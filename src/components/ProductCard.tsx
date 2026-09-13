@@ -42,15 +42,20 @@ const styles = {
     boxShadow: 0,
     backgroundColor: "transparent",
     borderRadius: 3,
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    // Breathing room between the hover surface and the image/content it
+    // wraps, so the hover tint never sits flush against the image edge.
+    padding: "12px 11px",
     transition: "background-color 0.2s",
     cursor: "pointer", // 👈 makes it feel clickable
     "&:hover": {
-      backgroundColor: "#f9f9f9", // 👈 subtle highlight
+      backgroundColor: "#EEF6FF", // 👈 hover surface (design spec)
     },
     "&:hover .menu-button": {
       opacity: 1,
     },
-    // border: "3px solid red",
   },
 };
 
@@ -247,36 +252,40 @@ const ProductCard: React.FC<ProductCardProps> = ({
             );
           })()}
         </Box>
+
+        {/* Action button: anchored to the image wrapper (not the padded
+            Card) so its position stays fixed at the image's corner
+            regardless of the outer card padding added for the hover
+            surface. */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            opacity: 0,
+            transition: "opacity 0.2s",
+            zIndex: 2,
+            "& .MuiIconButton-root": {
+              padding: "4px",
+            },
+            pointerEvents: "auto",
+            backgroundColor: "grey.200",
+            borderRadius: 2,
+            p: 1,
+          }}
+          className="menu-button"
+        >
+          <ProductActionsMenu
+            product={product}
+            currentCategory={currentCategory}
+            onPromotionClick={onPromotionClick}
+            onDeleteClick={onDeleteClick}
+            onMoveClick={onMoveClick}
+          />
+        </Box>
       </Box>
 
-      <Box
-        sx={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          opacity: 0,
-          transition: "opacity 0.2s",
-          zIndex: 2,
-          "& .MuiIconButton-root": {
-            padding: "4px",
-          },
-          pointerEvents: "auto",
-          backgroundColor: "grey.200",
-          borderRadius: 2,
-          p: 1,
-        }}
-        className="menu-button"
-      >
-        <ProductActionsMenu
-          product={product}
-          currentCategory={currentCategory}
-          onPromotionClick={onPromotionClick}
-          onDeleteClick={onDeleteClick}
-          onMoveClick={onMoveClick}
-        />
-      </Box>
-
-      <CardContent sx={{ p: 2, backgroundColor: "transparent", mt: 2 }}>
+      <CardContent sx={{ p: 2, backgroundColor: "transparent" }}>
         {/* Views */}
         {product.views !== undefined && (
           <Box display="flex" alignItems="center" gap={1} mb={1}>
