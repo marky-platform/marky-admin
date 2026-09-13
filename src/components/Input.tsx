@@ -17,8 +17,9 @@ interface InputProps {
   // "remaining" (default) shows characters left; "fraction" shows current/max
   counterFormat?: "remaining" | "fraction";
   // "adornment" (default, current behavior) renders the counter inside the
-  // input; "label" renders it aligned right in the FormLabel row, as in Figma
-  counterPosition?: "adornment" | "label";
+  // input; "label" renders it aligned right in the FormLabel row, as in
+  // Figma; "none" enforces maxLength natively without showing any counter
+  counterPosition?: "adornment" | "label" | "none";
   helperText?: string;
   disabled?: boolean;
   placeholder?: string;

@@ -235,13 +235,13 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                       {imageError ? "Imagen requerida" : "Imagen *"}
                     </Typography>
                   </Box>
-                  {/* INPUTS  */}
+                  {/* FIELDS: name on its own row, description + price below it */}
                   <Box
                     sx={{
                       display: "flex",
-                      alignItems: "center",
+                      flexDirection: "column",
                       flex: 1,
-                      gap: 2,
+                      gap: 1,
                     }}
                   >
                     <Input
@@ -252,6 +252,8 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                       onChange={handleChange}
                       onBlur={handleBlur}
                       required
+                      maxLength={32}
+                      counterPosition="none"
                       error={
                         getIn(touched, `variants[${index}].name`) &&
                         Boolean(getIn(errors, `variants[${index}].name`))
@@ -268,65 +270,75 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                       }}
                     />
 
-                    <Input
-                      name={`variants[${index}].description`}
-                      label="Descripción"
-                      placeholder="Descripción"
-                      value={variant.description}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      InputProps={{
-                        sx: {
-                          backgroundColor: "white",
-                        },
-                      }}
-                    />
+                    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
+                      <Box sx={{ flex: 2 }}>
+                        <Input
+                          name={`variants[${index}].description`}
+                          label="Descripción"
+                          placeholder="Descripción"
+                          value={variant.description}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          required
+                          maxLength={32}
+                          counterFormat="fraction"
+                          counterPosition="label"
+                          error={
+                            getIn(touched, `variants[${index}].description`) &&
+                            Boolean(getIn(errors, `variants[${index}].description`))
+                          }
+                          helperText={
+                            getIn(touched, `variants[${index}].description`)
+                              ? getIn(errors, `variants[${index}].description`)
+                              : undefined
+                          }
+                          InputProps={{
+                            sx: {
+                              backgroundColor: "white",
+                            },
+                          }}
+                        />
+                      </Box>
 
-                    <Field
-                      name={`variants[${index}].price`}
-                      component={NumberInput}
-                      label="Precio"
-                      required
-                      fullWidth
-                      margin="normal"
-                      InputProps={{
-                        sx: {
-                          backgroundColor: "white",
-                        },
-                        endAdornment: currencyCode ? (
-                          <InputAdornment position="end">
-                            <Typography variant="body2">{`[${currencyCode}]`}</Typography>
-                          </InputAdornment>
-                        ) : undefined,
-                      }}
-                    />
+                      <Box sx={{ flex: 1 }}>
+                        <Field
+                          name={`variants[${index}].price`}
+                          component={NumberInput}
+                          label="Precio"
+                          required
+                          fullWidth
+                          margin="normal"
+                          InputProps={{
+                            sx: {
+                              backgroundColor: "white",
+                            },
+                            endAdornment: currencyCode ? (
+                              <InputAdornment position="end">
+                                <Typography variant="body2">{`[${currencyCode}]`}</Typography>
+                              </InputAdornment>
+                            ) : undefined,
+                          }}
+                        />
+                      </Box>
+                    </Box>
                   </Box>
                   {/* DELETE BUTTON */}
-                  <Box
-                    sx={{
-                      backgroundColor: "grey.400",
-                      justifyItems: "center",
-                      borderRadius: 2,
-                      mt: 5,
-                      p: 1,
+                  <IconButton
+                    aria-label="Eliminar presentación"
+                    onClick={() => {
+                      // Persisted rows (real DB id) are soft-deleted so the
+                      // submit handler can send a { id, _delete: true }
+                      // tombstone the backend understands. Rows that were
+                      // never saved (no id yet) can just be spliced out.
+                      if (variant.id) {
+                        setFieldValue(`variants[${index}]._delete`, true);
+                      } else {
+                        remove(index);
+                      }
                     }}
                   >
-                    <IconButton
-                      onClick={() => {
-                        // Persisted rows (real DB id) are soft-deleted so the
-                        // submit handler can send a { id, _delete: true }
-                        // tombstone the backend understands. Rows that were
-                        // never saved (no id yet) can just be spliced out.
-                        if (variant.id) {
-                          setFieldValue(`variants[${index}]._delete`, true);
-                        } else {
-                          remove(index);
-                        }
-                      }}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </Box>
+                    <Delete />
+                  </IconButton>
                 </Box>
                 );
               })}

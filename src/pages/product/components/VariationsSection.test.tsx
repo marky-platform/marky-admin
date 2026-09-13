@@ -107,4 +107,25 @@ describe("VariationsSection", () => {
 
     expect(addButton).not.toBeDisabled();
   });
+
+  it("caps Nombre de presentación and Descripción at 32 characters via the native maxLength attribute", () => {
+    renderSection([{ name: "", description: "", price: "", image: null }]);
+
+    const nameInput = screen.getByPlaceholderText("Nombre de presentación");
+    const descriptionInput = screen.getByPlaceholderText("Descripción");
+
+    expect(nameInput).toHaveAttribute("maxlength", "32");
+    expect(descriptionInput).toHaveAttribute("maxlength", "32");
+  });
+
+  it("shows a 0/32 -> 32/32 character counter on Descripción that never goes negative", () => {
+    const thirtyTwoChars = "a".repeat(32);
+    renderSection([
+      { name: "Chico", description: "", price: 5, image: null },
+      { name: "Grande", description: thirtyTwoChars, price: 8, image: null },
+    ]);
+
+    expect(screen.getByText("0/32")).toBeInTheDocument();
+    expect(screen.getByText("32/32")).toBeInTheDocument();
+  });
 });
