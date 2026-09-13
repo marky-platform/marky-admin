@@ -11,6 +11,8 @@ import ProductDetailInfo from "./components/ProductDetailInfo";
 import ProductDetailPricing from "./components/ProductDetailPricing";
 import ProductVariantsList from "./components/ProductVariantsList";
 
+export const PRODUCT_INFO_MAX_WIDTH = 600;
+
 const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -43,7 +45,7 @@ const ProductDetailPage: React.FC = () => {
           flex: 1,
           px: { xs: 4, md: 8 },
           pb: "100px",
-          mt: 16,
+          mt: 8,
           mx: "auto",
           minWidth: "85%",
         }}
@@ -67,7 +69,14 @@ const ProductDetailPage: React.FC = () => {
           </Grid>
           {/* COLUMN 2 */}
           <Grid item xs={12} md={8} lg={7}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                maxWidth: PRODUCT_INFO_MAX_WIDTH,
+              }}
+            >
               <Box>
                 <ProductDetailInfo product={product} />
 
