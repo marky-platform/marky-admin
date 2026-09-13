@@ -151,8 +151,12 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         sx={{
           position: "sticky",
           top: "4rem",
-          zIndex: 1,
+          // Above every card-level element (badges, hover, action button —
+          // the highest of which is zIndex 2) so products always scroll
+          // underneath the category header instead of bleeding over it.
+          zIndex: 20,
           backgroundColor: "white",
+          borderBottom: "1px solid #E5E7EB",
           py: 2,
         }}
       >
