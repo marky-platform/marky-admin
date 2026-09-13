@@ -195,7 +195,15 @@ const Home = () => {
       }}
     >
       <Header />
-      <Box sx={{ flex: 1, px: { xs: 4, sm: 6, lg: 8 }, py: 3, height: "100%" }}>
+      <Box
+        sx={{
+          flex: 1,
+          px: { xs: 4, sm: 6, md: 0 },
+          pt: { xs: 3, md: 0 },
+          pb: 3,
+          height: "100%",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -213,6 +221,7 @@ const Home = () => {
               flexGrow: 0,
               flexShrink: 0,
               px: { xs: 0, md: 8 },
+              pt: { xs: 0, md: 8 },
               borderRight: (theme) => ({
                 xs: "none",
                 md: `1px solid ${theme.palette.grey[600]}`,

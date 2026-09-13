@@ -147,7 +147,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         display="flex"
         alignItems="center"
         gap={2}
-        mb={5}
+        mb={2}
         sx={{
           position: "sticky",
           top: "4rem",
@@ -169,7 +169,8 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
             onClick={handleOpen}
             sx={{
               borderRadius: 2,
-              p: 2.5,
+              p: 2,
+              backgroundColor: "grey.50",
               "&:hover, &:focus-visible": { backgroundColor: "grey.200" },
             }}
           >
