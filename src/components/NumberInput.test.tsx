@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import NumberInput from "./NumberInput";
@@ -107,8 +107,8 @@ describe("NumberInput error display for a nested array field (Variaciones/Adicio
     renderNestedField();
     const input = screen.getByRole("textbox");
     fireEvent.blur(input);
-    await waitFor(() =>
-      expect(screen.getByText("El precio es obligatorio")).toBeInTheDocument(),
-    );
+    expect(
+      await screen.findByText("El precio es obligatorio"),
+    ).toBeInTheDocument();
   });
 });

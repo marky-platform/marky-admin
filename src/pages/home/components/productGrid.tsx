@@ -180,7 +180,7 @@ export const ProductGrid: React.FC = () => {
   }
 
   return (
-    <Box sx={{ px: { xs: 0, md: 8 }, py: 2 }}>
+    <Box sx={{ px: { xs: 0, md: 8 }, pt: 0, pb: 2 }}>
       <Box
         mb={4}
         sx={{
@@ -188,7 +188,7 @@ export const ProductGrid: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingBottom: 4,
+          py: 3,
         }}
       >
         <Typography variant="h2" sx={{ display: { xs: "none", md: "block" } }}>
@@ -243,7 +243,7 @@ export const ProductGrid: React.FC = () => {
       </Box>
       {/* Filtros: Search y selects */}
       {!showEmptyState && (
-        <Box mb={4}>
+        <Box mb={2}>
           <FilterSection
             values={filters}
             onFilterChange={handleFilterChange}

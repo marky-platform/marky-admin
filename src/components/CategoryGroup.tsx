@@ -10,6 +10,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
@@ -146,7 +147,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         display="flex"
         alignItems="center"
         gap={2}
-        mb={5}
+        mb={2}
         sx={{
           position: "sticky",
           top: "4rem",
@@ -163,12 +164,19 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         </Box>
         {renderPromotionBadge()}
         {renderAvailabilityBadge()}
-        <IconButton
-          onClick={handleOpen}
-          sx={{ backgroundColor: "grey.200", borderRadius: 2, p: 2.5 }}
-        >
-          <MoreVertIcon />
-        </IconButton>
+        <Tooltip title="Más acciones">
+          <IconButton
+            onClick={handleOpen}
+            sx={{
+              borderRadius: 2,
+              p: 2,
+              backgroundColor: "grey.50",
+              "&:hover, &:focus-visible": { backgroundColor: "grey.200" },
+            }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        </Tooltip>
         <Menu
           anchorEl={anchorEl}
           open={open}

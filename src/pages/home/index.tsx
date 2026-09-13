@@ -7,6 +7,7 @@ import { useHomePageData } from "../../hooks/useHomePageData";
 import { useBusinessAccountInfo } from "../../hooks/useBusinessAccountInfo";
 import {
   useUpdateBusiness,
+  useUpdateBusinessAccountInfo,
   useUpdateBusinessProfileImage,
 } from "../../hooks/useBusinessMutations";
 import { useImageCropper } from "../../hooks/useImageCropper";
@@ -16,6 +17,12 @@ import { ChannelWizardModal } from "./components/channels/ChannelWizardModal";
 import { mapSocialLinksToChannels } from "../../mappers/channelMapper";
 import { ChannelsByKey } from "../../types/channel";
 import DescriptionModal from "./components/DescriptionModal";
+import EditNameModal from "./components/EditNameModal";
+import EditUsernameModal from "./components/EditUsernameModal";
+import LocationsModal, {
+  LocationEntryValue,
+} from "./components/LocationsModal";
+import { useUpdateBusinessLocations } from "../../hooks/useUpdateBusinessLocations";
 import { Header } from "../../components/Header";
 import PresentationModal from "./components/PresentationModal";
 import { ProductGrid } from "./components/productGrid";
@@ -32,6 +39,7 @@ const branchFormInitialValues = {
   socialMedia: {} as ChannelsByKey,
   description: "",
   attributes: [] as Attribute[],
+  locations: [] as LocationEntryValue[],
   profilePhoto: "",
 };
 
@@ -41,8 +49,15 @@ const Home = () => {
   const [openDescriptionModal, setOpenDescriptionModal] = useState(false);
   const [openAttributesModal, setOpenAttributesModal] = useState(false);
   const [openPresentationModal, setOpenPresentationModal] = useState(false);
+  const [openEditNameModal, setOpenEditNameModal] = useState(false);
+  const [openEditUsernameModal, setOpenEditUsernameModal] = useState(false);
+  const [openLocationsModal, setOpenLocationsModal] = useState(false);
 
   const { mutate: updateBusinessMutation } = useUpdateBusiness();
+  const { mutate: updateBusinessAccountInfoMutation } =
+    useUpdateBusinessAccountInfo();
+  const { mutate: updateBusinessLocationsMutation } =
+    useUpdateBusinessLocations();
 
   // Fetch home page data
   const { data: homePageData, isLoading, error } = useHomePageData();
@@ -113,6 +128,7 @@ const Home = () => {
       socialMedia,
       description: homePageData.description || "",
       attributes,
+      locations: homePageData.locations || [],
       profilePhoto: homePageData.profile_image,
     };
   }, [homePageData]);
@@ -179,7 +195,15 @@ const Home = () => {
       }}
     >
       <Header />
-      <Box sx={{ flex: 1, px: { xs: 4, sm: 6, lg: 8 }, py: 3, height: "100%" }}>
+      <Box
+        sx={{
+          flex: 1,
+          px: { xs: 4, sm: 6, md: 0 },
+          pt: { xs: 3, md: 0 },
+          pb: 3,
+          height: "100%",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -197,6 +221,7 @@ const Home = () => {
               flexGrow: 0,
               flexShrink: 0,
               px: { xs: 0, md: 8 },
+              pt: { xs: 0, md: 8 },
               borderRight: (theme) => ({
                 xs: "none",
                 md: `1px solid ${theme.palette.grey[600]}`,
@@ -246,9 +271,10 @@ const Home = () => {
                         values={values}
                         homePageData={homePageData}
                         setFieldValue={setFieldValue}
+                        locations={values.locations}
                         onOpenPhotoPicker={handleOpenPhotoPicker}
-                        openSocialMediaModal={() =>
-                          setOpenSocialMediaModal(true)
+                        onOpenEditProfile={() =>
+                          setOpenPresentationModal(true)
                         }
                         openDescriptionModal={() =>
                           setOpenDescriptionModal(true)
@@ -273,7 +299,10 @@ const Home = () => {
                           : undefined
                       }
                       open={openSocialMediaModal}
-                      onClose={() => setOpenSocialMediaModal(false)}
+                      onClose={() => {
+                        setOpenSocialMediaModal(false);
+                        setShowBackButtonInModals(false);
+                      }}
                       initialData={values.socialMedia}
                       onSubmit={(channels) => {
                         setFieldValue("socialMedia", channels);
@@ -290,7 +319,10 @@ const Home = () => {
                           : undefined
                       }
                       open={openDescriptionModal}
-                      onClose={() => setOpenDescriptionModal(false)}
+                      onClose={() => {
+                        setOpenDescriptionModal(false);
+                        setShowBackButtonInModals(false);
+                      }}
                       initialDescription={values.description}
                       onSubmit={(description) => {
                         updateBusinessMutation({ description });
@@ -308,7 +340,10 @@ const Home = () => {
                           : undefined
                       }
                       open={openAttributesModal}
-                      onClose={() => setOpenAttributesModal(false)}
+                      onClose={() => {
+                        setOpenAttributesModal(false);
+                        setShowBackButtonInModals(false);
+                      }}
                       initialAttributes={values.attributes}
                       onSubmit={(attributes) => {
                         const attributeIds = attributes.map((attr) => attr.id);
@@ -319,6 +354,68 @@ const Home = () => {
                       }}
                     />
 
+                    <EditNameModal
+                      onBack={
+                        showBackButtonInModals
+                          ? () => {
+                              setOpenPresentationModal(true);
+                              setOpenEditNameModal(false);
+                            }
+                          : undefined
+                      }
+                      open={openEditNameModal}
+                      onClose={() => {
+                        setOpenEditNameModal(false);
+                        setShowBackButtonInModals(false);
+                      }}
+                      initialName={values.business_name}
+                      onSubmit={(business_name) => {
+                        updateBusinessAccountInfoMutation({ business_name });
+                        setFieldValue("business_name", business_name);
+                      }}
+                    />
+
+                    <EditUsernameModal
+                      onBack={
+                        showBackButtonInModals
+                          ? () => {
+                              setOpenPresentationModal(true);
+                              setOpenEditUsernameModal(false);
+                            }
+                          : undefined
+                      }
+                      open={openEditUsernameModal}
+                      onClose={() => {
+                        setOpenEditUsernameModal(false);
+                        setShowBackButtonInModals(false);
+                      }}
+                      initialUsername={businessAccountInfo?.business_id || ""}
+                      onSubmit={(business_id) => {
+                        updateBusinessAccountInfoMutation({ business_id });
+                      }}
+                    />
+
+                    <LocationsModal
+                      onBack={
+                        showBackButtonInModals
+                          ? () => {
+                              setOpenPresentationModal(true);
+                              setOpenLocationsModal(false);
+                            }
+                          : undefined
+                      }
+                      open={openLocationsModal}
+                      onClose={() => {
+                        setOpenLocationsModal(false);
+                        setShowBackButtonInModals(false);
+                      }}
+                      initialLocations={values.locations}
+                      onSubmit={(locations) => {
+                        updateBusinessLocationsMutation({ locations });
+                        setFieldValue("locations", locations);
+                      }}
+                    />
+
                     <PresentationModal
                       open={openPresentationModal}
                       onClose={() => {
@@ -326,6 +423,16 @@ const Home = () => {
                         setShowBackButtonInModals(false);
                       }}
                       onEditPhoto={handleOpenPhotoPicker}
+                      onEditName={() => {
+                        setOpenEditNameModal(true);
+                        setOpenPresentationModal(false);
+                        setShowBackButtonInModals(true);
+                      }}
+                      onEditUsername={() => {
+                        setOpenEditUsernameModal(true);
+                        setOpenPresentationModal(false);
+                        setShowBackButtonInModals(true);
+                      }}
                       onEditChannels={() => {
                         setOpenSocialMediaModal(true);
                         setOpenPresentationModal(false);
@@ -333,6 +440,11 @@ const Home = () => {
                       }}
                       onEditDescription={() => {
                         setOpenDescriptionModal(true);
+                        setOpenPresentationModal(false);
+                        setShowBackButtonInModals(true);
+                      }}
+                      onEditLocations={() => {
+                        setOpenLocationsModal(true);
                         setOpenPresentationModal(false);
                         setShowBackButtonInModals(true);
                       }}

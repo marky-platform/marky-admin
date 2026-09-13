@@ -1,9 +1,27 @@
 import { Box, Typography } from "@mui/material";
-import React from "react";
+import { ThemeProvider, createTheme, useTheme } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
+import React, { useMemo } from "react";
 import { Product } from "../../../types/product";
 import { formatPrice } from "../../../utils/format";
 
+// Figma specifies a bolder/tighter H2 for the price than the app's shared
+// global h2 (also used e.g. for the product name). Scoped via a nested theme
+// so other h2 consumers on this page are unaffected — same pattern as
+// AuthLayout.tsx's applyAuthTypography.
+const applyPriceTypography = (outerTheme: Theme) =>
+  createTheme(outerTheme, {
+    typography: {
+      h2: { fontWeight: 700, lineHeight: "32px", letterSpacing: "-0.096px" },
+    },
+  });
+
 const ProductDetailPricing: React.FC<{ product: Product }> = ({ product }) => {
+  const outerTheme = useTheme();
+  const priceTheme = useMemo(
+    () => applyPriceTypography(outerTheme),
+    [outerTheme]
+  );
   const discount = Number(product.discountPercentage ?? 0);
 
   // Treat presence of backend "with discount" labels as signal too
@@ -32,26 +50,16 @@ const ProductDetailPricing: React.FC<{ product: Product }> = ({ product }) => {
   const secondaryOriginalToShow = product.secondaryPrice ?? undefined;
 
   return (
-    <Box sx={{ mt: 8 }}>
-      {hasDiscount ? (
-        <Box>
-          {/* Discounted prices (top, larger) */}
-          <Box display="flex" alignItems="center" gap={3}>
+    <ThemeProvider theme={priceTheme}>
+      <Box sx={{ mt: 8 }}>
+        {hasDiscount ? (
+          <Box display="flex" flexDirection="column" gap={0.5}>
             {primaryDiscountedToShow && (
-              <Typography color="primary" variant="h2" fontWeight={700}>
+              <Typography color="primary" variant="h2">
                 {primaryDiscountedToShow}
               </Typography>
             )}
 
-            {secondaryDiscountedToShow && (
-              <Typography color="grey.500" variant="h3" fontWeight={500}>
-                {secondaryDiscountedToShow}
-              </Typography>
-            )}
-          </Box>
-
-          {/* Original prices (below, struck-through) */}
-          <Box display="flex" alignItems="flex-end" gap={2} sx={{ mt: 0.5 }}>
             {primaryOriginalToShow && (
               <Typography
                 variant="body2"
@@ -64,32 +72,27 @@ const ProductDetailPricing: React.FC<{ product: Product }> = ({ product }) => {
               </Typography>
             )}
 
+            {secondaryDiscountedToShow && (
+              <Typography variant="body2" color="grey.500">
+                {secondaryDiscountedToShow}
+              </Typography>
+            )}
+          </Box>
+        ) : (
+          <Box display="flex" flexDirection="column" gap={0.5}>
+            <Typography color="primary" variant="h2">
+              {primaryOriginalToShow}
+            </Typography>
+
             {secondaryOriginalToShow && (
-              <Typography
-                variant="body2"
-                color="grey.500"
-                fontSize={"small"}
-                sx={{ textDecoration: "line-through" }}
-              >
+              <Typography variant="body2" color="text.secondary">
                 {secondaryOriginalToShow}
               </Typography>
             )}
           </Box>
-        </Box>
-      ) : (
-        <Box display="flex" alignItems="flex-end" gap={2}>
-          <Typography color="primary" variant="h4" fontWeight={700}>
-            {primaryOriginalToShow}
-          </Typography>
-
-          {secondaryOriginalToShow && (
-            <Typography variant="body2" color="text.secondary">
-              {secondaryOriginalToShow}
-            </Typography>
-          )}
-        </Box>
-      )}
-    </Box>
+        )}
+      </Box>
+    </ThemeProvider>
   );
 };
 

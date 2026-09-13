@@ -88,6 +88,11 @@ const Input: React.FC<InputProps> = ({
   const helperText =
     helperTextProp ?? (touched && fieldError ? String(fieldError) : undefined);
 
+  const hasEndAdornment =
+    type === "password" ||
+    (maxLength !== undefined && counterPosition === "adornment") ||
+    Boolean(endAdornment);
+
   const endAdornmentElements = (
     <>
       {type === "password" && (
@@ -166,7 +171,7 @@ const Input: React.FC<InputProps> = ({
           },
         })}
         InputProps={{
-          endAdornment: endAdornmentElements,
+          endAdornment: hasEndAdornment ? endAdornmentElements : undefined,
           ...customInputProps, // Spread customInputProps here
         }}
         inputProps={{

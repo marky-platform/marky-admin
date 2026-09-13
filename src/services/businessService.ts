@@ -104,6 +104,29 @@ export interface Category {
   name: string;
 }
 
+// Interface for a single named business address/location ("Ubicaciones").
+export interface BusinessLocation {
+  id: number;
+  name: string;
+  address: string;
+}
+
+export interface BusinessLocationsReplacePayload {
+  locations: { id?: number; name: string; address: string }[];
+}
+
+export interface BusinessLocationsReplaceResponse {
+  locations: BusinessLocation[];
+}
+
+// POST: Replace the full set of locations/addresses for the business.
+export async function updateBusinessLocations(
+  data: BusinessLocationsReplacePayload,
+): Promise<BusinessLocationsReplaceResponse> {
+  const response = await api.post(`${baseURL}/locations/bulk-update/`, data);
+  return response.data;
+}
+
 // Interface for home page data
 export interface HomePageData {
   business_name: string;
@@ -112,6 +135,7 @@ export interface HomePageData {
   categories: Category[];
   profile_image: string;
   headquarter_attributes: { id: number; name: string }[] | null;
+  locations: BusinessLocation[];
 }
 
 // GET: Fetch home page data
@@ -179,7 +203,6 @@ export async function patchBusinessAccountInfo(
 
 // Interface for business data to be updated
 export interface BusinessData {
-  business_name?: string;
   description?: string;
   profile_image?: string;
   headquarter_attributes?: number[];

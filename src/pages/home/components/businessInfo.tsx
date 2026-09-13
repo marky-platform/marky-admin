@@ -5,20 +5,23 @@ import AttributesInfo from "./AttributesInfo";
 import BusinessAvatar from "./BusinessAvatar";
 import DescriptionInfo from "./DescriptionInfo";
 import SocialMediaInfo from "./SocialMediaInfo";
+import { LocationEntryValue } from "./LocationsModal";
 import { PhotoCamera, StorefrontOutlined } from "@mui/icons-material";
 
 export const BusinessInfo: React.FC<{
   values: any;
   homePageData?: HomePageData;
   setFieldValue: (field: string, value: any) => void;
-  openSocialMediaModal: () => void;
+  locations: LocationEntryValue[];
+  onOpenEditProfile: () => void;
   openDescriptionModal: () => void;
   openAttributesModal: () => void;
   onOpenPhotoPicker: () => void;
 }> = ({
   values,
   homePageData,
-  openSocialMediaModal,
+  locations,
+  onOpenEditProfile,
   openDescriptionModal,
   openAttributesModal,
   onOpenPhotoPicker,
@@ -109,7 +112,9 @@ export const BusinessInfo: React.FC<{
       {/* Redes sociales */}
       <SocialMediaInfo
         socialMedia={values.socialMedia}
-        onOpen={openSocialMediaModal}
+        locations={locations}
+        businessName={businessName}
+        onEmptyState={onOpenEditProfile}
       />
       <Box display="flex" flexDirection="column" gap={2}>
         {/* Descripción */}

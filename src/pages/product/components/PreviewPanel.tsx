@@ -345,7 +345,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
   };
 
   return (
-    <Box sx={{ width: 330, flexShrink: 0, ml: 5 }}>
+    <Box sx={{ width: 330, flexShrink: 0, ml: 5, pr: 8 }}>
       <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3 }}>
         <VisibilityIcon fontSize="small" />
         <Typography variant="subtitle1" fontWeight="bold">

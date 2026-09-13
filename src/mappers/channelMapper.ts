@@ -53,6 +53,18 @@ export const mapSocialLinksToChannels = (links: SocialLink[] = []): ChannelsByKe
   return byChannel;
 };
 
+// Resuelve la entrada de un canal a la URL externa que debe abrirse en una
+// pestaña nueva. Para whatsapp arma un enlace wa.me a partir del número
+// (guardado como dígitos crudos, sin prefijo); para el resto reutiliza la
+// misma lógica de armado de URL que usa el payload de guardado.
+export const buildChannelExternalUrl = (chan: ChannelKey, entry: ChannelEntry): string => {
+  if (chan === "whatsapp") {
+    const digits = entry.url.replace(/\D/g, "");
+    return `https://wa.me/${digits}`;
+  }
+  return buildChannelValue(chan, entry.url);
+};
+
 // Reconstruye el payload que espera el bulk-update: reagrega los prefijos de
 // canal y normaliza enlaces, descartando entradas sin URL.
 export const mapChannelsToPayload = (
