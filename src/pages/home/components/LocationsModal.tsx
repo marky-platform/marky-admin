@@ -21,7 +21,7 @@ import colors from "../../../themes/utils/colors";
 import XButton from "../../../components/XButton";
 import BackButton from "../../../components/BackButton";
 
-const MAX_LOCATIONS = 10;
+const MAX_LOCATIONS = 4;
 const NAME_MAX_LENGTH = 60;
 const ADDRESS_MAX_LENGTH = 255;
 
