@@ -43,7 +43,11 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
 
   const handleChannelClick = (key: ChannelKey, entries: ChannelEntry[]) => {
     const meta = CHANNEL_META[key];
-    if (!meta.multiEntry) {
+    // Un solo registro configurado abre directo, sin importar si el canal
+    // admite varios (WhatsApp/Enlaces) o uno solo (Instagram/Facebook/
+    // TikTok) -- lo que decide es cuántos registros hay realmente, no el
+    // tipo de canal.
+    if (entries.length === 1) {
       openExternalUrl(buildChannelExternalUrl(key, entries[0]));
       return;
     }
@@ -60,6 +64,10 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   };
 
   const handleLocationsClick = () => {
+    if (filledLocations.length === 1) {
+      openExternalUrl(buildLocationMapsUrl(filledLocations[0].address));
+      return;
+    }
     setActivePopup({
       icon: <LocationIcon width={26} height={26} />,
       subtitle: "Ubicaciones",
@@ -105,7 +113,9 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
           sx={{ justifyContent: "center" }}
         >
           {filledChannels.map(({ key, entries }) => {
-            const IconComponent = CHANNEL_META[key].icon;
+            const meta = CHANNEL_META[key];
+            const IconComponent = meta.icon;
+            const handleClick = () => handleChannelClick(key, entries);
             return (
               <Badge
                 key={key}
@@ -113,7 +123,13 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
                 color="primary"
               >
                 <Box
-                  onClick={() => handleChannelClick(key, entries)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={meta.label}
+                  onClick={handleClick}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") handleClick();
+                  }}
                   sx={{
                     width: 42,
                     height: 42,
@@ -149,7 +165,13 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
               color="primary"
             >
               <Box
+                role="button"
+                tabIndex={0}
+                aria-label="Ubicaciones"
                 onClick={handleLocationsClick}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") handleLocationsClick();
+                }}
                 sx={{
                   width: 42,
                   height: 42,
