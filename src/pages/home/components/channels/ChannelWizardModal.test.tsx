@@ -168,9 +168,7 @@ describe("ChannelWizardModal", () => {
     fireEvent.change(nameInputs[0], { target: { value: "Pedidos" } });
     fireEvent.change(nameInputs[1], { target: { value: "Atención" } });
 
-    const phoneInputs = document.querySelectorAll(
-      'input[placeholder="Ingrese su número"]',
-    );
+    const phoneInputs = screen.getAllByPlaceholderText("Ingrese su número");
     fireEvent.change(phoneInputs[0], { target: { value: "595911111111" } });
     fireEvent.change(phoneInputs[1], { target: { value: "595911111111" } });
 
