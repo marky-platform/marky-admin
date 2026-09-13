@@ -17,7 +17,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logoMarky from "../assets/images/marky-logo.png";
+import logoMarky from "../assets/images/marky-logo.svg";
 import defaultUserAvatar from "../assets/images/user_default.png";
 import { ROUTES } from "../routes/paths";
 import { useSessionStore } from "../stores/sessionStore";
@@ -42,11 +42,20 @@ export const Header: React.FC = () => {
       color="inherit"
       elevation={0}
       sx={{
-        boxShadow: "0px 1px 0px 0px #E8E9EB",
         backgroundColor: "white",
       }}
     >
-      <Toolbar>
+      <Toolbar
+        sx={{
+          minHeight: { xs: 55, sm: 55, md: 55 },
+          maxHeight: 55,
+          py: 2,
+          px: 8,
+          gap: 6,
+          borderBottom: "1px solid #E5E7EB",
+          boxSizing: "border-box",
+        }}
+      >
         <Box display="flex" alignItems="center" flexGrow={1}>
           <ButtonBase
             onClick={() => navigate(ROUTES.HOME)}
@@ -65,6 +74,7 @@ export const Header: React.FC = () => {
           color="inherit"
           onClick={handleProfileClick}
           aria-label="user-menu"
+          sx={{ p: 1 }}
         >
           <Avatar src={defaultUserAvatar} />
         </IconButton>
