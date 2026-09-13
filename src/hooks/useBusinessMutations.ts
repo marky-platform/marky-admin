@@ -47,6 +47,7 @@ export const useUpdateBusinessAccountInfo = () => {
       queryClient.invalidateQueries({
         queryKey: ["productCategoriesWithProducts"],
       });
+      queryClient.invalidateQueries({ queryKey: ["homePageData"] });
     },
   });
 };
