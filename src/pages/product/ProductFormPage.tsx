@@ -67,8 +67,12 @@ import { ReactComponent as DestacarMenuIcon } from "../../assets/icons/product-f
 // document click / popstate interception) instead.
 
 const variantItemSchema = Yup.object().shape({
-  name: Yup.string().required("El nombre de la presentación es requerido"),
-  description: Yup.string(),
+  name: Yup.string()
+    .max(32, "El nombre de la presentación no puede superar los 32 caracteres")
+    .required("El nombre de la presentación es requerido"),
+  description: Yup.string()
+    .max(32, "La descripción no puede superar los 32 caracteres")
+    .required("La descripción de la presentación es requerida"),
   image: Yup.mixed().required("La imagen de la presentación es requerida"),
   price: Yup.number()
     .required("El precio es requerido")

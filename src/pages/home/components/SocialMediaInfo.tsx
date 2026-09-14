@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Badge, Box, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ALL_CHANNEL_KEYS, CHANNEL_META } from "./channels/channels.constants";
 import { ChannelEntry, ChannelKey, ChannelsByKey } from "../../../types/channel";
 import { buildChannelExternalUrl } from "../../../mappers/channelMapper";
@@ -20,6 +20,32 @@ interface ActivePopup {
   subtitle: string;
   items: EntryListPopupItem[];
 }
+
+// Pequeña burbuja con el conteo, superpuesta al borde inferior del ícono
+// (mt negativo), por spec de Figma -- reemplaza el Badge de notificación
+// que se usaba antes.
+const CountBubble: React.FC<{ count: number }> = ({ count }) => (
+  <Box
+    sx={{
+      mt: -2,
+      px: 2,
+      lineHeight: "16px",
+      bgcolor: (theme) => theme.palette.grey[50],
+      border: (theme) => `1px solid ${theme.palette.primary.main}`,
+      borderRadius: 1,
+    }}
+  >
+    <Typography
+      sx={{
+        color: (theme) => theme.palette.primary.main,
+        fontSize: 12,
+        lineHeight: "16px",
+      }}
+    >
+      {count}
+    </Typography>
+  </Box>
+);
 
 const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   socialMedia,
@@ -43,7 +69,11 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
 
   const handleChannelClick = (key: ChannelKey, entries: ChannelEntry[]) => {
     const meta = CHANNEL_META[key];
-    if (!meta.multiEntry) {
+    // Un solo registro configurado abre directo, sin importar si el canal
+    // admite varios (WhatsApp/Enlaces) o uno solo (Instagram/Facebook/
+    // TikTok) -- lo que decide es cuántos registros hay realmente, no el
+    // tipo de canal.
+    if (entries.length === 1) {
       openExternalUrl(buildChannelExternalUrl(key, entries[0]));
       return;
     }
@@ -60,6 +90,10 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   };
 
   const handleLocationsClick = () => {
+    if (filledLocations.length === 1) {
+      openExternalUrl(buildLocationMapsUrl(filledLocations[0].address));
+      return;
+    }
     setActivePopup({
       icon: <LocationIcon width={26} height={26} />,
       subtitle: "Ubicaciones",
@@ -100,20 +134,30 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
       ) : (
         <Box
           display="flex"
-          alignItems="center"
+          alignItems="flex-start"
           gap={3}
           sx={{ justifyContent: "center" }}
         >
           {filledChannels.map(({ key, entries }) => {
-            const IconComponent = CHANNEL_META[key].icon;
+            const meta = CHANNEL_META[key];
+            const IconComponent = meta.icon;
+            const handleClick = () => handleChannelClick(key, entries);
             return (
-              <Badge
+              <Box
                 key={key}
-                badgeContent={entries.length > 1 ? entries.length : undefined}
-                color="primary"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                sx={{ width: 42 }}
               >
                 <Box
-                  onClick={() => handleChannelClick(key, entries)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={meta.label}
+                  onClick={handleClick}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") handleClick();
+                  }}
                   sx={{
                     width: 42,
                     height: 42,
@@ -127,7 +171,8 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
                 >
                   <IconComponent style={{ width: 26, height: 26 }} />
                 </Box>
-              </Badge>
+                {entries.length > 1 && <CountBubble count={entries.length} />}
+              </Box>
             );
           })}
 
@@ -137,19 +182,26 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
                 width: "1px",
                 height: 32,
                 bgcolor: (theme) => theme.palette.grey[800],
+                alignSelf: "center",
               }}
             />
           )}
 
           {hasLocations && (
-            <Badge
-              badgeContent={
-                filledLocations.length > 1 ? filledLocations.length : undefined
-              }
-              color="primary"
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              sx={{ width: 42 }}
             >
               <Box
+                role="button"
+                tabIndex={0}
+                aria-label="Ubicaciones"
                 onClick={handleLocationsClick}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") handleLocationsClick();
+                }}
                 sx={{
                   width: 42,
                   height: 42,
@@ -163,7 +215,10 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
               >
                 <LocationIcon width={26} height={26} />
               </Box>
-            </Badge>
+              {filledLocations.length > 1 && (
+                <CountBubble count={filledLocations.length} />
+              )}
+            </Box>
           )}
         </Box>
       )}
