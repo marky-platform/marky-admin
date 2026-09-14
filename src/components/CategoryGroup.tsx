@@ -150,7 +150,11 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         mb={2}
         sx={{
           position: "sticky",
-          top: "4rem",
+          // Debe coincidir exactamente con la altura fija del AppBar
+          // (Header.tsx, Toolbar minHeight/maxHeight: 55) para que el
+          // encabezado de categoría quede pegado justo debajo, sin dejar un
+          // hueco donde se filtre el contenido que sigue haciendo scroll.
+          top: "55px",
           // Above every card-level element (badges, hover, action button —
           // the highest of which is zIndex 2) so products always scroll
           // underneath the category header instead of bleeding over it.
