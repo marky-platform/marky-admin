@@ -158,7 +158,6 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         display="flex"
         alignItems="center"
         gap={2}
-        mb={2}
         sx={{
           position: "sticky",
           top: `${STICKY_TOP_OFFSET}px`,

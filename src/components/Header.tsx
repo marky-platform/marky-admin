@@ -46,6 +46,7 @@ export const Header: React.FC = () => {
       }}
     >
       <Toolbar
+        disableGutters
         sx={{
           minHeight: { xs: 55, sm: 55, md: 55 },
           maxHeight: 55,
