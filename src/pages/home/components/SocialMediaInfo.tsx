@@ -13,6 +13,7 @@ interface SocialMediaInfoProps {
   locations: LocationEntryValue[];
   businessName: string;
   onEmptyState: () => void;
+  readOnly?: boolean;
 }
 
 interface ActivePopup {
@@ -52,6 +53,7 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   locations,
   businessName,
   onEmptyState,
+  readOnly = false,
 }) => {
   const [activePopup, setActivePopup] = useState<ActivePopup | null>(null);
 
@@ -66,6 +68,7 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   const filledLocations = locations || [];
   const hasLocations = filledLocations.length > 0;
   const isEmpty = !hasAnyChannels && !hasLocations;
+  if (isEmpty && readOnly) return null;
 
   const handleChannelClick = (key: ChannelKey, entries: ChannelEntry[]) => {
     const meta = CHANNEL_META[key];

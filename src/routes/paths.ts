@@ -13,4 +13,7 @@ export const ROUTES = {
   PRODUCT_DETAIL: "/product/:id",
   PRODUCT_EDIT: "/product/edit/:id",
   PRODUCT_CREATE: "/product/create",
+  // public (unauthenticated) routes — catch-alls, must be registered last (see App.tsx)
+  PUBLIC_BUSINESS: "/:businessId",
+  PUBLIC_PRODUCT_DETAIL: "/:businessId/product/:id",
 };

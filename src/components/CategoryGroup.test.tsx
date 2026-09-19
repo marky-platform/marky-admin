@@ -134,3 +134,28 @@ describe("CategoryGroup product delete propagation", () => {
     expect(onDeleteCategory).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("CategoryGroup readOnly rendering (public page)", () => {
+  it("renders no '...' menu when readOnly", () => {
+    renderCategoryGroup({ readOnly: true });
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("renders no 'Añade tu producto' tile for an empty category when readOnly", () => {
+    const emptyCategory: CategoryWithProducts = { ...category, products: [] };
+    renderCategoryGroup({ category: emptyCategory, readOnly: true });
+
+    expect(screen.queryByText("Añade tu producto")).not.toBeInTheDocument();
+  });
+
+  it("routes product clicks through onProductClick instead of the admin navigate", () => {
+    const onProductClick = jest.fn();
+    renderCategoryGroup({ readOnly: true, onProductClick });
+
+    fireEvent.click(screen.getByTestId("product-card"));
+
+    expect(onProductClick).toHaveBeenCalledTimes(1);
+    expect(onProductClick).toHaveBeenCalledWith(category.products[0]);
+  });
+});

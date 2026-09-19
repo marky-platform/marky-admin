@@ -4,7 +4,10 @@ import { Product } from "../../../types/product";
 import ProductStopperTag from "../../../components/ProductStopperTag";
 import ProductActionsMenu from "../../../components/ProductActionsMenu";
 
-const ProductDetailInfo: React.FC<{ product: Product }> = ({ product }) => {
+const ProductDetailInfo: React.FC<{ product: Product; readOnly?: boolean }> = ({
+  product,
+  readOnly = false,
+}) => {
   const isAvailable = product.is_available ?? product.is_active ?? true;
 
   return (
@@ -40,14 +43,16 @@ const ProductDetailInfo: React.FC<{ product: Product }> = ({ product }) => {
         >
           {product.name}
         </Typography>
-        <ProductActionsMenu
-          product={product}
-          triggerSx={{
-            backgroundColor: "grey.400",
-            borderRadius: 1.5,
-            p: 2,
-          }}
-        />
+        {!readOnly && (
+          <ProductActionsMenu
+            product={product}
+            triggerSx={{
+              backgroundColor: "grey.400",
+              borderRadius: 1.5,
+              p: 2,
+            }}
+          />
+        )}
       </Box>
 
       {/* Stopper + categoría en la misma fila */}

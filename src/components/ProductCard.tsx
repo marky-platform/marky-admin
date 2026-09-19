@@ -26,6 +26,8 @@ interface ProductCardProps {
     product: ProductGridItem,
     currentCategory?: ProductCategoryRef,
   ) => void;
+  /** Public/read-only rendering: hides the hover admin actions menu. */
+  readOnly?: boolean;
 }
 
 const LineClamp = styled(Typography)({
@@ -66,6 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onPromotionClick,
   onDeleteClick,
   onMoveClick,
+  readOnly = false,
 }) => {
   const discountNumber = Number(product.discountPercent ?? 0);
   const showDiscount = !isNaN(discountNumber) && discountNumber > 0;
@@ -257,32 +260,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
             Card) so its position stays fixed at the image's corner
             regardless of the outer card padding added for the hover
             surface. */}
-        <Box
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            opacity: 0,
-            transition: "opacity 0.2s",
-            zIndex: 2,
-            "& .MuiIconButton-root": {
-              padding: "4px",
-            },
-            pointerEvents: "auto",
-            backgroundColor: "grey.200",
-            borderRadius: 2,
-            p: 1,
-          }}
-          className="menu-button"
-        >
-          <ProductActionsMenu
-            product={product}
-            currentCategory={currentCategory}
-            onPromotionClick={onPromotionClick}
-            onDeleteClick={onDeleteClick}
-            onMoveClick={onMoveClick}
-          />
-        </Box>
+        {!readOnly && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              opacity: 0,
+              transition: "opacity 0.2s",
+              zIndex: 2,
+              "& .MuiIconButton-root": {
+                padding: "4px",
+              },
+              pointerEvents: "auto",
+              backgroundColor: "grey.200",
+              borderRadius: 2,
+              p: 1,
+            }}
+            className="menu-button"
+          >
+            <ProductActionsMenu
+              product={product}
+              currentCategory={currentCategory}
+              onPromotionClick={onPromotionClick}
+              onDeleteClick={onDeleteClick}
+              onMoveClick={onMoveClick}
+            />
+          </Box>
+        )}
       </Box>
 
       <CardContent sx={{ p: 2, backgroundColor: "transparent" }}>

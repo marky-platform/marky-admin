@@ -5,23 +5,26 @@ import { Box, Typography } from "@mui/material";
 interface DescriptionInfoProps {
   description: string;
   onOpen: () => void;
+  readOnly?: boolean;
 }
 
 const DescriptionInfo: React.FC<DescriptionInfoProps> = ({
   description,
   onOpen,
+  readOnly = false,
 }) => {
   const isEmpty = !description;
+  if (isEmpty && readOnly) return null;
   return (
     <Box
-      onClick={onOpen}
+      onClick={readOnly ? undefined : onOpen}
       sx={{
         border: isEmpty ? "1px dashed #B8CDF5" : "none",
         backgroundColor: isEmpty ? "#FAFCFF" : "transparent",
         borderRadius: isEmpty ? "6px" : 0,
         py: isEmpty ? 4 : 0,
         px: isEmpty ? 3 : 0,
-        cursor: "pointer",
+        cursor: readOnly ? "default" : "pointer",
       }}
     >
       {isEmpty ? (
