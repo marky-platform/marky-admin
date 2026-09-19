@@ -66,6 +66,7 @@ const AttributesInfo: React.FC<AttributesInfoProps> = ({
                     lineHeight: "16px",
                     color: "#4F4F4F",
                     whiteSpace: "nowrap",
+                    fontWeight: 400,
                   }}
                 >
                   {attr.name}

@@ -317,7 +317,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Description summary: truncated to 60 chars, full text on hover */}
         {product.description && (
           <Tooltip title={product.description} arrow>
-            <LineClamp sx={{ mt: 1, mb: 1, fontSize: 12, color: "#4F4F4F" }}>
+            <LineClamp
+              sx={{
+                mt: 1,
+                mb: 1,
+                fontSize: 12,
+                color: "#4F4F4F",
+                lineHeight: "18px",
+                fontWeight: 400,
+              }}
+            >
               {truncateText(product.description, 60)}
             </LineClamp>
           </Tooltip>
@@ -344,7 +353,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </Typography>
               )}
               {product.secondaryPriceWithDiscount && (
-                <Typography fontSize={14} color="grey.500">
+                <Typography fontSize={14} color="grey.500" fontWeight={400}>
                   {product.secondaryPriceWithDiscount}
                 </Typography>
               )}
@@ -355,7 +364,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.primaryPrice}
               </Typography>
               {product.secondaryPrice && (
-                <Typography fontSize={14} color="grey.500">
+                <Typography fontSize={14} color="grey.500" fontWeight={400}>
                   {product.secondaryPrice}
                 </Typography>
               )}
@@ -366,7 +375,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {formatPrice(product.price)}
               </Typography>
               {product.priceAlt && (
-                <Typography fontSize={14} color="textSecondary">
+                <Typography fontSize={14} color="textSecondary" fontWeight={400}>
                   {formatPrice(product.priceAlt)}
                 </Typography>
               )}

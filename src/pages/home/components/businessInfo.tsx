@@ -91,7 +91,7 @@ export const BusinessInfo: React.FC<{
         <Typography variant="body2">{categoriesText}</Typography>
         <Box display="flex" alignItems="center" gap={0.5}>
           <StorefrontOutlined sx={{ fontSize: 14, color: "#2563EB" }} />
-          <Typography sx={{ fontSize: 12, color: "#2563EB" }}>
+          <Typography sx={{ fontSize: 12, color: "#2563EB", fontWeight: 400 }}>
             Negocio
           </Typography>
         </Box>

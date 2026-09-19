@@ -21,7 +21,14 @@ import AddProductTileIcon from "../assets/icons/add-product-tile-icon.svg";
 import { ROUTES } from "../routes/paths";
 import { CategoryWithProducts } from "../types/categoryWithProducts";
 import { usePromotionCountdown } from "../hooks/usePromotionCountdown";
+import useIsStuck from "../hooks/useIsStuck";
 import ProductCard from "./ProductCard";
+
+// Debe coincidir exactamente con la altura fija del AppBar (Header.tsx,
+// Toolbar minHeight/maxHeight: 55) para que el encabezado de categoría quede
+// pegado justo debajo, sin dejar un hueco donde se filtre el contenido que
+// sigue haciendo scroll.
+const STICKY_TOP_OFFSET = 55;
 
 interface CategoryGroupProps {
   category: CategoryWithProducts;
@@ -49,6 +56,9 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
   // no local-only state: rely on query cache optimistic updates
   const isUnavailable = !category.is_available;
   const navigate = useNavigate();
+  const { ref: stickyHeaderRef, isStuck } = useIsStuck<HTMLDivElement>(
+    STICKY_TOP_OFFSET,
+  );
 
   const promotionCountdown = usePromotionCountdown({
     status: category.promotion_status,
@@ -144,23 +154,21 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
     <Box mb={6}>
       {/* Header */}
       <Box
+        ref={stickyHeaderRef}
         display="flex"
         alignItems="center"
         gap={2}
         mb={2}
         sx={{
           position: "sticky",
-          // Debe coincidir exactamente con la altura fija del AppBar
-          // (Header.tsx, Toolbar minHeight/maxHeight: 55) para que el
-          // encabezado de categoría quede pegado justo debajo, sin dejar un
-          // hueco donde se filtre el contenido que sigue haciendo scroll.
-          top: "55px",
+          top: `${STICKY_TOP_OFFSET}px`,
           // Above every card-level element (badges, hover, action button —
           // the highest of which is zIndex 2) so products always scroll
           // underneath the category header instead of bleeding over it.
           zIndex: 20,
           backgroundColor: "white",
-          borderBottom: "1px solid #E5E7EB",
+          borderBottom: "1px solid",
+          borderColor: isStuck ? "#E5E7EB" : "transparent",
           py: 2,
         }}
       >
@@ -286,7 +294,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
           md: "repeat(4, 1fr)", // 4 on medium
           lg: "repeat(5, 1fr)", // ✅ 5 columns on large screens
         }}
-        gap={{ xs: 4, sm: 4, lg: 6 }}
+        gap={{ xs: 4, sm: 4, md: 0 }}
       >
         {category.products.length === 0 ? (
           <Box
