@@ -44,6 +44,7 @@ const DescriptionInfo: React.FC<DescriptionInfoProps> = ({
             fontSize: 14,
             color: "#374151",
             lineHeight: "18px",
+            fontWeight: 400,
           }}
         >
           {description}

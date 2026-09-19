@@ -16,6 +16,9 @@ import SelectButtonField from "../../../components/SelectButtonField";
 import useDebounce from "../../../hooks/useDebounce";
 import CategoryFilterChips from "./CategoryFilterChips";
 
+// Achata los campos de filtro (búsqueda y categorías) al alto pedido por diseño.
+const filterFieldSx = { "& .MuiInputBase-input": { height: "1em" } };
+
 // Create a separate component for the filters section
 const FilterSection: React.FC<{
   values: any;
@@ -84,6 +87,7 @@ const FilterSection: React.FC<{
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             fullWidth
+            sx={filterFieldSx}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -118,7 +122,7 @@ const FilterSection: React.FC<{
                   : undefined
               }
               onClick={setOpenCategoryModal}
-              sx={{ flex: 1 }}
+              sx={{ flex: 1, ...filterFieldSx }}
             />
             <FormControlLabel
               sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
@@ -148,6 +152,7 @@ const FilterSection: React.FC<{
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             fullWidth
+            sx={filterFieldSx}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -167,6 +172,7 @@ const FilterSection: React.FC<{
                 : undefined
             }
             onClick={setOpenCategoryModal}
+            sx={filterFieldSx}
           />
         </Grid>
         <Grid item xs={12} md={2}>
