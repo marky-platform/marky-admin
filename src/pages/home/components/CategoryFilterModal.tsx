@@ -18,7 +18,6 @@ import CustomModal from "../../../components/Modal";
 import CheckboxWithLabel from "../../../components/CheckboxWithLabel";
 import useProductCategories from "../../../hooks/useProductCategories";
 import LoadingSpinner from "../../../components/LoadingSpinner";
-import { ProductCategory } from "../../../services/productService";
 
 // Define un tipo para las categorías
 export interface Category {
@@ -31,6 +30,9 @@ interface CategoryFilterModalProps {
   onClose: () => void;
   initialSelectedCategories: Category[];
   onSubmit: (selectedCategories: Category[]) => void;
+  /** Injected category list (e.g. from the public catalog endpoint) instead
+   * of fetching via the authenticated useProductCategories() hook. */
+  categories?: Category[];
 }
 
 const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
@@ -38,6 +40,7 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
   onClose,
   initialSelectedCategories,
   onSubmit,
+  categories: injectedCategories,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -51,15 +54,17 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
       page_size: 100,
     },
     {
-      enabled: open,
+      enabled: open && !injectedCategories,
     }
   );
 
+  const availableCategories: Category[] =
+    injectedCategories ?? categoriesData?.results ?? [];
+
   // Filtra las categorías disponibles según el término de búsqueda
-  const filteredCategories =
-    categoriesData?.results.filter((cat) =>
-      cat.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
+  const filteredCategories = availableCategories.filter((cat) =>
+    cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <CustomModal
@@ -125,12 +130,12 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
                       gap: 4,
                     }}
                   >
-                    {isLoading ? (
+                    {isLoading && !injectedCategories ? (
                       <LoadingSpinner />
                     ) : error ? (
                       <Typography>Error loading categories</Typography>
                     ) : (
-                      filteredCategories.map((cat: ProductCategory) => {
+                      filteredCategories.map((cat: Category) => {
                         const isChecked = values.selectedCategories.some(
                           (c: Category) => c.id === cat.id
                         );

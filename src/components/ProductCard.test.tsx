@@ -187,3 +187,20 @@ describe("ProductCard 'Eliminar' menu action (Home page card)", () => {
     expect(() => fireEvent.click(screen.getByText("Eliminar"))).not.toThrow();
   });
 });
+
+describe("ProductCard readOnly rendering (public page)", () => {
+  it("renders no actions menu when readOnly", () => {
+    renderProductCard({ readOnly: true });
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("still calls onClick when readOnly", () => {
+    const onClick = jest.fn();
+    renderProductCard({ readOnly: true, onClick });
+
+    fireEvent.click(screen.getByTestId("product-card"));
+
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+});

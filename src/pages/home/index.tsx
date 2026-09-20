@@ -26,7 +26,6 @@ import { useUpdateBusinessLocations } from "../../hooks/useUpdateBusinessLocatio
 import { Header } from "../../components/Header";
 import PresentationModal from "./components/PresentationModal";
 import { ProductGrid } from "./components/productGrid";
-import ProfileActionsRow from "./components/ProfileActionsRow";
 
 export interface Attribute {
   id: number;
@@ -280,9 +279,6 @@ const Home = () => {
                           setOpenDescriptionModal(true)
                         }
                         openAttributesModal={() => setOpenAttributesModal(true)}
-                      />
-                      <ProfileActionsRow
-                        onEditProfile={() => setOpenPresentationModal(true)}
                         onSettings={() => {
                           console.log("Abrir configuración");
                         }}

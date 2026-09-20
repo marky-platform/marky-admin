@@ -15,6 +15,7 @@ import React, { useEffect, useRef, useState } from "react";
 import SelectButtonField from "../../../components/SelectButtonField";
 import useDebounce from "../../../hooks/useDebounce";
 import CategoryFilterChips from "./CategoryFilterChips";
+import { Category } from "./CategoryFilterModal";
 
 // Achata los campos de filtro (búsqueda y categorías) al alto pedido por diseño.
 const filterFieldSx = { "& .MuiInputBase-input": { height: "1em" } };
@@ -24,7 +25,10 @@ const FilterSection: React.FC<{
   values: any;
   onFilterChange: (newFilters: any) => void;
   setOpenCategoryModal: () => void;
-}> = ({ values, onFilterChange, setOpenCategoryModal }) => {
+  /** Injected category list (public catalog page); forwarded to
+   * CategoryFilterChips on mobile instead of it fetching its own. */
+  categories?: Category[];
+}> = ({ values, onFilterChange, setOpenCategoryModal, categories }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -68,7 +72,11 @@ const FilterSection: React.FC<{
     // of a scrollable category chip row (per Figma's mobile frame — the
     // dropdown/checkbox filter UI is tablet+ only).
     return (
-      <CategoryFilterChips values={values} onFilterChange={onFilterChange} />
+      <CategoryFilterChips
+        values={values}
+        onFilterChange={onFilterChange}
+        categories={categories}
+      />
     );
   } else if (!isDesktop) {
     // Tablet (sm–md): search + a filter-toggle icon on one row (per Figma);

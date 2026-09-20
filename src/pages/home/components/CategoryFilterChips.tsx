@@ -6,6 +6,9 @@ import { Category } from "./CategoryFilterModal";
 interface CategoryFilterChipsProps {
   values: { categories: Category[] };
   onFilterChange: (newFilters: { categories: Category[] }) => void;
+  /** Injected category list (e.g. from the public catalog endpoint) instead
+   * of fetching via the authenticated useProductCategories() hook. */
+  categories?: Category[];
 }
 
 // Mobile-only replacement for the search box / category dropdown / "En
@@ -14,9 +17,13 @@ interface CategoryFilterChipsProps {
 const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
   values,
   onFilterChange,
+  categories: injectedCategories,
 }) => {
-  const { data: categoriesData } = useProductCategories({ page_size: 100 });
-  const categories = categoriesData?.results ?? [];
+  const { data: categoriesData } = useProductCategories(
+    { page_size: 100 },
+    { enabled: !injectedCategories },
+  );
+  const categories = injectedCategories ?? categoriesData?.results ?? [];
   const selectedIds = new Set(values.categories?.map((c) => c.id) ?? []);
   const isAllActive = selectedIds.size === 0;
 

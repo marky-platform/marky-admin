@@ -1,12 +1,11 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import { HomePageData } from "../../../services/businessService";
-import AttributesInfo from "./AttributesInfo";
 import BusinessAvatar from "./BusinessAvatar";
-import DescriptionInfo from "./DescriptionInfo";
-import SocialMediaInfo from "./SocialMediaInfo";
+import BusinessProfilePanel from "../../../components/BusinessProfilePanel";
+import ProfileActionsRow from "./ProfileActionsRow";
 import { LocationEntryValue } from "./LocationsModal";
-import { PhotoCamera, StorefrontOutlined } from "@mui/icons-material";
+import { PhotoCamera } from "@mui/icons-material";
 
 export const BusinessInfo: React.FC<{
   values: any;
@@ -17,6 +16,7 @@ export const BusinessInfo: React.FC<{
   openDescriptionModal: () => void;
   openAttributesModal: () => void;
   onOpenPhotoPicker: () => void;
+  onSettings?: () => void;
 }> = ({
   values,
   homePageData,
@@ -25,6 +25,7 @@ export const BusinessInfo: React.FC<{
   openDescriptionModal,
   openAttributesModal,
   onOpenPhotoPicker,
+  onSettings = () => {},
 }) => {
   // Get business name - use API data if available, otherwise placeholder
   const businessName =
@@ -46,9 +47,18 @@ export const BusinessInfo: React.FC<{
     (values.attributes || []).length === 0;
 
   return (
-    <Box display="flex" flexDirection="column" gap={6}>
-      {/* Datos principales del negocio (avatar, nombre, categoría, tipo de cuenta) */}
-      <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
+    <BusinessProfilePanel
+      name={businessName}
+      categoriesText={categoriesText}
+      photo={values.profilePhoto}
+      description={values.description}
+      attributes={values.attributes}
+      socialMedia={values.socialMedia}
+      locations={locations}
+      onOpenDescription={openDescriptionModal}
+      onOpenAttributes={openAttributesModal}
+      onEmptySocialMedia={onOpenEditProfile}
+      avatarSlot={
         <Box
           onClick={onOpenPhotoPicker}
           sx={{
@@ -81,53 +91,25 @@ export const BusinessInfo: React.FC<{
             <PhotoCamera />
           </Box>
         </Box>
-        <Typography
-          variant="h3"
-          mt={1}
-          sx={{ fontSize: "18px", fontWeight: 500 }}
-        >
-          {businessName}
-        </Typography>
-        <Typography variant="body2">{categoriesText}</Typography>
-        <Box display="flex" alignItems="center" gap={0.5}>
-          <StorefrontOutlined sx={{ fontSize: 14, color: "#2563EB" }} />
-          <Typography sx={{ fontSize: 12, color: "#2563EB", fontWeight: 400 }}>
-            Negocio
+      }
+      nudgeSlot={
+        isProfileIncomplete && (
+          <Typography
+            sx={{
+              color: "#374151",
+              fontWeight: 700,
+              fontSize: 14,
+              lineHeight: "18px",
+              textAlign: "center",
+            }}
+          >
+            Completa el perfil de tu negocio
           </Typography>
-        </Box>
-      </Box>
-      {isProfileIncomplete && (
-        <Typography
-          sx={{
-            color: "#374151",
-            fontWeight: 700,
-            fontSize: 14,
-            lineHeight: "18px",
-            textAlign: "center",
-          }}
-        >
-          Completa el perfil de tu negocio
-        </Typography>
-      )}
-      {/* Redes sociales */}
-      <SocialMediaInfo
-        socialMedia={values.socialMedia}
-        locations={locations}
-        businessName={businessName}
-        onEmptyState={onOpenEditProfile}
-      />
-      <Box display="flex" flexDirection="column" gap={2}>
-        {/* Descripción */}
-        <DescriptionInfo
-          description={values.description}
-          onOpen={openDescriptionModal}
-        />
-        {/* Atributos */}
-        <AttributesInfo
-          attributes={values.attributes}
-          onOpen={openAttributesModal}
-        />
-      </Box>
-    </Box>
+        )
+      }
+      actionsSlot={
+        <ProfileActionsRow onEditProfile={onOpenEditProfile} onSettings={onSettings} />
+      }
+    />
   );
 };

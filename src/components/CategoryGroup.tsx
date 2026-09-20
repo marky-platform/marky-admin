@@ -41,6 +41,15 @@ interface CategoryGroupProps {
     product: any,
     currentCategory: { id: number | null; name: string },
   ) => void;
+  /** Public/read-only rendering: hides the "..." admin menu and the
+   * "Añade tu producto" empty-state tile. */
+  readOnly?: boolean;
+  /** Overrides the default admin navigation to `/product/:id` (used by the
+   * public page to route to `/:businessId/product/:id` instead). */
+  onProductClick?: (product: any) => void;
+  /** Sticky header offset in px. Defaults to the admin Header's AppBar
+   * height (55px); the public page has no such header, so it passes 0. */
+  stickyTopOffset?: number;
 }
 
 const CategoryGroup: React.FC<CategoryGroupProps> = ({
@@ -51,13 +60,16 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
   onProductPromotionClick,
   onProductDeleteClick,
   onProductMoveClick,
+  readOnly = false,
+  onProductClick,
+  stickyTopOffset = STICKY_TOP_OFFSET,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   // no local-only state: rely on query cache optimistic updates
   const isUnavailable = !category.is_available;
   const navigate = useNavigate();
   const { ref: stickyHeaderRef, isStuck } = useIsStuck<HTMLDivElement>(
-    STICKY_TOP_OFFSET,
+    stickyTopOffset,
   );
 
   const promotionCountdown = usePromotionCountdown({
@@ -158,10 +170,9 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         display="flex"
         alignItems="center"
         gap={2}
-        mb={2}
         sx={{
           position: "sticky",
-          top: `${STICKY_TOP_OFFSET}px`,
+          top: `${stickyTopOffset}px`,
           // Above every card-level element (badges, hover, action button —
           // the highest of which is zIndex 2) so products always scroll
           // underneath the category header instead of bleeding over it.
@@ -180,109 +191,113 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         </Box>
         {renderPromotionBadge()}
         {renderAvailabilityBadge()}
-        <Tooltip title="Más acciones">
-          <IconButton
-            onClick={handleOpen}
-            sx={{
-              borderRadius: 2,
-              p: 2,
-              backgroundColor: "grey.50",
-              "&:hover, &:focus-visible": { backgroundColor: "grey.200" },
-            }}
-          >
-            <MoreVertIcon />
-          </IconButton>
-        </Tooltip>
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            sx: {
-              marginTop: 2,
-              backgroundColor: "white",
-              p: 1.5, // inner padding
-              maxWidth: 320, // optional, for spacing
-            },
-          }}
-        >
-          <MenuItem
-            onClick={() => {
-              navigate(ROUTES.PRODUCT_CREATE, {
-                state: {
-                  preselectedCategory: { id: category.id, name: category.name },
-                },
-              });
-              handleClose();
-            }}
-            sx={{
-              borderRadius: 2,
-              p: 3,
-              display: "flex",
-              gap: 4,
-            }}
-          >
-            <AddIcon fontSize="medium" />
-            <Typography>Añadir producto</Typography>
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              onPromotionClick?.(category);
-              handleClose();
-            }}
-            sx={{
-              borderRadius: 2,
-              p: 3,
-              display: "flex",
-              gap: 4,
-            }}
-          >
-            <LocalOfferIcon fontSize="medium" />
-            <Typography>Categoría en promoción</Typography>
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              onDeleteCategory?.();
-              handleClose();
-            }}
-            sx={{
-              borderRadius: 2,
-              p: 3,
-              display: "flex",
-              gap: 4,
-            }}
-          >
-            <DeleteIcon fontSize="medium" />
-            <Typography color="error">Eliminar categoría</Typography>
-          </MenuItem>
-          <Divider />
-          <Box px={2} py={1}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isUnavailable}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    onToggleAvailability?.(checked);
-                  }}
-                />
-              }
-              label={<Typography variant="body2">No disponible</Typography>}
-              sx={{
-                "& .MuiSvgIcon-root": {
-                  fontSize: 28, // Bigger checkbox
-                  borderRadius: 6, // Rounded corners (not fully circular)
+        {!readOnly && (
+          <>
+            <Tooltip title="Más acciones">
+              <IconButton
+                onClick={handleOpen}
+                sx={{
+                  borderRadius: 2,
+                  p: 2,
+                  backgroundColor: "grey.50",
+                  "&:hover, &:focus-visible": { backgroundColor: "grey.200" },
+                }}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              PaperProps={{
+                sx: {
+                  marginTop: 2,
+                  backgroundColor: "white",
+                  p: 1.5, // inner padding
+                  maxWidth: 320, // optional, for spacing
                 },
               }}
-            />
-            <Box>
-              <Typography variant="caption" color="textDisabled">
-                Al marcar esta opción, todos los productos continuarán
-                mostrándose pero con el estado "No disponible"
-              </Typography>
-            </Box>
-          </Box>
-        </Menu>
+            >
+              <MenuItem
+                onClick={() => {
+                  navigate(ROUTES.PRODUCT_CREATE, {
+                    state: {
+                      preselectedCategory: { id: category.id, name: category.name },
+                    },
+                  });
+                  handleClose();
+                }}
+                sx={{
+                  borderRadius: 2,
+                  p: 3,
+                  display: "flex",
+                  gap: 4,
+                }}
+              >
+                <AddIcon fontSize="medium" />
+                <Typography>Añadir producto</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onPromotionClick?.(category);
+                  handleClose();
+                }}
+                sx={{
+                  borderRadius: 2,
+                  p: 3,
+                  display: "flex",
+                  gap: 4,
+                }}
+              >
+                <LocalOfferIcon fontSize="medium" />
+                <Typography>Categoría en promoción</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onDeleteCategory?.();
+                  handleClose();
+                }}
+                sx={{
+                  borderRadius: 2,
+                  p: 3,
+                  display: "flex",
+                  gap: 4,
+                }}
+              >
+                <DeleteIcon fontSize="medium" />
+                <Typography color="error">Eliminar categoría</Typography>
+              </MenuItem>
+              <Divider />
+              <Box px={2} py={1}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isUnavailable}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        onToggleAvailability?.(checked);
+                      }}
+                    />
+                  }
+                  label={<Typography variant="body2">No disponible</Typography>}
+                  sx={{
+                    "& .MuiSvgIcon-root": {
+                      fontSize: 28, // Bigger checkbox
+                      borderRadius: 6, // Rounded corners (not fully circular)
+                    },
+                  }}
+                />
+                <Box>
+                  <Typography variant="caption" color="textDisabled">
+                    Al marcar esta opción, todos los productos continuarán
+                    mostrándose pero con el estado "No disponible"
+                  </Typography>
+                </Box>
+              </Box>
+            </Menu>
+          </>
+        )}
       </Box>
 
       {/* Grid of products */}
@@ -297,56 +312,63 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         gap={{ xs: 4, sm: 4, md: 0 }}
       >
         {category.products.length === 0 ? (
-          <Box
-            onClick={() =>
-              navigate(ROUTES.PRODUCT_CREATE, {
-                state: {
-                  preselectedCategory: { id: category.id, name: category.name },
-                },
-              })
-            }
-            sx={{
-              aspectRatio: "1 / 1",
-              minWidth: 97,
-              minHeight: 97,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 1,
-              border: "2px dashed",
-              borderColor: "primary.main",
-              borderRadius: "16px",
-              backgroundColor: "white",
-              cursor: "pointer",
-            }}
-          >
+          readOnly ? null : (
             <Box
-              component="img"
-              src={AddProductTileIcon}
-              alt=""
-              sx={{ width: 34, height: 34 }}
-            />
-            <Typography
+              onClick={() =>
+                navigate(ROUTES.PRODUCT_CREATE, {
+                  state: {
+                    preselectedCategory: { id: category.id, name: category.name },
+                  },
+                })
+              }
               sx={{
-                color: "primary.main",
-                fontWeight: 700,
-                fontSize: 14,
-                lineHeight: "16px",
-                textAlign: "center",
-                px: 3,
+                aspectRatio: "1 / 1",
+                minWidth: 97,
+                minHeight: 97,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+                border: "2px dashed",
+                borderColor: "primary.main",
+                borderRadius: "16px",
+                backgroundColor: "white",
+                cursor: "pointer",
               }}
             >
-              Añade tu producto
-            </Typography>
-          </Box>
+              <Box
+                component="img"
+                src={AddProductTileIcon}
+                alt=""
+                sx={{ width: 34, height: 34 }}
+              />
+              <Typography
+                sx={{
+                  color: "primary.main",
+                  fontWeight: 700,
+                  fontSize: 14,
+                  lineHeight: "16px",
+                  textAlign: "center",
+                  px: 3,
+                }}
+              >
+                Añade tu producto
+              </Typography>
+            </Box>
+          )
         ) : (
           category.products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
               currentCategory={{ id: category.id, name: category.name }}
+              readOnly={readOnly}
               onClick={() => {
+                if (onProductClick) {
+                  onProductClick(product);
+                  return;
+                }
                 navigate(
                   ROUTES.PRODUCT_DETAIL.replace(":id", product.id + ""),
                 );

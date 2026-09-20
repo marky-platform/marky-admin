@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NotFound from "./pages/NotFound";
+import PublicBusinessProfilePage from "./pages/public/PublicBusinessProfilePage";
+import PublicProductDetailPage from "./pages/public/PublicProductDetailPage";
 import { publicRoutes } from "./routes/publicRoutes";
 import { CustomThemeProvider } from "./themes/ThemeContext";
 import { protectedRoutes } from "./routes/protectedRoutes";
@@ -70,6 +72,24 @@ const App = () => {
                     }
                   />
                 ))}
+
+                {/* Public (unauthenticated) business/product pages. These are
+                    catch-all `/:businessId` routes, so they're registered
+                    outside both `.map()` loops above (which apply auth
+                    redirects) and must render unconditionally in every auth
+                    state — a logged-in merchant must still be able to view a
+                    public page instead of being bounced to /home. React
+                    Router ranks static segments (e.g. /login) above dynamic
+                    ones regardless of order, but keeping this last guards
+                    future routes. */}
+                <Route
+                  path={ROUTES.PUBLIC_PRODUCT_DETAIL}
+                  element={<PublicProductDetailPage />}
+                />
+                <Route
+                  path={ROUTES.PUBLIC_BUSINESS}
+                  element={<PublicBusinessProfilePage />}
+                />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <ToastContainer />
