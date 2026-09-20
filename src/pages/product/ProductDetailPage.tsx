@@ -7,9 +7,10 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import useProductDetail from "../../hooks/useProductDetail";
 import ProductDetailContent, {
   PRODUCT_INFO_MAX_WIDTH,
+  PRODUCT_PAGE_MAX_WIDTH,
 } from "./components/ProductDetailContent";
 
-export { PRODUCT_INFO_MAX_WIDTH };
+export { PRODUCT_INFO_MAX_WIDTH, PRODUCT_PAGE_MAX_WIDTH };
 
 const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const ProductDetailPage: React.FC = () => {
           pb: "100px",
           mt: 2,
           mx: "auto",
-          maxWidth: 1200,
+          maxWidth: PRODUCT_PAGE_MAX_WIDTH,
           width: "100%",
         }}
       >

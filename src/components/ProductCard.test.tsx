@@ -309,6 +309,14 @@ describe("ProductCard promotion/discount/multibuy badges over the image", () => 
     expect(getComputedStyle(pill).borderRadius).toBe("24px");
     expect(getComputedStyle(pill).padding).toBe("4px 8px 4px 8px");
   });
+
+  it("positions the badge container 12px from the top-left corner of the image", () => {
+    renderProductCard({ product: { ...product, discountPercent: 15 } });
+
+    const badgeContainer = screen.getByTestId("product-badge-container");
+    expect(getComputedStyle(badgeContainer).top).toBe("12px");
+    expect(getComputedStyle(badgeContainer).left).toBe("12px");
+  });
 });
 
 describe("ProductCard destacado (Favorito / Recomendado)", () => {

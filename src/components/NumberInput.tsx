@@ -17,6 +17,7 @@ const NumberInput: React.FC<
     placeholder?: string;
     description?: string;
     InputProps?: TextFieldProps["InputProps"];
+    sx?: object;
   }
 > = ({
   field,
@@ -28,6 +29,7 @@ const NumberInput: React.FC<
   disabled = false,
   placeholder,
   InputProps,
+  sx,
 }) => {
   // Estado local para el valor mostrado en el input (formateado en estilo LATAM)
   const [displayValue, setDisplayValue] = useState<string>("");
@@ -135,6 +137,8 @@ const NumberInput: React.FC<
       fullWidth
       error={Boolean(isTouched && fieldError)}
       disabled={disabled}
+      sx={sx}
+      data-testid="number-input-form-control"
     >
       <FormLabel>
         {label} {required && <span style={{ color: "red" }}>*</span>}

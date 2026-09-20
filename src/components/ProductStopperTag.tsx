@@ -32,6 +32,7 @@ const ProductStopperTag: React.FC<ProductStopperTagProps> = ({ stopper }) => {
         borderTopLeftRadius: "15px",
         borderBottomLeftRadius: "15px",
         paddingLeft: "6px",
+        paddingRight: "17px",
         mb: 2,
         clipPath:
           "polygon(0px 0px, 100% 0px, calc(100% - 11px) 100%, 0% 100%)",

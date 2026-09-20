@@ -84,25 +84,24 @@ const ProductSection = ({
               : "Describe el producto de forma clara. Máximo 300 caracteres."
           }
         />
-        <Box sx={{ maxWidth: { xs: "100%", sm: "238px" } }}>
-          <Field
-            name="price"
-            component={NumberInput}
-            label="Precio"
-            required
-            fullWidth
-            margin="normal"
-            error={touched.price && Boolean(errors.price)}
-            helperText={touched.price && errors.price}
-            InputProps={{
-              endAdornment: currencyCode ? (
-                <InputAdornment position="end">
-                  <Typography variant="body2">{`[${currencyCode}]`}</Typography>
-                </InputAdornment>
-              ) : undefined,
-            }}
-          />
-        </Box>
+        <Field
+          name="price"
+          component={NumberInput}
+          label="Precio"
+          required
+          fullWidth
+          margin="normal"
+          sx={{ maxWidth: { xs: "100%", sm: "238px" } }}
+          error={touched.price && Boolean(errors.price)}
+          helperText={touched.price && errors.price}
+          InputProps={{
+            endAdornment: currencyCode ? (
+              <InputAdornment position="end">
+                <Typography variant="body2">{`[${currencyCode}]`}</Typography>
+              </InputAdornment>
+            ) : undefined,
+          }}
+        />
         <CategorySelector
           selectedCategory={selectedCategory}
           onOpenModal={onOpenModal}

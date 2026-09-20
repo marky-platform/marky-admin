@@ -78,6 +78,25 @@ describe("NumberInput normalizes the display on blur", () => {
   });
 });
 
+describe("NumberInput forwards sx to its FormControl", () => {
+  it("applies a maxWidth passed via sx to the rendered FormControl", () => {
+    render(
+      <Formik initialValues={{ price: "" }} onSubmit={() => {}}>
+        <Form>
+          <Field
+            component={NumberInput}
+            name="price"
+            label="Precio"
+            sx={{ maxWidth: 238 }}
+          />
+        </Form>
+      </Formik>,
+    );
+    const formControl = screen.getByTestId("number-input-form-control");
+    expect(getComputedStyle(formControl).maxWidth).toBe("238px");
+  });
+});
+
 describe("NumberInput error display for a nested array field (Variaciones/Adicionales price)", () => {
   const renderNestedField = () =>
     render(

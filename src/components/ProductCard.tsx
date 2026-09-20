@@ -213,10 +213,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             is a separate variant rendered as a centered overlay below, not a
             conditional style mixed into this corner. */}
         <Box
+          data-testid="product-badge-container"
           sx={{
             position: "absolute",
-            top: 3,
-            left: 3,
+            top: "12px",
+            left: "12px",
             display: "flex",
             flexDirection: "column",
             gap: 1,
