@@ -8,6 +8,7 @@ import ProductDetailPricing from "./ProductDetailPricing";
 import ProductVariantsList from "./ProductVariantsList";
 
 export const PRODUCT_INFO_MAX_WIDTH = 600;
+export const PRODUCT_PAGE_MAX_WIDTH = 1200;
 
 /**
  * The product-detail body shared by the admin page (ProductDetailPage,

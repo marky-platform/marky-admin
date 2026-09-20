@@ -23,16 +23,19 @@ const ProductStopperTag: React.FC<ProductStopperTagProps> = ({ stopper }) => {
         backgroundColor: bg,
         color,
         fontWeight: 500,
-        fontSize: "0.875rem",
+        fontSize: 12,
         lineHeight: "28px",
         position: "relative",
-        borderRight: "20px solid transparent",
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
-        borderBottomLeftRadius: 8,
-        pl: 2,
+        // The clipPath below is the single mechanism that cuts the ribbon's
+        // pointed right edge — no borderRight/borderTopRightRadius, which
+        // would otherwise double the tip width.
+        borderTopLeftRadius: "15px",
+        borderBottomLeftRadius: "15px",
+        paddingLeft: "6px",
+        paddingRight: "17px",
         mb: 2,
-        clipPath: "polygon(0 0, calc(100% - 20px) 0, 100% 100%, 0% 100%)",
+        clipPath:
+          "polygon(0px 0px, 100% 0px, calc(100% - 11px) 100%, 0% 100%)",
       }}
     >
       {label}

@@ -7,9 +7,10 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import useProductDetail from "../../hooks/useProductDetail";
 import ProductDetailContent, {
   PRODUCT_INFO_MAX_WIDTH,
+  PRODUCT_PAGE_MAX_WIDTH,
 } from "./components/ProductDetailContent";
 
-export { PRODUCT_INFO_MAX_WIDTH };
+export { PRODUCT_INFO_MAX_WIDTH, PRODUCT_PAGE_MAX_WIDTH };
 
 const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -43,9 +44,10 @@ const ProductDetailPage: React.FC = () => {
           flex: 1,
           px: { xs: 4, md: 8 },
           pb: "100px",
-          mt: 8,
+          mt: 2,
           mx: "auto",
-          minWidth: "85%",
+          maxWidth: PRODUCT_PAGE_MAX_WIDTH,
+          width: "100%",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>

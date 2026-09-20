@@ -200,11 +200,17 @@ describe("ChannelWizardModal", () => {
 
     // "Seguir editando" dismisses the prompt and keeps the wizard open.
     fireEvent.click(screen.getByRole("button", { name: "Seguir editando" }));
-    await waitFor(() => {
-      expect(
-        screen.queryByText("¿Salir sin guardar los cambios?"),
-      ).not.toBeInTheDocument();
-    });
+    // MUI's Dialog unmounts only after its real-timer exit transition
+    // finishes, which can run past waitFor's default 1000ms under a
+    // CPU-contended full-suite (parallel workers) run, so give it more room.
+    await waitFor(
+      () => {
+        expect(
+          screen.queryByText("¿Salir sin guardar los cambios?"),
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
     expect(onClose).not.toHaveBeenCalled();
 
     // Confirming discards the changes and actually closes the modal.

@@ -197,8 +197,8 @@ const Home = () => {
       <Box
         sx={{
           flex: 1,
-          px: { xs: 4, sm: 6, md: 0 },
-          pt: { xs: 3, md: 0 },
+          px: { xs: 4, md: 0 },
+          pt: { xs: 6, md: 0 },
           pb: 3,
           height: "100%",
         }}

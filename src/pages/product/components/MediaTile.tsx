@@ -66,7 +66,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
         >
           <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
             {isVideo ? (
-              <AddVideoTileIcon width={34} height={34} />
+              <AddVideoTileIcon width={48} height={48} />
             ) : (
               <AddImageTileIcon width={34} height={34} />
             )}

@@ -5,7 +5,9 @@ import BackButton from "../../components/BackButton";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import usePublicProduct from "../../hooks/usePublicProduct";
 import usePublicBusinessProfile from "../../hooks/usePublicBusinessProfile";
-import ProductDetailContent from "../product/components/ProductDetailContent";
+import ProductDetailContent, {
+  PRODUCT_PAGE_MAX_WIDTH,
+} from "../product/components/ProductDetailContent";
 import PublicNotFound from "./components/PublicNotFound";
 
 // Public, unauthenticated product detail — marky.one/<businessId>/product/<id>.
@@ -56,7 +58,8 @@ const PublicProductDetailPage: React.FC = () => {
           pb: "100px",
           pt: 8,
           mx: "auto",
-          minWidth: "85%",
+          maxWidth: PRODUCT_PAGE_MAX_WIDTH,
+          width: "100%",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>

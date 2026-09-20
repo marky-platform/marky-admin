@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../themes/light";
 import ProductCard from "./ProductCard";
 import { ProductGridItem } from "../types/product";
+import { truncateText } from "../utils/format";
 
 // productService transitively imports axiosConfig -> axios, whose installed
 // version ships ESM-only and breaks CRA's default Jest transform. Mock it out,
@@ -106,12 +107,12 @@ describe("ProductCard promotion countdown badge", () => {
 
     const badge = screen.getByText(/^\d{2}:\d{2}:\d{2}:\d{2}$/);
     expect(badge).toBeInTheDocument();
-    // "ends" phase badge must use the urgency (error) color, not the
-    // scheduled (warning) one — this is the one fully-specified visual
-    // behavior in the whole countdown feature, so it needs a real assertion
-    // rather than relying on the text-content checks above to catch a
-    // "badge painted the wrong color" regression.
-    expect(getComputedStyle(badge).backgroundColor).toBe("rgb(246, 72, 72)"); // error.main #F64848
+    // The badge always uses the same fixed error.light background regardless
+    // of phase (see ProductCard.tsx renderPromotionBadge) — this is the one
+    // fully-specified visual behavior in the whole countdown feature, so it
+    // needs a real assertion rather than relying on the text-content checks
+    // above to catch a "badge painted the wrong color" regression.
+    expect(getComputedStyle(badge).backgroundColor).toBe("rgb(255, 234, 234)"); // error.light #FFEAEA
   });
 
   it("shows the 'Inicia en' indicator when promotionStatus is scheduled", () => {
@@ -132,9 +133,10 @@ describe("ProductCard promotion countdown badge", () => {
 
     const badge = screen.getByText(/Inicia en 2 h/);
     expect(badge).toBeInTheDocument();
-    // "starts" phase badge must use the warning color, distinct from the
-    // "ends" phase's error color above.
-    expect(getComputedStyle(badge).backgroundColor).toBe("rgb(237, 108, 2)"); // warning.main #ed6c02 (MUI default)
+    // Same fixed error.light background as the "ends" phase above — phases
+    // are distinguished by label text only, not color (see ProductCard.tsx
+    // renderPromotionBadge).
+    expect(getComputedStyle(badge).backgroundColor).toBe("rgb(255, 234, 234)"); // error.light #FFEAEA
   });
 
   it("does not show the countdown when promotionStatus is expired, even with dates present", () => {
@@ -202,5 +204,177 @@ describe("ProductCard readOnly rendering (public page)", () => {
     fireEvent.click(screen.getByTestId("product-card"));
 
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the same title/price visual design as the admin card, only hiding the menu", () => {
+    const discountedProduct: ProductGridItem = {
+      ...product,
+      discountPercent: 20,
+      primaryPrice: "$2.00",
+      primaryPriceWithDiscount: "$1.60",
+    };
+    renderProductCard({ product: discountedProduct, readOnly: true });
+
+    const name = screen.getByText("Galleta de chocolate");
+    const price = screen.getByText("$1.60");
+    expect(getComputedStyle(name).fontSize).toBe("12px");
+    expect(getComputedStyle(price).fontSize).toBe("14px");
+    expect(getComputedStyle(price).fontWeight).toBe("600");
+  });
+});
+
+describe("ProductCard title typography", () => {
+  it("renders the product name at the compact card size", () => {
+    renderProductCard();
+
+    const name = screen.getByText("Galleta de chocolate");
+    expect(name).toBeInTheDocument();
+    expect(getComputedStyle(name).fontSize).toBe("12px");
+    expect(getComputedStyle(name).lineHeight).toBe("14px");
+  });
+});
+
+describe("ProductCard description", () => {
+  const longDescription =
+    "Una descripcion bastante larga que deberia truncarse visualmente en la tarjeta de producto sin desbordar el layout.";
+
+  it("renders the truncated description text at the compact card size", () => {
+    renderProductCard({
+      product: { ...product, description: longDescription },
+    });
+
+    const description = screen.getByText(truncateText(longDescription, 60));
+    expect(description).toBeInTheDocument();
+    expect(getComputedStyle(description).fontSize).toBe("12px");
+    expect(getComputedStyle(description).lineHeight).toBe("14px");
+  });
+
+  it("does not show a hover tooltip with the full description", () => {
+    renderProductCard({
+      product: { ...product, description: longDescription },
+    });
+
+    const description = screen.getByText(truncateText(longDescription, 60));
+    fireEvent.mouseOver(description);
+
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+});
+
+describe("ProductCard price typography", () => {
+  it("uses the compact bold size for the primary price and the compact size for the secondary price", () => {
+    const discountedProduct: ProductGridItem = {
+      ...product,
+      discountPercent: 20,
+      primaryPrice: "$2.00",
+      primaryPriceWithDiscount: "$1.60",
+      secondaryPriceWithDiscount: "US$1.60",
+    };
+    renderProductCard({ product: discountedProduct });
+
+    const primary = screen.getByText("$1.60");
+    const secondary = screen.getByText("US$1.60");
+
+    expect(getComputedStyle(primary).fontSize).toBe("14px");
+    expect(getComputedStyle(primary).fontWeight).toBe("600");
+    expect(getComputedStyle(primary).lineHeight).toBe("14px");
+
+    expect(getComputedStyle(secondary).fontSize).toBe("12px");
+  });
+
+  it("uses the compact bold size for the plain fallback price", () => {
+    renderProductCard();
+
+    const price = screen.getByText("2,00");
+    expect(getComputedStyle(price).fontSize).toBe("14px");
+    expect(getComputedStyle(price).fontWeight).toBe("600");
+  });
+});
+
+describe("ProductCard promotion/discount/multibuy badges over the image", () => {
+  it("shows the discount badge with the compact pill geometry", () => {
+    renderProductCard({ product: { ...product, discountPercent: 15 } });
+
+    expect(screen.getByText("-15%")).toBeInTheDocument();
+    const pill = screen.getByTestId("product-badge");
+    expect(getComputedStyle(pill).borderRadius).toBe("24px");
+    expect(getComputedStyle(pill).padding).toBe("4px 8px 4px 8px");
+  });
+
+  it("shows the multibuy badge with the compact pill geometry", () => {
+    renderProductCard({ product: { ...product, multibuyOption: "2x1" } });
+
+    expect(screen.getByText("2x1")).toBeInTheDocument();
+    const pill = screen.getByTestId("product-badge");
+    expect(getComputedStyle(pill).borderRadius).toBe("24px");
+    expect(getComputedStyle(pill).padding).toBe("4px 8px 4px 8px");
+  });
+
+  it("positions the badge container 12px from the top-left corner of the image", () => {
+    renderProductCard({ product: { ...product, discountPercent: 15 } });
+
+    const badgeContainer = screen.getByTestId("product-badge-container");
+    expect(getComputedStyle(badgeContainer).top).toBe("12px");
+    expect(getComputedStyle(badgeContainer).left).toBe("12px");
+  });
+});
+
+describe("ProductCard destacado (Favorito / Recomendado)", () => {
+  it("renders the 'Recomendado' stopper with the shared ribbon geometry", () => {
+    renderProductCard({ product: { ...product, isRecommended: true } });
+
+    const stopper = screen.getByText("Recomendado");
+    expect(stopper).toBeInTheDocument();
+    expect(getComputedStyle(stopper).fontSize).toBe("12px");
+    expect(getComputedStyle(stopper).borderTopLeftRadius).toBe("15px");
+    expect(getComputedStyle(stopper).borderBottomLeftRadius).toBe("15px");
+    // Single mechanism for the pointed right edge: the clip-path, not a
+    // borderRight/borderTopRightRadius that would double the tip width.
+    expect(getComputedStyle(stopper).clipPath).toBe(
+      "polygon(0px 0px, 100% 0px, calc(100% - 11px) 100%, 0% 100%)",
+    );
+  });
+
+  it("renders the 'Favorito del mes' stopper with the same geometry as 'Recomendado'", () => {
+    renderProductCard({ product: { ...product, isFavorite: true } });
+
+    const stopper = screen.getByText("Favorito del mes");
+    expect(stopper).toBeInTheDocument();
+    expect(getComputedStyle(stopper).fontSize).toBe("12px");
+    expect(getComputedStyle(stopper).borderTopLeftRadius).toBe("15px");
+    expect(getComputedStyle(stopper).borderBottomLeftRadius).toBe("15px");
+    expect(getComputedStyle(stopper).clipPath).toBe(
+      "polygon(0px 0px, 100% 0px, calc(100% - 11px) 100%, 0% 100%)",
+    );
+  });
+
+  it("prefers 'Favorito del mes' over 'Recomendado' when both flags are set", () => {
+    renderProductCard({
+      product: { ...product, isFavorite: true, isRecommended: true },
+    });
+
+    expect(screen.getByText("Favorito del mes")).toBeInTheDocument();
+    expect(screen.queryByText("Recomendado")).not.toBeInTheDocument();
+  });
+});
+
+describe("ProductCard 'No disponible' availability overlay", () => {
+  it("shows a centered 'No disponible' overlay when the product is not available", () => {
+    renderProductCard({ product: { ...product, is_available: false } });
+
+    const label = screen.getByText("No disponible");
+    expect(label).toBeInTheDocument();
+  });
+
+  it("falls back to is_active when is_available is not provided", () => {
+    renderProductCard({ product: { ...product, is_active: false } });
+
+    expect(screen.getByText("No disponible")).toBeInTheDocument();
+  });
+
+  it("does not show the overlay when the product is available", () => {
+    renderProductCard({ product: { ...product, is_available: true } });
+
+    expect(screen.queryByText("No disponible")).not.toBeInTheDocument();
   });
 });
