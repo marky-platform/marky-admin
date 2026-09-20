@@ -135,9 +135,16 @@ describe("ProductGrid product delete flow (Home page)", () => {
     fireEvent.click(menuButton);
     fireEvent.click(screen.getByText("Eliminar"));
 
-    expect(await screen.findByText("Eliminar producto")).toBeInTheDocument();
+    expect(
+      await screen.findByText("¿Estás seguro de eliminar este producto?"),
+    ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Aceptar" }));
+    fireEvent.click(
+      screen.getByRole("checkbox", {
+        name: /Confirmo que deseo eliminar el producto/i,
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Eliminar" }));
 
     await waitFor(() => {
       expect(mockedDeleteProduct).toHaveBeenCalledWith(42);
@@ -153,7 +160,7 @@ describe("ProductGrid product delete flow (Home page)", () => {
     fireEvent.click(menuButton);
     fireEvent.click(screen.getByText("Eliminar"));
 
-    await screen.findByText("Eliminar producto");
+    await screen.findByText("¿Estás seguro de eliminar este producto?");
     fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
 
     expect(mockedDeleteProduct).not.toHaveBeenCalled();
