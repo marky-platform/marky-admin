@@ -43,9 +43,10 @@ const ProductDetailPage: React.FC = () => {
           flex: 1,
           px: { xs: 4, md: 8 },
           pb: "100px",
-          mt: 8,
+          mt: 2,
           mx: "auto",
-          minWidth: "85%",
+          maxWidth: 1200,
+          width: "100%",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>

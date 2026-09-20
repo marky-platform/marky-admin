@@ -56,7 +56,8 @@ const PublicProductDetailPage: React.FC = () => {
           pb: "100px",
           pt: 8,
           mx: "auto",
-          minWidth: "85%",
+          maxWidth: 1200,
+          width: "100%",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
