@@ -91,7 +91,7 @@ const ProductSection = ({
           required
           fullWidth
           margin="normal"
-          sx={{ maxWidth: { xs: "100%", sm: "238px" } }}
+          sx={{ maxWidth: { xs: "100%", md: "238px" } }}
           error={touched.price && Boolean(errors.price)}
           helperText={touched.price && errors.price}
           InputProps={{

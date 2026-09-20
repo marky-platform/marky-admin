@@ -1,4 +1,13 @@
-import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import defaultImage from "../assets/images/default-product.png"; // you can replace this path
@@ -39,10 +48,11 @@ const styles = {
     borderRadius: 3,
     display: "flex",
     flexDirection: "column",
-    // No structural gap: spacing between the image and the content block is
-    // owned entirely by CardContent's own padding (see below), not by a
-    // container gap or negative margins.
-    padding: "6px",
+    // Structural gap between the image and the content block: mobile owns
+    // that spacing entirely through CardContent's own padding (no gap);
+    // desktop restores the original flex gap between the two children.
+    gap: { xs: 0, md: "12px" },
+    padding: { xs: "6px", md: "12px 11px" },
     transition: "background-color 0.2s",
     cursor: "pointer", // 👈 makes it feel clickable
     "&:hover": {
@@ -69,8 +79,8 @@ const ProductBadge: React.FC<{
       bgcolor: backgroundColor,
       color: "common.white",
       px: 2,
-      py: 1,
-      borderRadius: "24px",
+      py: { xs: 1, md: 1.5 },
+      borderRadius: { xs: "24px", md: "4px" },
       display: "inline-block",
     }}
   >
@@ -85,14 +95,39 @@ const ProductBadge: React.FC<{
 );
 
 // "No disponible" is its own variant (not a conditional style mixed into the
-// promotion badges): it centers over the whole image via an absolute overlay
-// instead of sitting in the top-left badges corner.
-const AvailabilityBadge: React.FC = () => (
+// promotion badges), rendered as two reciprocal-display presentation
+// wrappers — only one is ever part of the accessibility tree at a given
+// breakpoint (the other is `display: none`), so there's a single accessible
+// label at any active breakpoint. Below `md` it's a centered overlay on the
+// image; at `md` and above it renders as a flex child *inside* the same
+// badge container as the discount/multibuy pills (see below), so it stacks
+// below them via the container's own `gap` instead of overlapping them at
+// the shared corner position — preserving 2a416d9's discount + "No
+// disponible" co-display fix at desktop too.
+const AvailabilityCornerBadge: React.FC = () => (
+  <Box
+    sx={{
+      display: { xs: "none", md: "inline-flex" },
+      backgroundColor: "#BDBDBD",
+      color: "white",
+      px: 2,
+      py: 1,
+      borderRadius: 1,
+      alignItems: "center",
+    }}
+  >
+    <Typography color="white" fontWeight={500} fontSize={14}>
+      No disponible
+    </Typography>
+  </Box>
+);
+
+const AvailabilityOverlayBadge: React.FC = () => (
   <Box
     sx={{
       position: "absolute",
       inset: 0,
-      display: "flex",
+      display: { xs: "flex", md: "none" },
       alignItems: "center",
       justifyContent: "center",
       zIndex: 1,
@@ -125,6 +160,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onMoveClick,
   readOnly = false,
 }) => {
+  const theme = useTheme();
+  // The description tooltip is a desktop-only affordance (mouse hover); on
+  // touch/mobile the truncated text stays the only way to read the
+  // description, matching the pre-existing mobile behavior.
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
   const discountNumber = Number(product.discountPercent ?? 0);
   const showDiscount = !isNaN(discountNumber) && discountNumber > 0;
   const discountLabel = showDiscount
@@ -192,7 +233,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           sx={{
             border: "1px solid",
             borderColor: "grey.200",
-            borderRadius: "18px",
+            borderRadius: { xs: "18px", md: "16px" },
             overflow: "hidden",
           }}
         >
@@ -216,8 +257,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           data-testid="product-badge-container"
           sx={{
             position: "absolute",
-            top: "12px",
-            left: "12px",
+            top: { xs: "12px", md: "15px" },
+            left: { xs: "12px", md: "15px" },
             display: "flex",
             flexDirection: "column",
             gap: 1,
@@ -235,9 +276,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               {product.multibuyOption}
             </ProductBadge>
           )}
+
+          {!isAvailable && <AvailabilityCornerBadge />}
         </Box>
 
-        {!isAvailable && <AvailabilityBadge />}
+        {!isAvailable && <AvailabilityOverlayBadge />}
 
         {/* Action button: anchored to the image wrapper (not the padded
             Card) so its position stays fixed at the image's corner
@@ -276,10 +319,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <CardContent
         sx={{
           pt: 2,
-          px: 0,
-          pb: 3,
+          px: { xs: 0, md: 2 },
+          pb: { xs: 3, md: 2 },
           backgroundColor: "transparent",
-          "&:last-child": { pb: 3 },
+          "&:last-child": { pb: { xs: 3, md: 2 } },
         }}
       >
         {/* Views */}
@@ -308,8 +351,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Product name */}
         <LineClamp
           sx={{
-            fontSize: 12,
-            lineHeight: "14px",
+            fontSize: { xs: 12, md: 14 },
+            lineHeight: { xs: "14px", md: "22px" },
             fontWeight: 500,
             color: "#4F4F4F",
           }}
@@ -317,22 +360,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {product.name}
         </LineClamp>
 
-        {/* Description summary: truncated to 60 chars. No hover tooltip —
-            the truncated text is the accessible text too (an aria-label with
-            the full description would be redundant with the visible,
-            truncated content for assistive tech). */}
+        {/* Description summary: truncated to 60 chars. The tooltip is kept
+            below `md` for the pre-existing touch behavior and disabled on
+            desktop, where the review explicitly requested its removal. */}
         {product.description && (
-          <LineClamp
-            sx={{
-              mt: 1,
-              fontSize: 12,
-              color: "#4F4F4F",
-              lineHeight: "14px",
-              fontWeight: 400,
-            }}
+          <Tooltip
+            title={product.description}
+            arrow
+            disableHoverListener={isDesktop}
+            disableFocusListener={isDesktop}
           >
-            {truncateText(product.description, 60)}
-          </LineClamp>
+            <LineClamp
+              sx={{
+                mt: 1,
+                mb: { xs: 0, md: 1 },
+                fontSize: 12,
+                color: "#4F4F4F",
+                lineHeight: { xs: "14px", md: "18px" },
+                fontWeight: 400,
+              }}
+            >
+              {truncateText(product.description, 60)}
+            </LineClamp>
+          </Tooltip>
         )}
 
         {/* Prices: prefer formatted labels from backend (primaryPrice / secondaryPrice)
@@ -340,24 +390,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
             When an active percentage discount applies (and it's not a 2x1/3x2-style
             multibuy promotion), show the discounted price as primary and the
             original price struck through below it. */}
-        {/* mt: 2 is the single owner of the 8px gap above the prices block —
-            the description above no longer carries a bottom margin, so the
-            spacing isn't the sum of two implicit margins. */}
-        <Box mt={2}>
+        {/* mt is the owner of the gap above the prices block: mobile collapses
+            the description's own margin to 0 so this single value is the full
+            gap; desktop restores both original margins. */}
+        <Box mt={{ xs: 2, md: 1 }}>
           {hasPriceDiscount && !hasMultibuy && product.primaryPriceWithDiscount ? (
             <>
               <Typography
                 color="primary"
-                fontWeight={600}
-                fontSize={14}
-                lineHeight="14px"
+                fontWeight={{ xs: 600, md: 500 }}
+                fontSize={{ xs: 14, md: 18 }}
+                lineHeight={{ xs: "14px", md: "22px" }}
               >
                 {product.primaryPriceWithDiscount}
               </Typography>
               {product.primaryPrice && (
                 <Typography
-                  fontSize={12}
-                  lineHeight="14px"
+                  fontSize={{ xs: 12, md: 14 }}
+                  lineHeight={{ xs: "14px", md: "22px" }}
                   color="grey.500"
                   sx={{ textDecoration: "line-through" }}
                 >
@@ -366,8 +416,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
               )}
               {product.secondaryPriceWithDiscount && (
                 <Typography
-                  fontSize={12}
-                  lineHeight="14px"
+                  fontSize={{ xs: 12, md: 14 }}
+                  lineHeight={{ xs: "14px", md: "22px" }}
                   color="grey.500"
                   fontWeight={400}
                 >
@@ -379,16 +429,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <>
               <Typography
                 color="primary"
-                fontWeight={600}
-                fontSize={14}
-                lineHeight="14px"
+                fontWeight={{ xs: 600, md: 500 }}
+                fontSize={{ xs: 14, md: 18 }}
+                lineHeight={{ xs: "14px", md: "22px" }}
               >
                 {product.primaryPrice}
               </Typography>
               {product.secondaryPrice && (
                 <Typography
-                  fontSize={12}
-                  lineHeight="14px"
+                  fontSize={{ xs: 12, md: 14 }}
+                  lineHeight={{ xs: "14px", md: "22px" }}
                   color="grey.500"
                   fontWeight={400}
                 >
@@ -400,16 +450,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <>
               <Typography
                 color="primary"
-                fontWeight={600}
-                fontSize={14}
-                lineHeight="14px"
+                fontWeight={{ xs: 600, md: 500 }}
+                fontSize={{ xs: 14, md: 18 }}
+                lineHeight={{ xs: "14px", md: "22px" }}
               >
                 {formatPrice(product.price)}
               </Typography>
               {product.priceAlt && (
                 <Typography
-                  fontSize={12}
-                  lineHeight="14px"
+                  fontSize={{ xs: 12, md: 14 }}
+                  lineHeight={{ xs: "14px", md: "22px" }}
                   color="textSecondary"
                   fontWeight={400}
                 >

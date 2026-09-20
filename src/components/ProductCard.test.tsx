@@ -31,6 +31,26 @@ const product: ProductGridItem = {
   price: "2.00",
 };
 
+// JSDOM has no window.matchMedia, so MUI's useMediaQuery falls back to
+// `defaultMatches` (false) for every query — i.e. every test below is
+// effectively "mobile" unless a test opts into desktop via this mock.
+const mockMatchMedia = (matches: boolean) => {
+  window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+    matches,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  }));
+};
+
+const restoreMatchMedia = () => {
+  delete (window as any).matchMedia;
+};
+
 const renderProductCard = (
   props: Partial<React.ComponentProps<typeof ProductCard>> = {},
 ) => {
@@ -215,41 +235,32 @@ describe("ProductCard readOnly rendering (public page)", () => {
     };
     renderProductCard({ product: discountedProduct, readOnly: true });
 
-    const name = screen.getByText("Galleta de chocolate");
-    const price = screen.getByText("$1.60");
-    expect(getComputedStyle(name).fontSize).toBe("12px");
-    expect(getComputedStyle(price).fontSize).toBe("14px");
-    expect(getComputedStyle(price).fontWeight).toBe("600");
+    expect(screen.getByText("Galleta de chocolate")).toBeInTheDocument();
+    expect(screen.getByText("$1.60")).toBeInTheDocument();
   });
 });
 
-describe("ProductCard title typography", () => {
-  it("renders the product name at the compact card size", () => {
-    renderProductCard();
-
-    const name = screen.getByText("Galleta de chocolate");
-    expect(name).toBeInTheDocument();
-    expect(getComputedStyle(name).fontSize).toBe("12px");
-    expect(getComputedStyle(name).lineHeight).toBe("14px");
-  });
-});
-
+// Geometry (font size, padding, radius, position) is expressed as
+// responsive `{ xs, md }` sx values per the mobile/desktop corrective plan.
+// JSDOM does not evaluate `@media` breakpoints reliably in getComputedStyle,
+// so these tests assert semantic content/behavior only — visual geometry at
+// each breakpoint is verified in the browser (see corrective plan's
+// "Browser verification" section), not here.
 describe("ProductCard description", () => {
   const longDescription =
     "Una descripcion bastante larga que deberia truncarse visualmente en la tarjeta de producto sin desbordar el layout.";
 
-  it("renders the truncated description text at the compact card size", () => {
+  it("renders the truncated description text", () => {
     renderProductCard({
       product: { ...product, description: longDescription },
     });
 
-    const description = screen.getByText(truncateText(longDescription, 60));
-    expect(description).toBeInTheDocument();
-    expect(getComputedStyle(description).fontSize).toBe("12px");
-    expect(getComputedStyle(description).lineHeight).toBe("14px");
+    expect(
+      screen.getByText(truncateText(longDescription, 60)),
+    ).toBeInTheDocument();
   });
 
-  it("does not show a hover tooltip with the full description", () => {
+  it("shows the hover tooltip with the full description on mobile/touch (matchMedia unsupported, desktop query does not match)", async () => {
     renderProductCard({
       product: { ...product, description: longDescription },
     });
@@ -257,95 +268,65 @@ describe("ProductCard description", () => {
     const description = screen.getByText(truncateText(longDescription, 60));
     fireEvent.mouseOver(description);
 
-    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
-  });
-});
-
-describe("ProductCard price typography", () => {
-  it("uses the compact bold size for the primary price and the compact size for the secondary price", () => {
-    const discountedProduct: ProductGridItem = {
-      ...product,
-      discountPercent: 20,
-      primaryPrice: "$2.00",
-      primaryPriceWithDiscount: "$1.60",
-      secondaryPriceWithDiscount: "US$1.60",
-    };
-    renderProductCard({ product: discountedProduct });
-
-    const primary = screen.getByText("$1.60");
-    const secondary = screen.getByText("US$1.60");
-
-    expect(getComputedStyle(primary).fontSize).toBe("14px");
-    expect(getComputedStyle(primary).fontWeight).toBe("600");
-    expect(getComputedStyle(primary).lineHeight).toBe("14px");
-
-    expect(getComputedStyle(secondary).fontSize).toBe("12px");
+    // MUI Tooltip's real enterDelay (100ms) can be starved well past the
+    // default 1000ms findByRole budget under a loaded, parallel CI worker
+    // pool — same flakiness class as ChannelWizardModal.test.tsx's dialog
+    // wait, fixed the same way.
+    expect(
+      await screen.findByRole("tooltip", {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
   });
 
-  it("uses the compact bold size for the plain fallback price", () => {
-    renderProductCard();
+  it("disables the hover tooltip at desktop (theme.breakpoints.up('md') matches)", () => {
+    mockMatchMedia(true);
+    try {
+      renderProductCard({
+        product: { ...product, description: longDescription },
+      });
 
-    const price = screen.getByText("2,00");
-    expect(getComputedStyle(price).fontSize).toBe("14px");
-    expect(getComputedStyle(price).fontWeight).toBe("600");
+      const description = screen.getByText(truncateText(longDescription, 60));
+      fireEvent.mouseOver(description);
+
+      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    } finally {
+      restoreMatchMedia();
+    }
   });
 });
 
 describe("ProductCard promotion/discount/multibuy badges over the image", () => {
-  it("shows the discount badge with the compact pill geometry", () => {
+  it("shows the discount badge", () => {
     renderProductCard({ product: { ...product, discountPercent: 15 } });
 
     expect(screen.getByText("-15%")).toBeInTheDocument();
-    const pill = screen.getByTestId("product-badge");
-    expect(getComputedStyle(pill).borderRadius).toBe("24px");
-    expect(getComputedStyle(pill).padding).toBe("4px 8px 4px 8px");
+    expect(screen.getByTestId("product-badge")).toBeInTheDocument();
   });
 
-  it("shows the multibuy badge with the compact pill geometry", () => {
+  it("shows the multibuy badge", () => {
     renderProductCard({ product: { ...product, multibuyOption: "2x1" } });
 
     expect(screen.getByText("2x1")).toBeInTheDocument();
-    const pill = screen.getByTestId("product-badge");
-    expect(getComputedStyle(pill).borderRadius).toBe("24px");
-    expect(getComputedStyle(pill).padding).toBe("4px 8px 4px 8px");
+    expect(screen.getByTestId("product-badge")).toBeInTheDocument();
   });
 
-  it("positions the badge container 12px from the top-left corner of the image", () => {
+  it("renders the badge container anchored to the image's top-left corner", () => {
     renderProductCard({ product: { ...product, discountPercent: 15 } });
 
-    const badgeContainer = screen.getByTestId("product-badge-container");
-    expect(getComputedStyle(badgeContainer).top).toBe("12px");
-    expect(getComputedStyle(badgeContainer).left).toBe("12px");
+    expect(screen.getByTestId("product-badge-container")).toBeInTheDocument();
   });
 });
 
 describe("ProductCard destacado (Favorito / Recomendado)", () => {
-  it("renders the 'Recomendado' stopper with the shared ribbon geometry", () => {
+  it("renders the 'Recomendado' stopper", () => {
     renderProductCard({ product: { ...product, isRecommended: true } });
 
-    const stopper = screen.getByText("Recomendado");
-    expect(stopper).toBeInTheDocument();
-    expect(getComputedStyle(stopper).fontSize).toBe("12px");
-    expect(getComputedStyle(stopper).borderTopLeftRadius).toBe("15px");
-    expect(getComputedStyle(stopper).borderBottomLeftRadius).toBe("15px");
-    // Single mechanism for the pointed right edge: the clip-path, not a
-    // borderRight/borderTopRightRadius that would double the tip width.
-    expect(getComputedStyle(stopper).clipPath).toBe(
-      "polygon(0px 0px, 100% 0px, calc(100% - 11px) 100%, 0% 100%)",
-    );
+    expect(screen.getByText("Recomendado")).toBeInTheDocument();
   });
 
-  it("renders the 'Favorito del mes' stopper with the same geometry as 'Recomendado'", () => {
+  it("renders the 'Favorito del mes' stopper", () => {
     renderProductCard({ product: { ...product, isFavorite: true } });
 
-    const stopper = screen.getByText("Favorito del mes");
-    expect(stopper).toBeInTheDocument();
-    expect(getComputedStyle(stopper).fontSize).toBe("12px");
-    expect(getComputedStyle(stopper).borderTopLeftRadius).toBe("15px");
-    expect(getComputedStyle(stopper).borderBottomLeftRadius).toBe("15px");
-    expect(getComputedStyle(stopper).clipPath).toBe(
-      "polygon(0px 0px, 100% 0px, calc(100% - 11px) 100%, 0% 100%)",
-    );
+    expect(screen.getByText("Favorito del mes")).toBeInTheDocument();
   });
 
   it("prefers 'Favorito del mes' over 'Recomendado' when both flags are set", () => {
@@ -359,22 +340,36 @@ describe("ProductCard destacado (Favorito / Recomendado)", () => {
 });
 
 describe("ProductCard 'No disponible' availability overlay", () => {
-  it("shows a centered 'No disponible' overlay when the product is not available", () => {
+  // "No disponible" renders as two reciprocal-display presentation wrappers
+  // (mobile centered overlay vs. desktop corner badge) — only one is ever
+  // in the accessibility tree at a given breakpoint (the other is
+  // `display: none`), but JSDOM doesn't evaluate that responsive `@media`
+  // rule, so both are present in the test DOM. Assert on count rather than
+  // a single `getByText` match.
+  it("shows the 'No disponible' label when the product is not available", () => {
     renderProductCard({ product: { ...product, is_available: false } });
 
-    const label = screen.getByText("No disponible");
-    expect(label).toBeInTheDocument();
+    expect(screen.getAllByText("No disponible").length).toBeGreaterThan(0);
   });
 
   it("falls back to is_active when is_available is not provided", () => {
     renderProductCard({ product: { ...product, is_active: false } });
 
-    expect(screen.getByText("No disponible")).toBeInTheDocument();
+    expect(screen.getAllByText("No disponible").length).toBeGreaterThan(0);
   });
 
-  it("does not show the overlay when the product is available", () => {
+  it("does not show the label when the product is available", () => {
     renderProductCard({ product: { ...product, is_available: true } });
 
     expect(screen.queryByText("No disponible")).not.toBeInTheDocument();
+  });
+
+  it("co-displays with the discount badge instead of covering it (2a416d9 regression check)", () => {
+    renderProductCard({
+      product: { ...product, is_available: false, discountPercent: 15 },
+    });
+
+    expect(screen.getByText("-15%")).toBeInTheDocument();
+    expect(screen.getAllByText("No disponible").length).toBeGreaterThan(0);
   });
 });
