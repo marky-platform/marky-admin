@@ -88,7 +88,7 @@ const FilterSection: React.FC<{
         <Box display="flex" alignItems="center" gap={2}>
           <TextField
             inputRef={searchInputRef}
-            placeholder="Buscar por texto o SKU del producto"
+            placeholder="Buscar por nombre del producto"
             name="search"
             variant="outlined"
             size="small"
@@ -153,7 +153,7 @@ const FilterSection: React.FC<{
         <Grid item xs={12} md={6}>
           <TextField
             inputRef={searchInputRef}
-            placeholder="Buscar por texto o SKU del producto"
+            placeholder="Buscar por nombre del producto"
             name="search"
             variant="outlined"
             size="small"
@@ -183,7 +183,12 @@ const FilterSection: React.FC<{
             sx={filterFieldSx}
           />
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid
+          item
+          xs={12}
+          md={2}
+          sx={{ display: "flex", justifyContent: "flex-end" }}
+        >
           <FormControlLabel
             sx={{ whiteSpace: "nowrap" }}
             control={

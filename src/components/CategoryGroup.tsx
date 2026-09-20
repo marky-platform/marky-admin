@@ -163,7 +163,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
   };
 
   return (
-    <Box mb={6}>
+    <Box mb={3}>
       {/* Header */}
       <Box
         ref={stickyHeaderRef}
