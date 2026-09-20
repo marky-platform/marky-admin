@@ -52,7 +52,7 @@ const BusinessProfilePanel: React.FC<BusinessProfilePanelProps> = ({
   onEmptySocialMedia = () => {},
 }) => {
   return (
-    <Box display="flex" flexDirection="column" gap="18px">
+    <Box display="flex" flexDirection="column" gap={{ xs: "18px", md: 6 }}>
       {/* Datos principales del negocio (avatar, nombre, categoría, tipo de cuenta) */}
       <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
         {avatarSlot ?? <BusinessAvatar photo={photo} size={100} />}

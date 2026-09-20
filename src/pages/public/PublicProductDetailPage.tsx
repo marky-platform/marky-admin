@@ -58,7 +58,7 @@ const PublicProductDetailPage: React.FC = () => {
           pb: "100px",
           pt: 8,
           mx: "auto",
-          maxWidth: PRODUCT_PAGE_MAX_WIDTH,
+          maxWidth: { xs: "none", md: PRODUCT_PAGE_MAX_WIDTH },
           width: "100%",
         }}
       >

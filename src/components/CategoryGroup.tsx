@@ -163,7 +163,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
   };
 
   return (
-    <Box mb={3}>
+    <Box mb={{ xs: 6, md: 3 }}>
       {/* Header */}
       <Box
         ref={stickyHeaderRef}
@@ -309,7 +309,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
           md: "repeat(4, 1fr)", // 4 on medium
           lg: "repeat(5, 1fr)", // ✅ 5 columns on large screens
         }}
-        gap={{ xs: 4, sm: 4, md: 0 }}
+        gap={{ xs: 0, md: 4, lg: 6 }}
       >
         {category.products.length === 0 ? (
           readOnly ? null : (

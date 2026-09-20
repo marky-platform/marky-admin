@@ -87,7 +87,7 @@ describe("PublicProductGrid client-side search", () => {
     jest.useFakeTimers();
     try {
       fireEvent.change(
-        screen.getByPlaceholderText("Buscar por nombre del producto"),
+        screen.getByPlaceholderText("Buscar por texto o SKU del producto"),
         { target: { value: "limón" } },
       );
       act(() => {
@@ -108,7 +108,7 @@ describe("PublicProductGrid client-side search", () => {
     jest.useFakeTimers();
     try {
       fireEvent.change(
-        screen.getByPlaceholderText("Buscar por nombre del producto"),
+        screen.getByPlaceholderText("Buscar por texto o SKU del producto"),
         { target: { value: "crocante" } },
       );
       act(() => {

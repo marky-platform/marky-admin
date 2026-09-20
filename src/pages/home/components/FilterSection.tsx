@@ -88,7 +88,7 @@ const FilterSection: React.FC<{
         <Box display="flex" alignItems="center" gap={2}>
           <TextField
             inputRef={searchInputRef}
-            placeholder="Buscar por nombre del producto"
+            placeholder="Buscar por texto o SKU del producto"
             name="search"
             variant="outlined"
             size="small"
@@ -187,6 +187,7 @@ const FilterSection: React.FC<{
           item
           xs={12}
           md={2}
+          data-testid="promotion-filter-container"
           sx={{ display: "flex", justifyContent: "flex-end" }}
         >
           <FormControlLabel

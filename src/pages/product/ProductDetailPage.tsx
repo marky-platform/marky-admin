@@ -44,9 +44,9 @@ const ProductDetailPage: React.FC = () => {
           flex: 1,
           px: { xs: 4, md: 8 },
           pb: "100px",
-          mt: 2,
+          mt: { xs: 2, md: 4 },
           mx: "auto",
-          maxWidth: PRODUCT_PAGE_MAX_WIDTH,
+          maxWidth: { xs: "none", md: PRODUCT_PAGE_MAX_WIDTH },
           width: "100%",
         }}
       >
