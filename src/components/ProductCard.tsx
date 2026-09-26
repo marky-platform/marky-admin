@@ -45,13 +45,13 @@ const styles = {
     width: "100%",
     boxShadow: 0,
     backgroundColor: "transparent",
-    borderRadius: 3,
+    borderRadius: { xs: 3, md: "22px" },
     display: "flex",
     flexDirection: "column",
     // Structural gap between the image and the content block: mobile owns
     // that spacing entirely through CardContent's own padding (no gap);
     // desktop restores the original flex gap between the two children.
-    gap: { xs: 0, md: "12px" },
+    gap: { xs: 0, md: "24px" },
     padding: { xs: "6px", md: "12px 11px" },
     transition: "background-color 0.2s",
     cursor: "pointer", // 👈 makes it feel clickable
@@ -79,8 +79,8 @@ const ProductBadge: React.FC<{
       bgcolor: backgroundColor,
       color: "common.white",
       px: 2,
-      py: { xs: 1, md: 1.5 },
-      borderRadius: { xs: "24px", md: "4px" },
+      py: 1,
+      borderRadius: "24px",
       display: "inline-block",
     }}
   >
@@ -112,7 +112,7 @@ const AvailabilityCornerBadge: React.FC = () => (
       color: "white",
       px: 2,
       py: 1,
-      borderRadius: 1,
+      borderRadius: "24px",
       alignItems: "center",
     }}
   >
@@ -126,9 +126,10 @@ const AvailabilityOverlayBadge: React.FC = () => (
   <Box
     sx={{
       position: "absolute",
-      inset: 0,
+      top: "12px",
+      left: 0,
+      right: 0,
       display: { xs: "flex", md: "none" },
-      alignItems: "center",
       justifyContent: "center",
       zIndex: 1,
     }}
@@ -137,9 +138,8 @@ const AvailabilityOverlayBadge: React.FC = () => (
       sx={{
         backgroundColor: "#BDBDBD",
         color: "white",
-        px: 2,
-        py: 1,
-        borderRadius: 1,
+        p: 1,
+        borderRadius: "24px",
         display: "flex",
         alignItems: "center",
       }}
@@ -352,7 +352,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <LineClamp
           sx={{
             fontSize: { xs: 12, md: 14 },
-            lineHeight: { xs: "14px", md: "22px" },
+            lineHeight: { xs: "14px", md: "18px" },
             fontWeight: 500,
             color: "#4F4F4F",
           }}

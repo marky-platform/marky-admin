@@ -309,7 +309,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
           md: "repeat(4, 1fr)", // 4 on medium
           lg: "repeat(5, 1fr)", // ✅ 5 columns on large screens
         }}
-        gap={{ xs: 0, md: 4, lg: 6 }}
+        gap={0}
       >
         {category.products.length === 0 ? (
           readOnly ? null : (
