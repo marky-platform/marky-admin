@@ -207,7 +207,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
           items={images.map((item: any) => item.id.toString())}
           strategy={horizontalListSortingStrategy}
         >
-          <Box display="flex" gap={2}>
+          <Box display="flex" gap={6}>
             {imageSlots.map((item, index) =>
               item ? (
                 <MediaTile

@@ -51,7 +51,7 @@ const styles = {
     // Structural gap between the image and the content block: mobile owns
     // that spacing entirely through CardContent's own padding (no gap);
     // desktop restores the original flex gap between the two children.
-    gap: { xs: 0, md: "24px" },
+    gap: { xs: 0, md: "8px" },
     padding: { xs: "6px", md: "12px 11px" },
     transition: "background-color 0.2s",
     cursor: "pointer", // 👈 makes it feel clickable

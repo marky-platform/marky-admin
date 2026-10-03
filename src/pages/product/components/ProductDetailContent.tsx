@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import { Product } from "../../../types/product";
 import ProductAddonsList from "./ProductAddonsList";
@@ -20,19 +20,20 @@ const ProductDetailContent: React.FC<{ product: Product; readOnly?: boolean }> =
   readOnly = false,
 }) => {
   return (
-    <Grid container spacing={8}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) minmax(0, 1fr)" },
+        columnGap: { xs: 0, md: "40px" },
+        rowGap: 8,
+      }}
+    >
       {/* COLUMN 1 */}
-      <Grid
-        item
-        xs={12}
-        md={4}
-        lg={5}
-        sx={{ display: "flex", alignItems: "flex-start" }}
-      >
+      <Box sx={{ display: "flex", alignItems: "flex-start", minWidth: 0 }}>
         <ProductDetailGallery product={product} />
-      </Grid>
+      </Box>
       {/* COLUMN 2 */}
-      <Grid item xs={12} md={8} lg={7}>
+      <Box sx={{ minWidth: 0 }}>
         <Box
           sx={{
             display: "flex",
@@ -54,8 +55,8 @@ const ProductDetailContent: React.FC<{ product: Product; readOnly?: boolean }> =
             <ProductAddonsList addons={product.addons} />
           )}
         </Box>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 };
 

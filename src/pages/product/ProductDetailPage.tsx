@@ -42,7 +42,7 @@ const ProductDetailPage: React.FC = () => {
       <Box
         sx={{
           flex: 1,
-          px: { xs: 4, md: 8 },
+          px: { xs: 4, md: "72px" },
           pb: "100px",
           mt: { xs: 2, md: 4 },
           mx: "auto",
