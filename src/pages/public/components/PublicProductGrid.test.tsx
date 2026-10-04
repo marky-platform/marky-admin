@@ -10,6 +10,13 @@ import { getPublicCatalog } from "../../../services/publicService";
 // publicService hits the network via a real axios instance (publicAxios.ts);
 // mock it out the same way productService is mocked in productGrid.test.tsx,
 // so tests never make a real HTTP call.
+// ProductActionsMenu reads the business id (Copiar URL) via
+// useBusinessAccountInfo -> businessService -> axiosConfig -> axios, whose
+// installed version ships ESM-only and breaks CRA's default Jest transform.
+jest.mock("../../../services/businessService", () => ({
+  getBusinessAccountInfo: jest.fn(),
+}));
+
 jest.mock("../../../services/publicService", () => ({
   getPublicCatalog: jest.fn(),
 }));

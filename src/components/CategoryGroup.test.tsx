@@ -9,6 +9,13 @@ import { CategoryWithProducts } from "../types/categoryWithProducts";
 // productService transitively imports axiosConfig -> axios, whose installed
 // version ships ESM-only and breaks CRA's default Jest transform. Mock it out,
 // same as Login.test.tsx does for authService.
+// ProductActionsMenu reads the business id (Copiar URL) via
+// useBusinessAccountInfo -> businessService -> axiosConfig -> axios, whose
+// installed version ships ESM-only and breaks CRA's default Jest transform.
+jest.mock("../services/businessService", () => ({
+  getBusinessAccountInfo: jest.fn(),
+}));
+
 jest.mock("../services/productService", () => ({
   getProductCategories: jest.fn(),
   getProductCategoriesWithProducts: jest.fn(),
@@ -18,6 +25,7 @@ jest.mock("../services/productService", () => ({
   deleteProductCategory: jest.fn(),
   addPromotionToProductCategory: jest.fn(),
   updateProductCategoryOrder: jest.fn(),
+  updateProductCategoryProductsOrder: jest.fn(),
   createProduct: jest.fn(),
   updateProduct: jest.fn(),
   getProductById: jest.fn(),
@@ -104,7 +112,9 @@ describe("CategoryGroup promotion countdown badge", () => {
     };
     renderCategoryGroup({ category: expiredCategory });
 
-    expect(screen.queryByText(/Empieza en|Finaliza en/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Empieza en|Finaliza en/),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -157,5 +167,42 @@ describe("CategoryGroup readOnly rendering (public page)", () => {
 
     expect(onProductClick).toHaveBeenCalledTimes(1);
     expect(onProductClick).toHaveBeenCalledWith(category.products[0]);
+  });
+});
+
+describe("CategoryGroup 'Organizar productos' menu item", () => {
+  const openMenu = () => fireEvent.click(screen.getAllByRole("button")[0]);
+
+  it("calls onOrganizeProductsClick with the category when clicked", () => {
+    const onOrganizeProductsClick = jest.fn();
+    renderCategoryGroup({ onOrganizeProductsClick });
+
+    openMenu();
+    fireEvent.click(screen.getByText("Organizar productos"));
+
+    expect(onOrganizeProductsClick).toHaveBeenCalledWith(category);
+  });
+
+  it("is hidden when no handler is passed", () => {
+    renderCategoryGroup();
+
+    openMenu();
+
+    expect(screen.queryByText("Organizar productos")).not.toBeInTheDocument();
+  });
+
+  it("is hidden for the synthetic 'Sin categoría' group (id null)", () => {
+    const uncategorized = {
+      ...category,
+      id: null,
+    } as unknown as CategoryWithProducts;
+    renderCategoryGroup({
+      category: uncategorized,
+      onOrganizeProductsClick: jest.fn(),
+    });
+
+    openMenu();
+
+    expect(screen.queryByText("Organizar productos")).not.toBeInTheDocument();
   });
 });

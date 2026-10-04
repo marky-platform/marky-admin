@@ -31,6 +31,7 @@ jest.mock("../../../services/productService", () => ({
   deleteProductCategory: jest.fn(),
   addPromotionToProductCategory: jest.fn(),
   updateProductCategoryOrder: jest.fn(),
+  updateProductCategoryProductsOrder: jest.fn(),
   createProduct: jest.fn(),
   updateProduct: jest.fn(),
   getProductById: jest.fn(),

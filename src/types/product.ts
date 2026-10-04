@@ -68,6 +68,57 @@ export interface ProductAddon {
   _delete?: boolean;
 }
 
+export type AmountType = "units" | "weight" | "volume";
+export type AmountUnit = "g" | "kg" | "ml" | "l";
+export type DimensionShape = "round" | "rectangular";
+
+// Forma persistida (versionada) del campo `presentation` del backend.
+export interface ProductPresentation {
+  version: 1;
+  amount: { type: AmountType; value: number; unit: AmountUnit | null } | null;
+  dimensions: {
+    shape: DimensionShape;
+    diameterCm: number | null;
+    lengthCm: number | null;
+    widthCm: number | null;
+    heightCm: number | null;
+  } | null;
+  approximateYield: { minPeople: number; maxPeople: number | null } | null;
+}
+
+// Forma persistida del campo `celiac_info` (null = switch apagado).
+export interface CeliacInfo {
+  version: 1;
+  crossContaminationControl: boolean;
+  glutenFreeGrains: boolean;
+  certifiedProtocol: boolean;
+}
+
+// Estado del formulario para "Presentación": todo texto para poder aceptar
+// la coma decimal; se convierte a números solo al enviar.
+export interface PresentationFormState {
+  amountEnabled: boolean;
+  amountType: AmountType;
+  amountValue: string;
+  amountUnit: AmountUnit;
+  dimensionsEnabled: boolean;
+  shape: DimensionShape;
+  diameterCm: string;
+  lengthCm: string;
+  widthCm: string;
+  heightCm: string;
+  yieldEnabled: boolean;
+  minPeople: string;
+  maxPeople: string;
+}
+
+export interface CeliacFormState {
+  enabled: boolean;
+  crossContaminationControl: boolean;
+  glutenFreeGrains: boolean;
+  certifiedProtocol: boolean;
+}
+
 export interface Product {
   id?: number;
   name: string;
@@ -92,6 +143,15 @@ export interface Product {
   promotionEndTime?: string;
   promotionStatus?: PromotionStatus;
   media?: MediaItemLocal[];
+  // Datos informativos opcionales. `featuredIngredients`/`allergens` son
+  // arrays en el frontend (CSV en la API); `presentation`/`celiacInfo` es lo
+  // que llega de la API, y `presentationForm`/`celiacForm` el estado editable.
+  featuredIngredients?: string[];
+  allergens?: string[];
+  presentation?: ProductPresentation | null;
+  celiacInfo?: CeliacInfo | null;
+  presentationForm?: PresentationFormState;
+  celiacForm?: CeliacFormState;
   primaryPrice?: string;
   secondaryPrice?: string;
   /** Fully formatted primary price with discount coming from the backend (e.g. "PYG 60.000,00") */

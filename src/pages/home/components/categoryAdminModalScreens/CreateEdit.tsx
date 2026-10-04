@@ -12,6 +12,8 @@ interface CreateEditProps {
   initialCategory?: Category | null;
   /** will be called with the new/updated category */
   onSubmit: (category: Category, backScreen: boolean) => void;
+  /** hides "Guardar y crear otra" (e.g. when the modal closes after creating) */
+  hideCreateAnother?: boolean;
 }
 
 interface FormValues {
@@ -22,6 +24,7 @@ interface FormValues {
 export const CreateEdit: React.FC<CreateEditProps> = ({
   initialCategory,
   onSubmit,
+  hideCreateAnother = false,
 }) => {
   const createProductCategory = useCreateProductCategory();
   const updateProductCategory = useUpdateProductCategory();
@@ -220,7 +223,7 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
               {isEdit ? "Guardar cambios" : "Crear categoría"}
             </Button>
 
-            {!isEdit && (
+            {!isEdit && !hideCreateAnother && (
               <Button
                 variant="contained"
                 color="secondary"

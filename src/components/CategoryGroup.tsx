@@ -2,6 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import OpenWithIcon from "@mui/icons-material/OpenWith";
 import {
   Box,
   Checkbox,
@@ -33,6 +34,9 @@ const STICKY_TOP_OFFSET = 55;
 interface CategoryGroupProps {
   category: CategoryWithProducts;
   onPromotionClick?: (category: CategoryWithProducts) => void;
+  /** Opens the "Organizar productos" modal. The menu item is hidden without
+   * it, and for the synthetic "Sin categoría" group (no id). */
+  onOrganizeProductsClick?: (category: CategoryWithProducts) => void;
   onDeleteCategory?: () => void;
   onToggleAvailability?: (checked: boolean) => void;
   onProductPromotionClick?: (product: any) => void;
@@ -55,6 +59,7 @@ interface CategoryGroupProps {
 const CategoryGroup: React.FC<CategoryGroupProps> = ({
   category,
   onPromotionClick,
+  onOrganizeProductsClick,
   onDeleteCategory,
   onToggleAvailability,
   onProductPromotionClick,
@@ -253,6 +258,23 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
                 <LocalOfferIcon fontSize="medium" />
                 <Typography>Categoría en promoción</Typography>
               </MenuItem>
+              {onOrganizeProductsClick && category.id != null && (
+                <MenuItem
+                  onClick={() => {
+                    onOrganizeProductsClick(category);
+                    handleClose();
+                  }}
+                  sx={{
+                    borderRadius: 2,
+                    p: 3,
+                    display: "flex",
+                    gap: 4,
+                  }}
+                >
+                  <OpenWithIcon fontSize="medium" />
+                  <Typography>Organizar productos</Typography>
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
                   onDeleteCategory?.();

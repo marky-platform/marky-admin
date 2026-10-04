@@ -1,4 +1,5 @@
 import { Product } from "../types/product";
+import { celiacToForm, presentationToForm } from "./productExtras";
 
 // Builds a "duplicated" copy of a product to prefill the create form: strips
 // the id, appends " (copia)" to the name, drops media (URL/file complications),
@@ -15,6 +16,13 @@ export const buildDuplicatedProduct = (product: Product): Product => {
     id: undefined as any,
     name: `${values.name} (copia)`,
     media: [],
+    // Los datos informativos se copian como estado de formulario, venga el
+    // producto del form (ya en ese formato) o de la API (presentation/celiacInfo).
+    featuredIngredients: values.featuredIngredients ?? [],
+    allergens: values.allergens ?? [],
+    presentationForm:
+      values.presentationForm ?? presentationToForm(values.presentation),
+    celiacForm: values.celiacForm ?? celiacToForm(values.celiacInfo),
     variants: (values.variants || [])
       .filter((v: any) => !v._delete)
       .map((v: any) => ({
@@ -30,6 +38,9 @@ export const buildDuplicatedProduct = (product: Product): Product => {
         price: Number(a.price) || 0,
       })),
   };
+
+  delete duplicated.presentation;
+  delete duplicated.celiacInfo;
 
   if (duplicated.category && typeof duplicated.category === "object") {
     duplicated.category = (duplicated.category as any).id;

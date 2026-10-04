@@ -6,7 +6,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { SortableContext, arrayMove, horizontalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import { Box, Typography } from "@mui/material";
 import { useFormikContext } from "formik";
@@ -172,7 +172,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const imageSlots = [0, 1, 2].map((slotIndex) => images[slotIndex] ?? null);
 
   return (
-    <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 2, padding: 5 }}>
+    <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 2, padding: { xs: 4, md: 5 } }}>
       <ImageCropModal
         open={!!croppingMedia}
         onClose={handleCloseCropModal}
@@ -205,9 +205,18 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={images.map((item: any) => item.id.toString())}
-          strategy={horizontalListSortingStrategy}
+          strategy={rectSortingStrategy}
         >
-          <Box display="flex" gap={2}>
+          <Box
+            sx={{
+              display: { xs: "grid", sm: "flex" },
+              gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))" },
+              columnGap: { xs: 3, sm: 6 },
+              rowGap: { xs: 6, sm: 0 },
+              minWidth: 0,
+              maxWidth: "100%",
+            }}
+          >
             {imageSlots.map((item, index) =>
               item ? (
                 <MediaTile

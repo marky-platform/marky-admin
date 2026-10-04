@@ -1,10 +1,12 @@
-import { Box, Grid } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import { Product } from "../../../types/product";
 import ProductAddonsList from "./ProductAddonsList";
 import ProductDetailGallery from "./ProductDetailGallery";
 import ProductDetailInfo from "./ProductDetailInfo";
 import ProductDetailPricing from "./ProductDetailPricing";
+import ProductFoodInfo from "./ProductFoodInfo";
+import RelatedProducts from "./RelatedProducts";
 import ProductVariantsList from "./ProductVariantsList";
 
 export const PRODUCT_INFO_MAX_WIDTH = 600;
@@ -15,24 +17,28 @@ export const PRODUCT_PAGE_MAX_WIDTH = 1200;
  * wrapped in Header + back row) and the public page (its own chrome + this
  * same content, `readOnly`).
  */
-const ProductDetailContent: React.FC<{ product: Product; readOnly?: boolean }> = ({
-  product,
-  readOnly = false,
-}) => {
+const ProductDetailContent: React.FC<{
+  product: Product;
+  readOnly?: boolean;
+  /** Public page only: selects the anonymous catalog and public routes for
+   * the related-products grid. */
+  businessId?: string;
+}> = ({ product, readOnly = false, businessId }) => {
   return (
-    <Grid container spacing={8}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) minmax(0, 1fr)" },
+        columnGap: { xs: 0, md: "40px" },
+        rowGap: 8,
+      }}
+    >
       {/* COLUMN 1 */}
-      <Grid
-        item
-        xs={12}
-        md={4}
-        lg={5}
-        sx={{ display: "flex", alignItems: "flex-start" }}
-      >
+      <Box sx={{ display: "flex", alignItems: "flex-start", minWidth: 0 }}>
         <ProductDetailGallery product={product} />
-      </Grid>
+      </Box>
       {/* COLUMN 2 */}
-      <Grid item xs={12} md={8} lg={7}>
+      <Box sx={{ minWidth: 0 }}>
         <Box
           sx={{
             display: "flex",
@@ -41,11 +47,13 @@ const ProductDetailContent: React.FC<{ product: Product; readOnly?: boolean }> =
             maxWidth: PRODUCT_INFO_MAX_WIDTH,
           }}
         >
-          <Box>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <ProductDetailInfo product={product} readOnly={readOnly} />
 
             <ProductDetailPricing product={product} />
           </Box>
+
+          <ProductFoodInfo product={product} />
 
           {product.variants.length > 0 && (
             <ProductVariantsList variants={product.variants} />
@@ -54,8 +62,12 @@ const ProductDetailContent: React.FC<{ product: Product; readOnly?: boolean }> =
             <ProductAddonsList addons={product.addons} />
           )}
         </Box>
-      </Grid>
-    </Grid>
+      </Box>
+      {/* Related products: full width under both columns */}
+      <Box sx={{ gridColumn: "1 / -1", minWidth: 0 }}>
+        <RelatedProducts product={product} businessId={businessId} />
+      </Box>
+    </Box>
   );
 };
 

@@ -22,6 +22,9 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/paths";
 import { useUpdateProductAvailability } from "../hooks/useProductMutations";
 import useDuplicateProduct from "../hooks/useDuplicateProduct";
+import { useBusinessAccountInfo } from "../hooks/useBusinessAccountInfo";
+import { getPublicProductUrl } from "../utils/publicUrls";
+import { ShowNotification } from "../utils/utils";
 
 export interface ProductCategoryRef {
   id: number | null;
@@ -57,6 +60,7 @@ function ProductActionsMenu<P extends ProductActionsMenuProduct>({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const updateAvailability = useUpdateProductAvailability();
   const duplicateProduct = useDuplicateProduct();
+  const { data: accountInfo } = useBusinessAccountInfo();
 
   // derive initial availability from product payload (may be snake_case or camelCase)
   const initialIsAvailable = Boolean(
@@ -70,6 +74,29 @@ function ProductActionsMenu<P extends ProductActionsMenuProduct>({
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => setAnchorEl(null);
+
+  const handleCopyUrl = async () => {
+    const businessId = accountInfo?.business_id;
+    if (!businessId || product.id === undefined || product.id === null) {
+      ShowNotification({
+        message: "No se pudo copiar el enlace",
+        type: "error",
+      });
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(
+        getPublicProductUrl(businessId, product.id),
+      );
+      ShowNotification({ message: "Enlace copiado", type: "success" });
+      handleClose();
+    } catch {
+      ShowNotification({
+        message: "No se pudo copiar el enlace",
+        type: "error",
+      });
+    }
+  };
 
   return (
     <>
@@ -147,7 +174,13 @@ function ProductActionsMenu<P extends ProductActionsMenuProduct>({
           <LocalOfferIcon fontSize="small" sx={{ mr: 4 }} />
           Producto en promoción
         </MenuItem>
-        <MenuItem sx={{ py: 4, borderRadius: 2 }}>
+        <MenuItem
+          onClick={(event: React.MouseEvent<HTMLLIElement>) => {
+            event.stopPropagation();
+            handleCopyUrl();
+          }}
+          sx={{ py: 4, borderRadius: 2 }}
+        >
           <ContentCopyIcon fontSize="small" sx={{ mr: 4 }} />
           Copiar URL
         </MenuItem>

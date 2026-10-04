@@ -49,7 +49,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
   if (!filled) {
     const isVideo = kind === "video";
     return (
-      <Box sx={{ flex: 1, minWidth: 90 }}>
+      <Box sx={{ flex: 1, minWidth: { xs: 0, sm: 90 }, maxWidth: "100%" }}>
         <Box
           onClick={onAdd}
           sx={{
@@ -104,7 +104,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
       ref={sortable ? setNodeRef : undefined}
       style={sortable ? style : undefined}
       {...(sortable ? attributes : {})}
-      sx={{ flex: 1, minWidth: 90 }}
+      sx={{ flex: 1, minWidth: { xs: 0, sm: 90 }, maxWidth: "100%", position: "relative" }}
     >
       <Box
         {...(sortable ? listeners : {})}
@@ -170,15 +170,23 @@ const MediaTile: React.FC<MediaTileProps> = ({
         <Box
           sx={{
             display: "inline-block",
-            backgroundColor: "#FFD401",
-            borderRadius: "6px",
-            px: 1,
-            mt: "-12px",
-            ml: 1,
-            position: "relative",
+            backgroundColor: "rgb(255, 212, 1)",
+            borderRadius: "999px",
+            paddingInline: "8px",
+            position: "absolute",
+            left: "50%",
+            bottom: "-14px",
+            transform: "translateX(-50%)",
+            width: "max-content",
+            maxWidth: "calc(100% + 16px)",
+            overflow: "hidden",
           }}
         >
-          <Typography variant="caption" fontWeight="bold" sx={{ color: "#4B4B4B" }}>
+          <Typography
+            variant="caption"
+            fontWeight="bold"
+            sx={{ color: "#4B4B4B", whiteSpace: "nowrap", textOverflow: "ellipsis" }}
+          >
             Imagen de portada
           </Typography>
         </Box>
