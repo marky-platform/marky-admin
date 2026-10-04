@@ -49,6 +49,15 @@ const components = {
       },
     },
   },
+  MuiInputBase: {
+    styleOverrides: {
+      input: {
+        "@media (max-width: 899.95px)": {
+          fontSize: "16px",
+        },
+      },
+    },
+  },
   MuiCssBaseline: {
     styleOverrides: {
       // For Chrome, Safari, Edge, Opera

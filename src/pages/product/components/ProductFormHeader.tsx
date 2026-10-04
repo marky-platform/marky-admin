@@ -63,24 +63,30 @@ const ProductFormHeader: React.FC<ProductFormHeaderProps> = ({
         borderColor: "grey.400",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1, minWidth: 0 }}>
         <Box
           sx={{
             padding: 1,
             backgroundColor: "grey.400",
             borderRadius: 2,
             ml: { xs: 2, md: 0 },
+            flexShrink: 0,
           }}
         >
           <IconButton onClick={() => (onBack ? onBack() : navigate(-1))}>
             <ArrowBack />
           </IconButton>
         </Box>
-        <Typography variant="h2" fontWeight="bold" sx={{ ml: 2 }}>
+        <Typography
+          variant="h2"
+          fontWeight="bold"
+          noWrap
+          sx={{ ml: { xs: 1, md: 2 }, minWidth: 0, fontSize: { xs: 20, md: 24 } }}
+        >
           {title}
         </Typography>
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, md: 2 }, flexShrink: 0 }}>
         <FormControlLabel
           control={
             <Switch
@@ -118,6 +124,7 @@ const ProductFormHeader: React.FC<ProductFormHeaderProps> = ({
             />
           }
           label="Disponible"
+          sx={{ mr: { xs: 0 } }}
         />
         <IconButton
           onClick={handleMenuClick}
