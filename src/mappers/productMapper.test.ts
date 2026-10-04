@@ -137,6 +137,56 @@ describe("mapProduct", () => {
     expect(result.promotionStatus).toBe("expired");
   });
 
+  it("maps the descriptive extras from the API payload", () => {
+    const presentation = {
+      version: 1,
+      amount: { type: "volume", value: 500, unit: "ml" },
+      dimensions: null,
+      approximateYield: { minPeople: 1, maxPeople: null },
+    };
+    const celiac = {
+      version: 1,
+      crossContaminationControl: true,
+      glutenFreeGrains: false,
+      certifiedProtocol: false,
+    };
+    const result = mapProduct({
+      id: 1,
+      name: "Frappuccino",
+      description: "desc",
+      price: 100,
+      is_active: true,
+      featured_ingredients: "Café,Leche,Caramelo",
+      allergens: "milk,mystery,egg",
+      presentation,
+      celiac_info: celiac,
+    });
+
+    expect(result.featuredIngredients).toEqual(["Café", "Leche", "Caramelo"]);
+    expect(result.allergens).toEqual(["milk", "egg"]);
+    expect(result.presentation).toEqual(presentation);
+    expect(result.celiacInfo).toEqual(celiac);
+  });
+
+  it("maps a legacy product with no extras to empty values", () => {
+    const result = mapProduct({
+      id: 1,
+      name: "Pizza",
+      description: "desc",
+      price: 100,
+      is_active: true,
+      featured_ingredients: null,
+      allergens: null,
+      presentation: null,
+      celiac_info: null,
+    });
+
+    expect(result.featuredIngredients).toEqual([]);
+    expect(result.allergens).toEqual([]);
+    expect(result.presentation).toBeNull();
+    expect(result.celiacInfo).toBeNull();
+  });
+
   it("defaults variants to an empty array when missing", () => {
     const result = mapProduct({
       id: 1,

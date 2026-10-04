@@ -51,7 +51,7 @@ const ProductDetailPricing: React.FC<{ product: Product }> = ({ product }) => {
 
   return (
     <ThemeProvider theme={priceTheme}>
-      <Box sx={{ mt: 8 }}>
+      <Box>
         {hasDiscount ? (
           <Box display="flex" flexDirection="column" gap={0.5}>
             {primaryDiscountedToShow && (

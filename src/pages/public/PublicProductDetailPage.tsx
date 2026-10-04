@@ -23,6 +23,11 @@ const PublicProductDetailPage: React.FC = () => {
   );
   const { data: profile } = usePublicBusinessProfile(businessId);
 
+  // Navegar entre productos relacionados reutiliza esta página: volver arriba.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [numericId]);
+
   useEffect(() => {
     if (product?.name) {
       document.title = profile?.business_name
@@ -65,10 +70,16 @@ const PublicProductDetailPage: React.FC = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
           <BackButton onClick={() => navigate(`/${businessId}`)} />
           <Typography variant="h4" fontWeight={500} color="text.primary">
-            Volver
+            {profile?.business_name
+              ? `Volver a ${profile.business_name}`
+              : "Volver"}
           </Typography>
         </Box>
-        <ProductDetailContent product={product} readOnly />
+        <ProductDetailContent
+          product={product}
+          readOnly
+          businessId={businessId}
+        />
       </Box>
     </Box>
   );
