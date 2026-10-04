@@ -33,8 +33,18 @@ import {
   splitIsoDateTime,
   buildProductPromotionFields,
 } from "../../utils/promotionForm";
+import {
+  buildPresentationSchema,
+  buildCategoryPayload,
+  buildProductExtrasFields,
+  celiacToForm,
+  defaultCeliacForm,
+  defaultPresentationForm,
+  presentationToForm,
+  stripProductExtrasKeys,
+} from "../../utils/productExtras";
 import { ShowNotification } from "../../utils/utils";
-import AssignCategoryModal from "./components/AssignCategoryModal";
+import CategoryAdminModal from "../home/components/CategoryAdminModal";
 import CompleteYourProductList from "./components/CompleteYourProductList";
 import ExtrasSection from "./components/ExtrasSection";
 import HighlightSection from "./components/HighlightSection";
@@ -109,6 +119,7 @@ const buildValidationSchema = (
     // block saving a brand-new product before the user had a chance to
     // assign one from the "Producto" tab.
     category: Yup.number().nullable(),
+    presentationForm: buildPresentationSchema(),
     // Rows soft-deleted via the section's Delete button (see
     // VariationsSection/ExtrasSection) are skipped: they no longer need to
     // satisfy the item schema (e.g. a row the user blanked out before
@@ -280,6 +291,10 @@ const ProductFormPage = () => {
     promotionEndDate: "",
     promotionEndTime: "",
     media: [],
+    featuredIngredients: [],
+    allergens: [],
+    presentationForm: defaultPresentationForm(),
+    celiacForm: defaultCeliacForm(),
   });
 
   const formikRef = useRef<FormikProps<Product>>(null);
@@ -400,6 +415,10 @@ const ProductFormPage = () => {
             // unset, which Yup then rejects with "cannot be null" and blocks
             // Publish even though nothing on the form actually changed.
             stopper: productTemp.stopper ?? "",
+            featuredIngredients: product.featuredIngredients ?? [],
+            allergens: product.allergens ?? [],
+            presentationForm: presentationToForm(product.presentation),
+            celiacForm: celiacToForm(product.celiacInfo),
             isPromotionActive,
             promotionOption,
             multibuyOption: multibuyOption,
@@ -518,7 +537,11 @@ const ProductFormPage = () => {
       component: (props: any) => (
         <ProductSection
           formik={props}
-          onOpenModal={() => setIsModalOpen(true)}
+          onCreateCategory={() => setIsModalOpen(true)}
+          onSelectCategory={(category) => {
+            setSelectedCategory(category);
+            props.setFieldValue("category", category ? category.id : null);
+          }}
           selectedCategory={selectedCategory}
           uploadProgress={uploadProgress}
           isSaving={isSaving}
@@ -638,10 +661,7 @@ const ProductFormPage = () => {
             }
             return item; // existing items keep id
           }),
-          category:
-            values.category && typeof values.category === "object"
-              ? ((values.category as any).id ?? null)
-              : (values.category ?? null),
+          category: buildCategoryPayload(values.category, !!id),
         };
 
         // Only touch promo fields when the "Destacar producto" section was
@@ -668,6 +688,12 @@ const ProductFormPage = () => {
         delete submissionValues.promotionOption;
         delete submissionValues.countdownActive;
         delete submissionValues.promotionStatus;
+
+        // Datos informativos opcionales: siempre se envían completos (con
+        // "" para limpiar) como CSV / un único string JSON — ver
+        // utils/productExtras.ts. Se descartan las claves de estado del form.
+        stripProductExtrasKeys(submissionValues);
+        Object.assign(submissionValues, buildProductExtrasFields(values));
 
         // 4) Variants/addons: rows soft-deleted in the section UI (see
         //    VariationsSection/ExtrasSection) become a { id, _delete: true }
@@ -828,21 +854,28 @@ const ProductFormPage = () => {
                 }
               }}
             >
-              <AssignCategoryModal
-                open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                selectedCategory={selectedCategory}
-                onSelectCategory={(category: Category | null) => {
-                  // Update local selected category and formik field only when
-                  // the user confirms the selection via the modal button.
-                  setSelectedCategory(category);
-                  formikProps.setFieldValue(
-                    "category",
-                    category ? category.id : null,
-                  );
-                  setIsModalOpen(false);
-                }}
-              />
+              {/* Los change de los modales (portales) burbujean por React hasta
+                  el <Form onChange> y marcarían el form como sucio sin cambios. */}
+              <div onChange={(e) => e.stopPropagation()}>
+                <CategoryAdminModal
+                  open={isModalOpen}
+                  initialScreen="createEdit"
+                  onClose={() => setIsModalOpen(false)}
+                  // Solo se auto-selecciona tras una creación exitosa; cancelar
+                  // o fallar no toca el formulario. El hook de creación ya
+                  // agregó la categoría a la caché de ["productCategories"]
+                  // antes de este callback, así que el pill existe al seleccionar.
+                  onCategoryCreated={(created) => {
+                    setSelectedCategory({
+                      id: created.id,
+                      name: created.label,
+                      icon: created.icon,
+                      order: 0,
+                    });
+                    formikProps.setFieldValue("category", created.id);
+                  }}
+                />
+              </div>
               {/* Exit confirmation dialog (unsaved changes) */}
               <ConfirmationDialog
                 open={Boolean(openExitDialog)}
@@ -984,7 +1017,8 @@ const ProductFormPage = () => {
                 content="Esta acción eliminará permanentemente el producto."
                 image={
                   formikProps.values.media?.find(
-                    (m) => m.media_type === "image" && typeof m.file === "string",
+                    (m) =>
+                      m.media_type === "image" && typeof m.file === "string",
                   )?.file as string | undefined
                 }
                 imageOverlay={

@@ -1,4 +1,5 @@
 import { Product, ProductGridItem } from "../types/product";
+import { parseAllergenIds, parseCsvList } from "../utils/productExtras";
 
 export const mapProductGridItem = (productData: any): ProductGridItem => {
   return {
@@ -51,6 +52,10 @@ export const mapProduct = (productData: any): Product => {
   return {
     ...productData,
     is_active: productData.is_active,
+    featuredIngredients: parseCsvList(productData.featured_ingredients),
+    allergens: parseAllergenIds(productData.allergens),
+    presentation: productData.presentation ?? null,
+    celiacInfo: productData.celiac_info ?? null,
     multibuyOption: productData.multibuy_option,
     discountPercentage: productData.discount_percentage,
     promotionStartDate: productData.promotion_starts_at,

@@ -23,11 +23,21 @@ type ActiveScreen = "welcome" | "main" | "sort" | "createEdit" | "promotion";
 interface CategoryAdminModalProps {
   open: boolean;
   onClose: (orderChanged: boolean) => void;
+  /** Abre directamente la pantalla de creación (p. ej. desde el formulario de producto). */
+  initialScreen?: "createEdit";
+  /**
+   * Si se pasa, al crear una categoría nueva el modal se cierra y se avisa
+   * con la categoría creada en lugar de volver al listado. Sin esta prop el
+   * comportamiento es el de siempre (Home).
+   */
+  onCategoryCreated?: (category: Category) => void;
 }
 
 export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
   open,
   onClose,
+  initialScreen,
+  onCategoryCreated,
 }) => {
   const { data: categoriesData, isLoading } = useProductCategories(
     {
@@ -38,17 +48,24 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
   const updateProductCategoryOrder = useUpdateProductCategoryOrder();
   const [categories, setCategories] = useState<Category[]>([]);
   const [hasOrderChanged, setHasOrderChanged] = useState(false);
-  const [activeScreen, setActiveScreen] = useState<ActiveScreen>("main");
+  const [activeScreen, setActiveScreen] = useState<ActiveScreen>(
+    initialScreen ?? "main",
+  );
   const [categoryForm, setCategoryForm] = useState<Category | null>(null);
   const [selectedPromotionCategory, setSelectedPromotionCategory] =
     useState<Category>();
-  const goBack = () => setActiveScreen("main");
+  const restingScreen: ActiveScreen = initialScreen ?? "main";
 
   const handleModalClose = () => {
     onClose(hasOrderChanged);
-    setActiveScreen("main");
+    setActiveScreen(restingScreen);
+    setCategoryForm(null);
     setHasOrderChanged(false);
   };
+
+  // Con `initialScreen` no hay listado al que volver: "atrás" cierra el modal.
+  const goBack = () =>
+    initialScreen ? handleModalClose() : setActiveScreen("main");
 
   const handleCreateEditSubmit = (
     cat: Partial<Category>,
@@ -66,6 +83,14 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
       }
     });
 
+    // Alta desde otro contexto (formulario de producto): se cierra el modal y
+    // se notifica la categoría creada. La edición mantiene el flujo normal.
+    if (onCategoryCreated && !categoryForm?.id) {
+      onCategoryCreated(cat as Category);
+      handleModalClose();
+      return;
+    }
+
     setCategoryForm(null);
 
     if (backScreen) {
@@ -79,6 +104,12 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
   const onDeleteCategory = (cat: any) => {
     // This is now handled by react-query optimistic updates
   };
+
+  // Al abrirse con `initialScreen` siempre arranca en esa pantalla, sin
+  // pasar por "welcome"/"main" (que dependen de cuántas categorías existan).
+  useEffect(() => {
+    if (open && initialScreen) setActiveScreen(initialScreen);
+  }, [open, initialScreen]);
 
   useEffect(() => {
     if (categoriesData) {
@@ -100,6 +131,7 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
   }, [categoriesData]);
 
   useEffect(() => {
+    if (initialScreen) return;
     if (
       open &&
       activeScreen === "main" &&
@@ -115,7 +147,7 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
     ) {
       setActiveScreen("main");
     }
-  }, [categories, activeScreen, isLoading, open]);
+  }, [categories, activeScreen, isLoading, open, initialScreen]);
 
   return (
     <Dialog open={open} onClose={handleModalClose} fullWidth maxWidth="md">
@@ -148,6 +180,7 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
             </DialogTitle>
           </Box>
           <XButton
+            aria-label="Cerrar"
             onClick={handleModalClose}
             sx={{ bgcolor: "grey.400", borderRadius: 1.5 }}
           />
@@ -204,6 +237,7 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
               key={categoryForm?.id ?? "new"}
               initialCategory={categoryForm}
               onSubmit={handleCreateEditSubmit}
+              hideCreateAnother={Boolean(onCategoryCreated)}
             />
           )}
           {/* TODO: make this work ========== CATEGORY PROMOTION ========== */}

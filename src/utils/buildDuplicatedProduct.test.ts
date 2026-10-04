@@ -59,4 +59,32 @@ describe("buildDuplicatedProduct", () => {
     expect(result.addons).toHaveLength(1);
     expect((result.addons as any)[0]).toMatchObject({ name: "Queso" });
   });
+
+  it("copies the optional informational fields as form state", () => {
+    const result = buildDuplicatedProduct(
+      baseProduct({
+        featuredIngredients: ["Tomate"],
+        allergens: ["milk"],
+        presentation: {
+          version: 1,
+          amount: null,
+          dimensions: null,
+          approximateYield: { minPeople: 4, maxPeople: null },
+        },
+        celiacInfo: {
+          version: 1,
+          crossContaminationControl: true,
+          glutenFreeGrains: false,
+          certifiedProtocol: false,
+        },
+      } as any),
+    );
+
+    expect(result.featuredIngredients).toEqual(["Tomate"]);
+    expect(result.allergens).toEqual(["milk"]);
+    expect(result.presentationForm).toMatchObject({ yieldEnabled: true, minPeople: "4" });
+    expect(result.celiacForm).toMatchObject({ enabled: true, crossContaminationControl: true });
+    expect(result).not.toHaveProperty("presentation");
+    expect(result).not.toHaveProperty("celiacInfo");
+  });
 });

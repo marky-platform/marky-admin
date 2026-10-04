@@ -1,17 +1,23 @@
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Box, InputAdornment, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Field, FormikProps } from "formik";
 import Input from "../../../components/Input";
 import NumberInput from "../../../components/NumberInput";
 import { useBusinessAccountInfo } from "../../../hooks/useBusinessAccountInfo";
 import { Category } from "../../../types/category";
 import { Product } from "../../../types/product";
-import CategorySelector from "./CategorySelector";
+import { defaultCeliacForm } from "../../../utils/productExtras";
+import AllergensSection from "./AllergensSection";
+import CategoryPills from "./CategoryPills";
+import CeliacSection from "./CeliacSection";
+import FeaturedIngredientsField from "./FeaturedIngredientsField";
+import PresentationSection from "./PresentationSection";
 import ProductImageGallery from "./ProductImageGallery"; // Import the new component
 
 interface ProductSectionProps {
   formik: FormikProps<Product>;
-  onOpenModal: () => void;
+  onCreateCategory: () => void;
+  onSelectCategory: (category: Category | null) => void;
   selectedCategory: Category | null;
   uploadProgress?: number | null;
   isSaving?: boolean;
@@ -19,7 +25,8 @@ interface ProductSectionProps {
 
 const ProductSection = ({
   formik,
-  onOpenModal,
+  onCreateCategory,
+  onSelectCategory,
   selectedCategory,
   uploadProgress,
   isSaving,
@@ -66,7 +73,7 @@ const ProductSection = ({
         />
         <Input
           name="description"
-          label="Descripción"
+          label="Cuenta qué hace especial a este producto"
           placeholder="Ej. Galleta artesanal con chips de chocolate, textura suave y toque salado."
           value={values.description}
           onChange={handleChange}
@@ -87,26 +94,34 @@ const ProductSection = ({
         <Field
           name="price"
           component={NumberInput}
-          label="Precio"
+          label={currencyCode ? `Precio en ${currencyCode}` : "Precio"}
           required
           fullWidth
           margin="normal"
           sx={{ maxWidth: { xs: "100%", md: "238px" } }}
           error={touched.price && Boolean(errors.price)}
           helperText={touched.price && errors.price}
-          InputProps={{
-            endAdornment: currencyCode ? (
-              <InputAdornment position="end">
-                <Typography variant="body2">{`[${currencyCode}]`}</Typography>
-              </InputAdornment>
-            ) : undefined,
-          }}
         />
-        <CategorySelector
+        <FeaturedIngredientsField
+          value={values.featuredIngredients ?? []}
+          onChange={(next) => formik.setFieldValue("featuredIngredients", next)}
+        />
+        <CategoryPills
           selectedCategory={selectedCategory}
-          onOpenModal={onOpenModal}
+          onSelect={onSelectCategory}
+          onCreateCategory={onCreateCategory}
         />
       </Box>
+
+      <PresentationSection formik={formik} />
+      <AllergensSection
+        value={values.allergens ?? []}
+        onChange={(ids) => formik.setFieldValue("allergens", ids)}
+      />
+      <CeliacSection
+        value={values.celiacForm ?? defaultCeliacForm()}
+        onChange={(next) => formik.setFieldValue("celiacForm", next)}
+      />
     </Box>
   );
 };
