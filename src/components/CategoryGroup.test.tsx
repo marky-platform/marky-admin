@@ -9,6 +9,13 @@ import { CategoryWithProducts } from "../types/categoryWithProducts";
 // productService transitively imports axiosConfig -> axios, whose installed
 // version ships ESM-only and breaks CRA's default Jest transform. Mock it out,
 // same as Login.test.tsx does for authService.
+// ProductActionsMenu reads the business id (Copiar URL) via
+// useBusinessAccountInfo -> businessService -> axiosConfig -> axios, whose
+// installed version ships ESM-only and breaks CRA's default Jest transform.
+jest.mock("../services/businessService", () => ({
+  getBusinessAccountInfo: jest.fn(),
+}));
+
 jest.mock("../services/productService", () => ({
   getProductCategories: jest.fn(),
   getProductCategoriesWithProducts: jest.fn(),
