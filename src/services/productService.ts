@@ -104,6 +104,15 @@ export const updateProductCategoryOrder = async (
   await api.post(`${categoryBaseURL}/update_order/`, { categories });
 };
 
+export const updateProductCategoryProductsOrder = async (
+  categoryId: number,
+  productIds: number[],
+): Promise<void> => {
+  await api.post(`${categoryBaseURL}/${categoryId}/update_products_order/`, {
+    product_ids: productIds,
+  });
+};
+
 export const createProduct = async (
   formData: FormData,
   onUploadProgress?: (progressEvent: AxiosProgressEvent) => void,

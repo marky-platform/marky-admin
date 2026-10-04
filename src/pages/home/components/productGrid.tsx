@@ -16,6 +16,7 @@ import LoadingSpinner from "../../../components/LoadingSpinner";
 import useProductCategoriesWithProducts from "../../../hooks/useProductCategoriesWithProducts";
 import { CategoryWithProducts } from "../../../types/categoryWithProducts";
 import CategoryAdminModal from "./CategoryAdminModal";
+import ProductOrderModal from "./ProductOrderModal";
 import CategoryPromotionModal from "../../../components/CategoryPromotionModal";
 import ProductPromotionModal from "../../../components/ProductPromotionModal";
 import MoveToCategoryModal, {
@@ -117,6 +118,9 @@ export const ProductGrid: React.FC = () => {
   const [openPromotionModal, setOpenPromotionModal] = useState(false);
   const [selectedPromotionCategory, setSelectedPromotionCategory] =
     useState<any>(null);
+  const [openProductOrderModal, setOpenProductOrderModal] = useState(false);
+  const [selectedOrderCategory, setSelectedOrderCategory] =
+    useState<CategoryWithProducts | null>(null);
 
   const location = useLocation();
 
@@ -300,6 +304,10 @@ export const ProductGrid: React.FC = () => {
             setSelectedPromotionCategory(c);
             setOpenPromotionModal(true);
           }}
+          onOrganizeProductsClick={(c) => {
+            setSelectedOrderCategory(c);
+            setOpenProductOrderModal(true);
+          }}
           onDeleteCategory={() => {
             setSelectedCategoryToDelete(cat);
             setOpenDeleteCategoryDialog(true);
@@ -393,6 +401,14 @@ export const ProductGrid: React.FC = () => {
         onClose={() => {
           setOpenPromotionModal(false);
           setSelectedPromotionCategory(null);
+        }}
+      />
+      <ProductOrderModal
+        open={openProductOrderModal}
+        category={selectedOrderCategory}
+        onClose={() => {
+          setOpenProductOrderModal(false);
+          setSelectedOrderCategory(null);
         }}
       />
       <ProductPromotionModal
