@@ -24,12 +24,13 @@ import { CategoryWithProducts } from "../types/categoryWithProducts";
 import { usePromotionCountdown } from "../hooks/usePromotionCountdown";
 import useIsStuck from "../hooks/useIsStuck";
 import ProductCard from "./ProductCard";
+import { HEADER_HEIGHT } from "../constants/layout";
 
 // Debe coincidir exactamente con la altura fija del AppBar (Header.tsx,
 // Toolbar minHeight/maxHeight: 55) para que el encabezado de categoría quede
 // pegado justo debajo, sin dejar un hueco donde se filtre el contenido que
 // sigue haciendo scroll.
-const STICKY_TOP_OFFSET = 55;
+const STICKY_TOP_OFFSET = HEADER_HEIGHT;
 
 interface CategoryGroupProps {
   category: CategoryWithProducts;

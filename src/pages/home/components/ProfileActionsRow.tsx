@@ -1,41 +1,26 @@
-import React, { useState } from "react";
-import { Box, IconButton } from "@mui/material";
+import React from "react";
+import { Box, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ShareIcon from "@mui/icons-material/Share";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import QrCodeIcon from "@mui/icons-material/QrCode";
 import CancelButton from "../../../components/CancelButton";
-import CustomPopupMenu from "../../../components/CustomPopupMenu";
+import ProfileActionsMenu, {
+  profileShareItems,
+} from "../../../components/ProfileActionsMenu";
 
 interface ProfileActionsRowProps {
   onEditProfile: () => void; // Abre el PresentationModal
   onSettings: () => void; // Función para configurar (futura)
 }
 
+// Solo desktop (md+). En mobile la edición vive junto al nombre del negocio y
+// "Más acciones" en el Header, así que la fila no se renderiza.
 const ProfileActionsRow: React.FC<ProfileActionsRowProps> = ({
   onEditProfile,
   onSettings,
 }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const handleOpenMenu = (e: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const menuItems = [
-    { icon: ShareIcon, text: "Compartir perfil", onClick: handleCloseMenu },
-    {
-      icon: ContentCopyIcon,
-      text: "Copiar URL del perfil",
-      onClick: handleCloseMenu,
-    },
-    { icon: QrCodeIcon, text: "Código QR", onClick: handleCloseMenu },
-  ];
+  if (isMobile) return null;
 
   return (
     <Box display="flex" alignItems="center" gap={3} mt={4}>
@@ -62,21 +47,13 @@ const ProfileActionsRow: React.FC<ProfileActionsRowProps> = ({
       >
         <SettingsIcon />
       </IconButton>
-      <IconButton
-        onClick={handleOpenMenu}
+      <ProfileActionsMenu
+        items={profileShareItems()}
         sx={{
           backgroundColor: "grey.200",
           borderRadius: 1,
           p: 3,
         }}
-      >
-        <MoreVertIcon />
-      </IconButton>
-      <CustomPopupMenu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-        menuItems={menuItems}
       />
     </Box>
   );

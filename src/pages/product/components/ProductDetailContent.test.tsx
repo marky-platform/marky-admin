@@ -3,7 +3,9 @@ import { ThemeProvider } from "@mui/material/styles";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../../../themes/light";
-import ProductDetailContent from "./ProductDetailContent";
+import ProductDetailContent, {
+  PRODUCT_PAGE_MAX_WIDTH,
+} from "./ProductDetailContent";
 import { Product } from "../../../types/product";
 
 // The related-products grid fetches the catalog; these tests are about the
@@ -230,5 +232,11 @@ describe("ProductDetailContent: new product information", () => {
 
     renderContent(fullProduct, { readOnly: true });
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+});
+
+describe("ProductDetailContent page width", () => {
+  it("caps the desktop product-detail content at 1440px", () => {
+    expect(PRODUCT_PAGE_MAX_WIDTH).toBe(1440);
   });
 });

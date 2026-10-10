@@ -1,9 +1,9 @@
 import React from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import LanguageIcon from "@mui/icons-material/Language";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { ReactComponent as FacebookSvgIcon } from "../../../../assets/icons/facebook.svg";
 import { ReactComponent as TiktokIcon } from "../../../../assets/icons/tiktok.svg";
+import { ReactComponent as LinkIcon } from "../../../../assets/icons/link.svg";
 import { ChannelKey } from "../../../../types/channel";
 import { CHANNEL_URL_PREFIXES } from "../../../../mappers/channelMapper";
 
@@ -78,7 +78,7 @@ export const CHANNEL_META: Record<ChannelKey, ChannelMeta> = {
   link: {
     label: "Enlaces",
     detailTitle: "Enlaces externos",
-    icon: LanguageIcon,
+    icon: LinkIcon,
     multiEntry: true,
     maxEntries: 3,
     addEntryLabel: "Añadir otro enlace",

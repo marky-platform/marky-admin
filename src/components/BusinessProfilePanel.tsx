@@ -30,6 +30,9 @@ interface BusinessProfilePanelProps {
   /** Rendered between the avatar block and the social-media row (e.g. admin's
    * "Completa el perfil de tu negocio" nudge). Never used on the public page. */
   nudgeSlot?: React.ReactNode;
+  /** Rendered beside the business name (e.g. admin's compact edit icon). The
+   * public profile never passes it. */
+  titleActionSlot?: React.ReactNode;
   onOpenDescription?: () => void;
   onOpenAttributes?: () => void;
   onEmptySocialMedia?: () => void;
@@ -47,6 +50,7 @@ const BusinessProfilePanel: React.FC<BusinessProfilePanelProps> = ({
   avatarSlot,
   actionsSlot,
   nudgeSlot,
+  titleActionSlot,
   onOpenDescription = () => {},
   onOpenAttributes = () => {},
   onEmptySocialMedia = () => {},
@@ -56,13 +60,36 @@ const BusinessProfilePanel: React.FC<BusinessProfilePanelProps> = ({
       {/* Datos principales del negocio (avatar, nombre, categoría, tipo de cuenta) */}
       <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
         {avatarSlot ?? <BusinessAvatar photo={photo} size={100} />}
-        <Typography
-          variant="h3"
-          mt={1}
-          sx={{ fontSize: "18px", fontWeight: 500 }}
-        >
-          {name}
-        </Typography>
+        <Box display="flex" justifyContent="center" width="100%" mt={1}>
+          {/* El nombre queda centrado; la acción (si hay) cuelga a su derecha
+              sin desplazarlo. El margen reservado evita que se salga del bloque. */}
+          <Box
+            sx={{
+              position: "relative",
+              maxWidth: titleActionSlot ? "calc(100% - 80px)" : "100%",
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{ fontSize: "18px", fontWeight: 500, textAlign: "center" }}
+            >
+              {name}
+            </Typography>
+            {titleActionSlot && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  left: "calc(100% + 8px)",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  display: "flex",
+                }}
+              >
+                {titleActionSlot}
+              </Box>
+            )}
+          </Box>
+        </Box>
         <Typography variant="body2">{categoriesText}</Typography>
         <Box display="flex" alignItems="center" gap={0.5}>
           <StorefrontOutlined sx={{ fontSize: 14, color: "#2563EB" }} />

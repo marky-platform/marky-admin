@@ -181,8 +181,12 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                     p: 3,
                     mb: 2,
                     display: "flex",
-                    alignItems: "center",
+                    // Mobile: composición vertical (imagen arriba, campos a
+                    // todo el ancho) con el eliminar arriba a la derecha.
+                    flexDirection: { xs: "column", md: "row" },
+                    alignItems: { xs: "stretch", md: "center" },
                     gap: 3,
+                    position: "relative",
                     backgroundColor: "grey.50",
                   }}
                 >
@@ -191,7 +195,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      alignItems: "center",
+                      alignItems: { xs: "flex-start", md: "center" },
                     }}
                   >
                     <Box
@@ -229,7 +233,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                     <Typography
                       variant="caption"
                       color={imageError ? "error.main" : "text.secondary"}
-                      textAlign="center"
+                      textAlign={{ xs: "left", md: "center" }}
                       sx={{ mt: 0.5, maxWidth: 90 }}
                     >
                       {imageError ? "Imagen requerida" : "Imagen *"}
@@ -270,8 +274,15 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                       }}
                     />
 
-                    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                      <Box sx={{ flex: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
+                        alignItems: { xs: "stretch", md: "flex-start" },
+                        gap: 2,
+                      }}
+                    >
+                      <Box sx={{ flex: { xs: "none", md: 2 } }}>
                         <Input
                           name={`variants[${index}].description`}
                           label="Descripción"
@@ -300,7 +311,13 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                         />
                       </Box>
 
-                      <Box sx={{ flex: 1 }}>
+                      <Box
+                        sx={{
+                          flex: { xs: "none", md: 1 },
+                          width: { xs: "60%", md: "auto" },
+                          minWidth: { xs: 160, md: 0 },
+                        }}
+                      >
                         <Field
                           name={`variants[${index}].price`}
                           component={NumberInput}
@@ -325,6 +342,11 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                   {/* DELETE BUTTON */}
                   <IconButton
                     aria-label="Eliminar presentación"
+                    sx={{
+                      position: { xs: "absolute", md: "static" },
+                      top: { xs: 4 },
+                      right: { xs: 4 },
+                    }}
                     onClick={() => {
                       // Persisted rows (real DB id) are soft-deleted so the
                       // submit handler can send a { id, _delete: true }

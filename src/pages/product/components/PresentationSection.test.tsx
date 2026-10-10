@@ -124,6 +124,15 @@ describe("PresentationSection", () => {
     });
   });
 
+  it("keeps the persona/personas label on the same row as the stepper (no wrap)", () => {
+    renderSection();
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: "Rendimiento aproximado" }),
+    );
+
+    expect(screen.getByTestId("yield-row")).toHaveStyle({ flexWrap: "nowrap" });
+  });
+
   it("steps the yield (exact value, no range) and clears it when switched off", () => {
     renderSection();
     fireEvent.click(

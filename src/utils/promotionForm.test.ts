@@ -88,4 +88,29 @@ describe("buildProductPromotionFields", () => {
     const result = buildProductPromotionFields(sameValues, baseline, true);
     expect(result).toEqual({});
   });
+  describe("exclusivity of discount vs offer", () => {
+    it("sends multibuy_option '' when Descuento is selected and a stale multibuy value remains", () => {
+      const stale: ProductPromotionFormValues = {
+        ...baseline,
+        promotionOption: "descuento",
+        discountPercentage: 30,
+        multibuyOption: "3x2",
+      };
+      const result = buildProductPromotionFields(stale, baseline, false);
+      expect(result.discount_percentage).toBe(30);
+      expect(result.multibuy_option).toBe("");
+    });
+
+    it("sends discount_percentage 0 when Oferta is selected and a stale discount remains", () => {
+      const stale: ProductPromotionFormValues = {
+        ...baseline,
+        promotionOption: "oferta",
+        discountPercentage: 30,
+        multibuyOption: "3x2",
+      };
+      const result = buildProductPromotionFields(stale, baseline, true);
+      expect(result.discount_percentage).toBe(0);
+      expect(result.multibuy_option).toBe("3x2");
+    });
+  });
 });

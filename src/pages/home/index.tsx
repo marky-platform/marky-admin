@@ -24,6 +24,9 @@ import LocationsModal, {
 } from "./components/LocationsModal";
 import { useUpdateBusinessLocations } from "../../hooks/useUpdateBusinessLocations";
 import { Header } from "../../components/Header";
+import ProfileActionsMenu, {
+  profileShareItems,
+} from "../../components/ProfileActionsMenu";
 import PresentationModal from "./components/PresentationModal";
 import { ProductGrid } from "./components/productGrid";
 
@@ -193,7 +196,15 @@ const Home = () => {
         minHeight: "100vh",
       }}
     >
-      <Header />
+      <Header
+        businessPhoto={homePageData?.profile_image}
+        mobileActionsSlot={
+          <ProfileActionsMenu
+            items={profileShareItems()}
+            placement="below-end"
+          />
+        }
+      />
       <Box
         sx={{
           flex: 1,
@@ -208,7 +219,10 @@ const Home = () => {
             display: "flex",
             flexWrap: "wrap",
             gap: { xs: 3, md: 0 },
-            height: { xs: "auto", md: "100vh" },
+            // minHeight (no height fijo): el contenido del catálogo define la altura
+            // del contenedor, así el bloque contenedor del AppBar sticky abarca
+            // todo el catálogo y el Header no se despega al final del scroll.
+            minHeight: { md: "100vh" },
           }}
         >
           <Box
