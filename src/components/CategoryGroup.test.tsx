@@ -206,3 +206,24 @@ describe("CategoryGroup 'Organizar productos' menu item", () => {
     expect(screen.queryByText("Organizar productos")).not.toBeInTheDocument();
   });
 });
+
+describe("CategoryGroup view mode", () => {
+  it("renders product cards in grid mode by default", () => {
+    renderCategoryGroup();
+
+    expect(screen.getByTestId("product-card")).toBeInTheDocument();
+    expect(screen.queryByTestId("product-list-item")).not.toBeInTheDocument();
+  });
+
+  it("renders the same products as list rows in list mode, with a working click", () => {
+    const onProductClick = jest.fn();
+    renderCategoryGroup({ viewMode: "list", onProductClick });
+
+    expect(screen.queryByTestId("product-card")).not.toBeInTheDocument();
+    const row = screen.getByTestId("product-list-item");
+    expect(row).toHaveTextContent("Galleta de chocolate");
+
+    fireEvent.click(row);
+    expect(onProductClick).toHaveBeenCalledWith(category.products[0]);
+  });
+});

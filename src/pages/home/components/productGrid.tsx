@@ -24,6 +24,8 @@ import MoveToCategoryModal, {
 } from "../../product/components/MoveToCategoryModal";
 import CategoryFilterModal, { Category } from "./CategoryFilterModal";
 import FilterSection from "./FilterSection";
+import CatalogViewToggle from "../../../components/CatalogViewToggle";
+import useCatalogViewMode from "../../../hooks/useCatalogViewMode";
 import EmptyProducts from "./EmptyProducts";
 import { useHomePageData } from "../../../hooks/useHomePageData";
 
@@ -31,6 +33,7 @@ interface FilterValues {
   search: string;
   categories: Category[];
   offer: boolean;
+  featured: boolean;
 }
 
 export const ProductGrid: React.FC = () => {
@@ -40,7 +43,9 @@ export const ProductGrid: React.FC = () => {
     search: "",
     categories: [],
     offer: false,
+    featured: false,
   };
+  const { viewMode, setViewMode } = useCatalogViewMode();
 
   const [filters, setFilters] = useState<FilterValues>(initialFilters);
   const [hasFiltered, setHasFiltered] = useState(false);
@@ -65,6 +70,9 @@ export const ProductGrid: React.FC = () => {
     error,
   } = useProductCategoriesWithProducts({
     has_promotion: filters.offer,
+    // Solo se envía cuando está activo, para no alterar la query por defecto.
+    ...(filters.featured ? { has_featured: true } : {}),
+    include_counts: true,
     ids: filters.categories.map((c) => c.id).join(","),
   });
 
@@ -177,7 +185,8 @@ export const ProductGrid: React.FC = () => {
       const isFiltering =
         updatedFilters.search !== "" ||
         updatedFilters.categories.length > 0 ||
-        updatedFilters.offer;
+        updatedFilters.offer ||
+        updatedFilters.featured;
       setHasFiltered(isFiltering);
       return updatedFilters;
     });
@@ -248,6 +257,9 @@ export const ProductGrid: React.FC = () => {
               Producto
             </Box>
           </Button>
+          <Box sx={{ display: { xs: "flex", sm: "none" } }}>
+            <CatalogViewToggle value={viewMode} onChange={setViewMode} />
+          </Box>
         </Box>
         )}
       </Box>
@@ -258,6 +270,12 @@ export const ProductGrid: React.FC = () => {
             values={filters}
             onFilterChange={handleFilterChange}
             setOpenCategoryModal={() => setOpenCategoryModal(true)}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            filterCounts={{
+              promotion: categoriesWithProductsRaw?.filter_counts?.promotion,
+              featured: categoriesWithProductsRaw?.filter_counts?.featured,
+            }}
           />
           {hasFiltered && (
             <Typography
@@ -331,6 +349,7 @@ export const ProductGrid: React.FC = () => {
         <CategoryGroup
           key={cat.id}
           category={cat}
+          viewMode={viewMode}
           onPromotionClick={(c) => {
             setSelectedPromotionCategory(c);
             setOpenPromotionModal(true);

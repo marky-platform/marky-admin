@@ -24,6 +24,8 @@ import { CategoryWithProducts } from "../types/categoryWithProducts";
 import { usePromotionCountdown } from "../hooks/usePromotionCountdown";
 import useIsStuck from "../hooks/useIsStuck";
 import ProductCard from "./ProductCard";
+import ProductListItem from "./ProductListItem";
+import { CatalogViewMode } from "../hooks/useCatalogViewMode";
 import { HEADER_HEIGHT } from "../constants/layout";
 
 // Debe coincidir exactamente con la altura fija del AppBar (Header.tsx,
@@ -55,6 +57,8 @@ interface CategoryGroupProps {
   /** Sticky header offset in px. Defaults to the admin Header's AppBar
    * height (55px); the public page has no such header, so it passes 0. */
   stickyTopOffset?: number;
+  /** Presentación de los productos: mosaico (por defecto) o lista. */
+  viewMode?: CatalogViewMode;
 }
 
 const CategoryGroup: React.FC<CategoryGroupProps> = ({
@@ -69,6 +73,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
   readOnly = false,
   onProductClick,
   stickyTopOffset = STICKY_TOP_OFFSET,
+  viewMode = "grid",
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   // no local-only state: rely on query cache optimistic updates
@@ -135,6 +140,14 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         </Typography>
       </Box>
     );
+  };
+
+  const handleProductClick = (product: any) => {
+    if (onProductClick) {
+      onProductClick(product);
+      return;
+    }
+    navigate(ROUTES.PRODUCT_DETAIL.replace(":id", product.id + ""));
   };
 
   const open = Boolean(anchorEl);
@@ -323,7 +336,31 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         )}
       </Box>
 
-      {/* Grid of products */}
+      {/* Products: grid (default) or list */}
+      {viewMode === "list" && category.products.length > 0 ? (
+        <Box
+          data-testid="product-list"
+          sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
+        >
+          {category.products.map((product) => (
+            <ProductListItem
+              key={product.id}
+              product={product}
+              currentCategory={{ id: category.id, name: category.name }}
+              readOnly={readOnly}
+              onClick={() => handleProductClick(product)}
+              onPromotionClick={onProductPromotionClick}
+              onDeleteClick={onProductDeleteClick}
+              onMoveClick={(prod, currentCategory) =>
+                onProductMoveClick?.(
+                  prod,
+                  currentCategory ?? { id: category.id, name: category.name },
+                )
+              }
+            />
+          ))}
+        </Box>
+      ) : (
       <Box
         display={"grid"}
         gridTemplateColumns={{
@@ -387,15 +424,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
               product={product}
               currentCategory={{ id: category.id, name: category.name }}
               readOnly={readOnly}
-              onClick={() => {
-                if (onProductClick) {
-                  onProductClick(product);
-                  return;
-                }
-                navigate(
-                  ROUTES.PRODUCT_DETAIL.replace(":id", product.id + ""),
-                );
-              }}
+              onClick={() => handleProductClick(product)}
               onPromotionClick={onProductPromotionClick}
               onDeleteClick={onProductDeleteClick}
               onMoveClick={(prod, currentCategory) =>
@@ -408,6 +437,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
           ))
         )}
       </Box>
+      )}
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../../../themes/light";
@@ -87,14 +87,71 @@ describe("FilterSection breakpoint scope", () => {
     ).toBeInTheDocument();
   });
 
-  it("right-aligns the 'En promoción' control on desktop only", () => {
+  it("shows the Todos / Promociones / Destacados pills on desktop", () => {
     mockMatchMedia("min-width:900"); // theme.breakpoints.up("md")
     renderFilterSection();
 
-    expect(screen.getByText("En promoción")).toBeInTheDocument();
-    const promotionGridItem = screen.getByTestId("promotion-filter-container");
-    expect(getComputedStyle(promotionGridItem).justifyContent).toBe(
-      "flex-end",
+    expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Promociones" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Destacados" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("En promoción")).not.toBeInTheDocument();
+  });
+
+  it("combines Promociones and Destacados and clears both with Todos", () => {
+    mockMatchMedia("min-width:900");
+    const onFilterChange = jest.fn();
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ThemeProvider theme={lightTheme}>
+          <FilterSection
+            values={{ offer: true, featured: false }}
+            onFilterChange={onFilterChange}
+            setOpenCategoryModal={jest.fn()}
+            filterCounts={{ promotion: 4, featured: 1 }}
+          />
+        </ThemeProvider>
+      </QueryClientProvider>,
     );
+
+    // Counts render inside the pill labels.
+    fireEvent.click(screen.getByRole("button", { name: "Destacados 1" }));
+    expect(onFilterChange).toHaveBeenCalledWith({ featured: true });
+
+    fireEvent.click(screen.getByRole("button", { name: "Promociones 4" }));
+    expect(onFilterChange).toHaveBeenCalledWith({ offer: false });
+
+    fireEvent.click(screen.getByRole("button", { name: "Todos" }));
+    expect(onFilterChange).toHaveBeenCalledWith({
+      offer: false,
+      featured: false,
+    });
+  });
+
+  it("switches view mode from the toggle", () => {
+    mockMatchMedia("min-width:900");
+    const onViewModeChange = jest.fn();
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ThemeProvider theme={lightTheme}>
+          <FilterSection
+            values={{}}
+            onFilterChange={jest.fn()}
+            setOpenCategoryModal={jest.fn()}
+            viewMode="grid"
+            onViewModeChange={onViewModeChange}
+          />
+        </ThemeProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Vista de mosaico" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Vista de lista" }));
+    expect(onViewModeChange).toHaveBeenCalledWith("list");
   });
 });

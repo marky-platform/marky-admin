@@ -2,9 +2,6 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
-  Checkbox,
-  FormControlLabel,
-  Grid,
   IconButton,
   InputAdornment,
   TextField,
@@ -12,7 +9,10 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import CatalogFilterPills from "../../../components/CatalogFilterPills";
+import CatalogViewToggle from "../../../components/CatalogViewToggle";
 import SelectButtonField from "../../../components/SelectButtonField";
+import { CatalogViewMode } from "../../../hooks/useCatalogViewMode";
 import useDebounce from "../../../hooks/useDebounce";
 import CategoryFilterChips from "./CategoryFilterChips";
 import { Category } from "./CategoryFilterModal";
@@ -28,7 +28,24 @@ const FilterSection: React.FC<{
   /** Injected category list (public catalog page); forwarded to
    * CategoryFilterChips on mobile instead of it fetching its own. */
   categories?: Category[];
-}> = ({ values, onFilterChange, setOpenCategoryModal, categories }) => {
+  /** Selector mosaico/lista. Sin estos props no se muestra. */
+  viewMode?: CatalogViewMode;
+  onViewModeChange?: (mode: CatalogViewMode) => void;
+  /** En mobile el selector vive en la barra de acciones del admin; la vista
+   * pública (sin esa barra) lo muestra junto a las píldoras. */
+  showViewToggleOnMobile?: boolean;
+  /** Totales de Promociones/Destacados para las píldoras. */
+  filterCounts?: { promotion?: number; featured?: number };
+}> = ({
+  values,
+  onFilterChange,
+  setOpenCategoryModal,
+  categories,
+  viewMode,
+  onViewModeChange,
+  showViewToggleOnMobile = false,
+  filterCounts,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -45,7 +62,22 @@ const FilterSection: React.FC<{
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [showFilters, setShowFilters] = useState(false);
   const hasActiveFilters =
-    (values.categories?.length ?? 0) > 0 || Boolean(values.offer);
+    (values.categories?.length ?? 0) > 0 ||
+    Boolean(values.offer) ||
+    Boolean(values.featured);
+
+  const pills = (
+    <CatalogFilterPills
+      offer={Boolean(values.offer)}
+      featured={Boolean(values.featured)}
+      counts={filterCounts}
+      onChange={onFilterChange}
+    />
+  );
+  const viewToggle =
+    viewMode && onViewModeChange ? (
+      <CatalogViewToggle value={viewMode} onChange={onViewModeChange} />
+    ) : null;
 
   // Keep local state in sync if the parent resets filters externally
   // (e.g. a "clear filters" action elsewhere).
@@ -68,15 +100,32 @@ const FilterSection: React.FC<{
   }, [values.search]);
 
   if (isMobile) {
-    // Mobile drops free-text search and the "En promoción" checkbox in favor
-    // of a scrollable category chip row (per Figma's mobile frame — the
-    // dropdown/checkbox filter UI is tablet+ only).
+    // Mobile drops free-text search and the category dropdown in favor of a
+    // scrollable category chip row (per Figma's mobile frame). The
+    // Todos/Promociones/Destacados pills sit in their own row below it.
     return (
-      <CategoryFilterChips
-        values={values}
-        onFilterChange={onFilterChange}
-        categories={categories}
-      />
+      <Box>
+        <CategoryFilterChips
+          values={values}
+          onFilterChange={onFilterChange}
+          categories={categories}
+        />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            pt: 1,
+            pb: 2,
+            overflowX: "auto",
+            "&::-webkit-scrollbar": { display: "none" },
+          }}
+        >
+          {pills}
+          {showViewToggleOnMobile && viewToggle}
+        </Box>
+      </Box>
     );
   } else if (!isDesktop) {
     // Tablet (sm–md): search + a filter-toggle icon on one row (per Figma);
@@ -119,6 +168,7 @@ const FilterSection: React.FC<{
           >
             <FilterListIcon />
           </IconButton>
+          {viewToggle}
         </Box>
         {showFilters && (
           <Box display="flex" alignItems="center" gap={6}>
@@ -132,25 +182,24 @@ const FilterSection: React.FC<{
               onClick={setOpenCategoryModal}
               sx={{ flex: 1, ...filterFieldSx }}
             />
-            <FormControlLabel
-              sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
-              control={
-                <Checkbox
-                  checked={values.offer}
-                  onChange={(e) => onFilterChange({ offer: e.target.checked })}
-                  color="primary"
-                />
-              }
-              label="En promoción"
-            />
+            {pills}
           </Box>
         )}
       </Box>
     );
   } else {
+    // Una sola fila que envuelve (flex-wrap) si el ancho no alcanza, así
+    // las píldoras y el selector nunca provocan scroll horizontal.
     return (
-      <Grid container spacing={4} alignItems="center">
-        <Grid item xs={12} md={6}>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: 4,
+        }}
+      >
+        <Box sx={{ flex: "2 1 220px", minWidth: 0 }}>
           <TextField
             inputRef={searchInputRef}
             placeholder="Buscar por nombre del producto"
@@ -170,8 +219,8 @@ const FilterSection: React.FC<{
               sx: { paddingY: 2 },
             }}
           />
-        </Grid>
-        <Grid item xs={12} md={4}>
+        </Box>
+        <Box sx={{ flex: "1 1 200px", minWidth: 0 }}>
           <SelectButtonField
             placeholder="Categorías: Todas"
             displayText={
@@ -182,27 +231,15 @@ const FilterSection: React.FC<{
             onClick={setOpenCategoryModal}
             sx={filterFieldSx}
           />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={2}
+        </Box>
+        <Box
           data-testid="promotion-filter-container"
-          sx={{ display: "flex", justifyContent: "flex-end" }}
+          sx={{ display: "flex", alignItems: "center", gap: 4, ml: "auto" }}
         >
-          <FormControlLabel
-            sx={{ whiteSpace: "nowrap" }}
-            control={
-              <Checkbox
-                checked={values.offer}
-                onChange={(e) => onFilterChange({ offer: e.target.checked })}
-                color="primary"
-              />
-            }
-            label="En promoción"
-          />
-        </Grid>
-      </Grid>
+          {pills}
+          {viewToggle}
+        </Box>
+      </Box>
     );
   }
 };
