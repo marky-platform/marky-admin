@@ -4,7 +4,7 @@ import { ALL_CHANNEL_KEYS, CHANNEL_META } from "./channels/channels.constants";
 import { ChannelEntry, ChannelKey, ChannelsByKey } from "../../../types/channel";
 import { buildChannelExternalUrl } from "../../../mappers/channelMapper";
 import { openExternalUrl, buildLocationMapsUrl } from "../../../utils/externalLinks";
-import { ReactComponent as LocationIcon } from "../../../assets/icons/location-marker.svg";
+import { ReactComponent as LocationIcon } from "../../../assets/icons/location.svg";
 import EntryListPopup, { EntryListPopupItem } from "./EntryListPopup";
 import { LocationEntryValue } from "./LocationsModal";
 

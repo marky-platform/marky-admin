@@ -9,11 +9,13 @@ import CategoryFilterModal, {
   Category,
 } from "../../home/components/CategoryFilterModal";
 import FilterSection from "../../home/components/FilterSection";
+import useCatalogViewMode from "../../../hooks/useCatalogViewMode";
 
 interface FilterValues {
   search: string;
   categories: Category[];
   offer: boolean;
+  featured: boolean;
 }
 
 interface PublicProductGridProps {
@@ -36,7 +38,9 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
     search: "",
     categories: [],
     offer: false,
+    featured: false,
   };
+  const { viewMode, setViewMode } = useCatalogViewMode();
   const [filters, setFilters] = useState<FilterValues>(initialFilters);
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
@@ -51,6 +55,8 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
   // against category name AND product name/description client-side below.
   const { data: catalogRaw, isLoading, error } = usePublicCatalog(businessId, {
     has_promotion: filters.offer,
+    ...(filters.featured ? { has_featured: true } : {}),
+    include_counts: true,
     ids: filters.categories.map((c) => c.id).join(","),
   });
 
@@ -109,6 +115,13 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
             onFilterChange={handleFilterChange}
             setOpenCategoryModal={() => setOpenCategoryModal(true)}
             categories={categories}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            showViewToggleOnMobile
+            filterCounts={{
+              promotion: catalogRaw?.filter_counts?.promotion,
+              featured: catalogRaw?.filter_counts?.featured,
+            }}
           />
         </Box>
       )}
@@ -133,6 +146,7 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
           <CategoryGroup
             key={cat.id}
             category={cat}
+            viewMode={viewMode}
             readOnly
             stickyTopOffset={0}
             onProductClick={(product) =>

@@ -155,7 +155,13 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
                   name="promotionOption"
                   value="descuento"
                   checked={values.promotionOption === "descuento"}
-                  onChange={() => setFieldValue("promotionOption", "descuento")}
+                  onChange={() =>
+                    setValues((prev: any) => ({
+                      ...prev,
+                      promotionOption: "descuento",
+                      multibuyOption: "",
+                    }))
+                  }
                 />
               }
               label="Descuento"
@@ -200,7 +206,13 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
                   name="promotionOption"
                   value="oferta"
                   checked={values.promotionOption === "oferta"}
-                  onChange={() => setFieldValue("promotionOption", "oferta")}
+                  onChange={() =>
+                    setValues((prev: any) => ({
+                      ...prev,
+                      promotionOption: "oferta",
+                      discountPercentage: "",
+                    }))
+                  }
                 />
               }
               label="Oferta"

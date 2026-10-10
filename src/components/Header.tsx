@@ -13,6 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import React, { useState } from "react";
@@ -21,13 +22,30 @@ import logoMarky from "../assets/images/marky-logo.svg";
 import defaultUserAvatar from "../assets/images/user_default.png";
 import { ROUTES } from "../routes/paths";
 import { useSessionStore } from "../stores/sessionStore";
+import { HEADER_HEIGHT } from "../constants/layout";
+import BusinessAvatar from "../pages/home/components/BusinessAvatar";
 import NotificationsMenu from "./NotificationsMenu";
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  /** Opt-in (solo Home admin, mobile): foto del negocio en el avatar de la
+   * cuenta en lugar del avatar genérico. */
+  businessPhoto?: unknown;
+  /** Opt-in (solo Home admin, mobile): acciones del perfil a la derecha del
+   * avatar (p. ej. el menú "Más acciones"). */
+  mobileActionsSlot?: React.ReactNode;
+}
+
+export const Header: React.FC<HeaderProps> = ({
+  businessPhoto,
+  mobileActionsSlot,
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
   const navigate = useNavigate();
   const { user } = useSessionStore();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const hasProfileVariant = businessPhoto !== undefined || !!mobileActionsSlot;
+  const showProfileVariant = hasProfileVariant && isMobile;
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -42,17 +60,25 @@ export const Header: React.FC = () => {
       color="inherit"
       elevation={0}
       sx={{
-        backgroundColor: "white",
+        backgroundColor: hasProfileVariant
+          ? { xs: "#F8F8FA", md: "white" }
+          : "white",
       }}
     >
       <Toolbar
         disableGutters
         sx={{
-          minHeight: { xs: 55, sm: 55, md: 55 },
-          maxHeight: 55,
+          // Un valor por breakpoint a propósito: el Toolbar de MUI fija 64px en
+          // sm+ con una media query, que un minHeight escalar no pisa.
+          minHeight: {
+            xs: HEADER_HEIGHT,
+            sm: HEADER_HEIGHT,
+            md: HEADER_HEIGHT,
+          },
+          maxHeight: HEADER_HEIGHT,
           py: 2,
-          px: 8,
-          gap: 6,
+          px: { xs: 4, md: 8 },
+          gap: { xs: 4, md: 6 },
           borderBottom: "1px solid #E5E7EB",
           boxSizing: "border-box",
         }}
@@ -75,10 +101,15 @@ export const Header: React.FC = () => {
           color="inherit"
           onClick={handleProfileClick}
           aria-label="user-menu"
-          sx={{ p: 1 }}
+          sx={{ p: showProfileVariant ? 0.5 : 1 }}
         >
-          <Avatar src={defaultUserAvatar} />
+          {showProfileVariant ? (
+            <BusinessAvatar photo={businessPhoto} size={34} />
+          ) : (
+            <Avatar src={defaultUserAvatar} />
+          )}
         </IconButton>
+        {showProfileVariant && mobileActionsSlot}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}

@@ -1,5 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 import defaultImage from "../../../assets/images/default-product.png";
 import { Product } from "../../../types/product";
@@ -24,6 +25,12 @@ const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
   };
 
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  // Mobile with exactly one image: no thumbnail rail (nothing to choose from),
+  // so the main image uses the full gallery width. Zero-media fallback and a
+  // single video keep their current layout.
+  const hideThumbnailRail =
+    isMobile && media.length === 1 && media[0].media_type !== "video";
   // Prepare formatted discount string: hide ".00" when discount is an integer
   const _rawDiscount = Number(product.discountPercentage ?? 0);
   const numericDiscount = Number.isFinite(_rawDiscount) ? _rawDiscount : 0;
@@ -40,40 +47,51 @@ const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
       }}
     >
       <Grid container spacing={3}>
-        <Grid item xs={3} sm={2}>
-          <Box display="flex" flexDirection="column" gap={3}>
-            {media.map((item: any, idx: number) => (
-              <Box
-                key={item.id || idx}
-                onClick={() => setMainIndex(idx)}
-                sx={{
-                  width: 54,
-                  height: 54,
-                  borderRadius: 1.5,
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  border: idx === mainIndex ? "2px solid" : "1px solid",
-                  borderColor: idx === mainIndex ? "primary.main" : "grey.300",
-                }}
-              >
-                {item.media_type === "video" ? (
-                  <VideoThumbnail
-                    url={resolveUrl(item.file)}
-                    width={54}
-                    height={54}
-                  />
-                ) : (
-                  <img
-                    src={resolveUrl(item.file)}
-                    alt={item.name || "thumb"}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                )}
-              </Box>
-            ))}
-          </Box>
-        </Grid>
-        <Grid item xs={9} sm={10}>
+        {!hideThumbnailRail && (
+          <Grid item xs={3} sm={2}>
+            <Box display="flex" flexDirection="column" gap={3}>
+              {media.map((item: any, idx: number) => (
+                <Box
+                  key={item.id || idx}
+                  onClick={() => setMainIndex(idx)}
+                  sx={{
+                    width: 54,
+                    height: 54,
+                    borderRadius: 1.5,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    border: idx === mainIndex ? "2px solid" : "1px solid",
+                    borderColor:
+                      idx === mainIndex ? "primary.main" : "grey.300",
+                  }}
+                >
+                  {item.media_type === "video" ? (
+                    <VideoThumbnail
+                      url={resolveUrl(item.file)}
+                      width={54}
+                      height={54}
+                    />
+                  ) : (
+                    <img
+                      src={resolveUrl(item.file)}
+                      alt={item.name || "thumb"}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+                </Box>
+              ))}
+            </Box>
+          </Grid>
+        )}
+        <Grid
+          item
+          xs={hideThumbnailRail ? 12 : 9}
+          sm={hideThumbnailRail ? 12 : 10}
+        >
           <Box
             sx={{
               border: "1px solid",

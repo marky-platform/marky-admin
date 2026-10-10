@@ -25,6 +25,8 @@ export interface PaginatedResponse<T> {
 export interface PaginatedProductCategoriesResponse<T>
   extends PaginatedResponse<T> {
   products_count: number;
+  /** Solo cuando se pide `include_counts=true`. */
+  filter_counts?: { promotion: number; featured: number };
 }
 
 export interface PaginatedNotificationsResponse<T>

@@ -86,7 +86,11 @@ const PresentationSection = ({ formik }: { formik: FormikProps<Product> }) => {
   const numberField = (
     key: keyof PresentationFormState,
     label: string,
-    opts: { integer?: boolean; suffix?: string } = {},
+    opts: {
+      integer?: boolean;
+      suffix?: string;
+      sx?: Record<string, unknown>;
+    } = {},
   ) => {
     const path = `${FIELD}.${key}`;
     const error = getIn(touched, path) && getIn(errors, path);
@@ -108,7 +112,7 @@ const PresentationSection = ({ formik }: { formik: FormikProps<Product> }) => {
             </Typography>
           ) : undefined,
         }}
-        sx={{ maxWidth: { xs: "100%", md: 238 }, ...inputOnGrey }}
+        sx={{ maxWidth: { xs: "100%", md: 238 }, ...inputOnGrey, ...opts.sx }}
       />
     );
   };
@@ -298,11 +302,14 @@ const PresentationSection = ({ formik }: { formik: FormikProps<Product> }) => {
             // Figma (6689-15640) solo muestra un valor exacto con stepper: no hay
             // rango, así que `maxPeople` queda sin usar (null al enviar).
             <Box
+              data-testid="yield-row"
               sx={{
                 display: "flex",
                 gap: 1,
                 alignItems: "center",
-                flexWrap: "wrap",
+                // Sin wrap: en mobile "persona/personas" debe quedar en la
+                // misma línea que el stepper (el campo se encoge si hace falta).
+                flexWrap: "nowrap",
                 mt: 1,
               }}
             >
@@ -319,7 +326,14 @@ const PresentationSection = ({ formik }: { formik: FormikProps<Product> }) => {
               >
                 <RemoveCircleOutlineIcon />
               </IconButton>
-              {numberField("minPeople", "Personas", { integer: true })}
+              {numberField("minPeople", "Personas", {
+                integer: true,
+                sx: {
+                  flex: { xs: "1 1 0", md: "0 1 auto" },
+                  minWidth: { xs: 64, md: 0 },
+                  maxWidth: { xs: 96, md: 238 },
+                },
+              })}
               <IconButton
                 color="primary"
                 aria-label="Más personas"
@@ -334,7 +348,7 @@ const PresentationSection = ({ formik }: { formik: FormikProps<Product> }) => {
               >
                 <AddCircleOutlineIcon />
               </IconButton>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ flexShrink: 0 }}>
                 {Number(form.minPeople) === 1 ? "persona" : "personas"}
               </Typography>
             </Box>

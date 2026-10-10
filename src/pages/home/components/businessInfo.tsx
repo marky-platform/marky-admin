@@ -1,11 +1,17 @@
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  ButtonBase,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 import { HomePageData } from "../../../services/businessService";
 import BusinessAvatar from "./BusinessAvatar";
 import BusinessProfilePanel from "../../../components/BusinessProfilePanel";
 import ProfileActionsRow from "./ProfileActionsRow";
 import { LocationEntryValue } from "./LocationsModal";
-import { PhotoCamera } from "@mui/icons-material";
+import { EditOutlined, PhotoCamera } from "@mui/icons-material";
 
 export const BusinessInfo: React.FC<{
   values: any;
@@ -27,6 +33,9 @@ export const BusinessInfo: React.FC<{
   onOpenPhotoPicker,
   onSettings = () => {},
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   // Get business name - use API data if available, otherwise placeholder
   const businessName =
     homePageData?.business_name || values.business_name || "nombre_del_negocio";
@@ -58,6 +67,31 @@ export const BusinessInfo: React.FC<{
       onOpenDescription={openDescriptionModal}
       onOpenAttributes={openAttributesModal}
       onEmptySocialMedia={onOpenEditProfile}
+      titleActionSlot={
+        // Solo mobile: en desktop la acción vive en ProfileActionsRow.
+        isMobile ? (
+          <ButtonBase
+            aria-label="Editar perfil"
+            onClick={onOpenEditProfile}
+            sx={{
+              position: "relative",
+              bgcolor: "#EDEDED",
+              borderRadius: "56px",
+              px: 2,
+              py: 0.5,
+              // El pill visible es chico (16px de ícono); el área táctil real
+              // se amplía sin cambiar el layout.
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                inset: "-12px -8px",
+              },
+            }}
+          >
+            <EditOutlined sx={{ fontSize: 16 }} />
+          </ButtonBase>
+        ) : undefined
+      }
       avatarSlot={
         <Box
           onClick={onOpenPhotoPicker}

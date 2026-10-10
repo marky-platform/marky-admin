@@ -45,6 +45,27 @@ jest.mock("../../../services/businessService", () => ({
   getHomePageData: jest.fn(),
 }));
 
+// The real modal pulls in the category hooks/forms; these tests only care
+// that Home opens it directly on the create screen.
+jest.mock("./CategoryAdminModal", () => ({
+  __esModule: true,
+  default: ({ open, initialScreen, onCategoryCreated, onClose }: any) =>
+    open ? (
+      <div>
+        <div>category-modal-{initialScreen ?? "main"}</div>
+        <button
+          onClick={() => {
+            // El modal real entrega `label` en runtime (ver ProductFormPage).
+            onCategoryCreated?.({ id: 9, label: "Postres QA", icon: "x" });
+            onClose?.(false);
+          }}
+        >
+          simular-categoria-creada
+        </button>
+      </div>
+    ) : null,
+}));
+
 const mockedGetCategories = getProductCategoriesWithProducts as jest.Mock;
 const mockedDeleteProduct = deleteProduct as jest.Mock;
 const mockedGetHomePageData = getHomePageData as jest.Mock;
@@ -213,5 +234,91 @@ describe("ProductGrid category-expiry notification deep link", () => {
     fireEvent.click(screen.getByText("trigger-in-place-deep-link"));
 
     expect(await screen.findByText("Promoción")).toBeInTheDocument();
+  });
+});
+
+describe("ProductGrid no-products empty state", () => {
+  beforeEach(() => {
+    mockedGetHomePageData.mockResolvedValue({ business_name: "Test Biz" });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("shows the onboarding empty state for categories with zero products, without the action bar", async () => {
+    mockedGetCategories.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      products_count: 0,
+      results: [{ ...category, products: [] }],
+    });
+    renderProductGrid();
+
+    expect(
+      await screen.findByRole("button", { name: "Agregar mi primer producto" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Crear una categoría" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Administrar Categorías")).not.toBeInTheDocument();
+    expect(screen.queryByText("Agregar Producto")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("Buscar por nombre del producto"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens the category modal directly on the create screen from 'Crear una categoría'", async () => {
+    mockedGetCategories.mockResolvedValue({
+      count: 0,
+      next: null,
+      previous: null,
+      products_count: 0,
+      results: [],
+    });
+    renderProductGrid();
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Crear una categoría" }),
+    );
+    expect(screen.getByText("category-modal-createEdit")).toBeInTheDocument();
+  });
+
+  it("confirms the created category in the empty state, since it has no products yet", async () => {
+    mockedGetCategories.mockResolvedValue({
+      count: 0,
+      next: null,
+      previous: null,
+      products_count: 0,
+      results: [],
+    });
+    renderProductGrid();
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Crear una categoría" }),
+    );
+    fireEvent.click(screen.getByText("simular-categoria-creada"));
+
+    expect(
+      await screen.findByText(/Categoría «Postres QA» creada/),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the normal catalog once at least one product exists", async () => {
+    mockedGetCategories.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      products_count: 1,
+      results: [category],
+    });
+    renderProductGrid();
+
+    expect(await screen.findByText("Galleta de chocolate")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Agregar mi primer producto" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Administrar Categorías")).toBeInTheDocument();
   });
 });

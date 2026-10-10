@@ -168,11 +168,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const discountNumber = Number(product.discountPercent ?? 0);
   const showDiscount = !isNaN(discountNumber) && discountNumber > 0;
-  const discountLabel = showDiscount
-    ? discountNumber % 1 === 0
-      ? String(discountNumber)
-      : String(discountNumber)
-    : null;
+  const discountLabel = showDiscount ? String(discountNumber) : null;
   // Matches ProductDetailPricing's hasDiscount: also treat presence of
   // backend "with discount" labels as a discount signal, so the grid and
   // detail views stay consistent even if discountPercent reads as 0.

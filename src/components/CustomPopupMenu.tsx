@@ -6,6 +6,8 @@ interface CustomPopupMenuItem {
   icon: OverridableComponent<SvgIconTypeMap<{}, "svg"> | any>;
   text: string;
   onClick: () => void;
+  /** Acción destructiva (p. ej. "Reportar"): se muestra en rojo. */
+  destructive?: boolean;
 }
 
 interface CustomPopupMenuProps {
@@ -13,6 +15,11 @@ interface CustomPopupMenuProps {
   open: boolean;
   onClose: () => void;
   menuItems: CustomPopupMenuItem[];
+  /** `above-start` (default) abre hacia arriba del disparador; `below-end` abre
+   * debajo y alineado a su borde derecho (disparadores en una barra superior). */
+  placement?: "above-start" | "below-end";
+  /** id del menú, para `aria-controls` del disparador. */
+  id?: string;
 }
 
 const CustomPopupMenu: React.FC<CustomPopupMenuProps> = ({
@@ -20,20 +27,26 @@ const CustomPopupMenu: React.FC<CustomPopupMenuProps> = ({
   open,
   onClose,
   menuItems,
+  placement = "above-start",
+  id,
 }) => {
+  const isBelowEnd = placement === "below-end";
   return (
     <Menu
+      id={id}
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      transformOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
-      }}
+      anchorOrigin={
+        isBelowEnd
+          ? { vertical: "bottom", horizontal: "right" }
+          : { vertical: "top", horizontal: "left" }
+      }
+      transformOrigin={
+        isBelowEnd
+          ? { vertical: "top", horizontal: "right" }
+          : { vertical: "bottom", horizontal: "center" }
+      }
       // PaperProps={{
       //   sx: {
       //     "& .MuiMenuItem-root": {
@@ -44,7 +57,7 @@ const CustomPopupMenu: React.FC<CustomPopupMenuProps> = ({
       // }}
       PaperProps={{
         sx: {
-          marginTop: 2,
+          marginTop: isBelowEnd ? 1 : 2,
           backgroundColor: "white", // light custom background
           p: 2, // inner padding
           maxWidth: 220, // optional, for spacing
@@ -77,6 +90,7 @@ const CustomPopupMenu: React.FC<CustomPopupMenuProps> = ({
             p: 3,
             display: "flex",
             gap: 4,
+            ...(item.destructive && { color: "error.main" }),
           }}
         >
           <item.icon fontSize="small" />

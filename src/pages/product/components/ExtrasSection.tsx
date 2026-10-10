@@ -88,7 +88,10 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                     p: 3,
                     mb: 2,
                     display: "flex",
-                    alignItems: "center",
+                    // Mobile: nombre y precio en filas separadas, con el
+                    // eliminar arriba a la derecha (sin superponerse).
+                    flexDirection: { xs: "column", md: "row" },
+                    alignItems: { xs: "stretch", md: "center" },
                     gap: 3,
                     backgroundColor: "grey.50",
                   }}
@@ -96,7 +99,8 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                   <Box
                     sx={{
                       display: "flex",
-                      alignItems: "center",
+                      flexDirection: { xs: "column", md: "row" },
+                      alignItems: { xs: "stretch", md: "center" },
                       flex: 1,
                       gap: 2,
                     }}
@@ -131,6 +135,7 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                       required
                       fullWidth
                       margin="normal"
+                      sx={{ width: { xs: "60%", md: "100%" }, minWidth: { xs: 160, md: 0 } }}
                       InputProps={{
                         sx: {
                           backgroundColor: "white",
@@ -143,7 +148,12 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                       }}
                     />
                   </Box>
-                  <Box>
+                  <Box
+                    sx={{
+                      order: { xs: -1, md: 0 },
+                      alignSelf: { xs: "flex-end", md: "auto" },
+                    }}
+                  >
                     <IconButton
                       onClick={() => {
                         // Persisted rows (real DB id) are soft-deleted so the

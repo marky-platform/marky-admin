@@ -125,23 +125,32 @@ export const buildProductPromotionFields = (
     return buildPromotionClearPayload();
   }
 
+  const discount =
+    values.discountPercentage && !isNaN(Number(values.discountPercentage))
+      ? Number(values.discountPercentage)
+      : 0;
+  // coerce multibuy_option to a plain string (pick first if array)
+  const multibuy =
+    Array.isArray(values.multibuyOption) && values.multibuyOption.length > 0
+      ? String(values.multibuyOption[0])
+      : values.multibuyOption
+        ? String(values.multibuyOption)
+        : "";
+
+  // A row carries ONE promotion type. The selected type is authoritative:
+  // a stale value left over in the hidden branch must never be serialized,
+  // or the backend would persist (and the card render) both badges.
+  const isOffer =
+    values.promotionOption === "oferta" ||
+    (values.promotionOption !== "descuento" && !!multibuy);
+
   return {
     promotion_starts_at:
       toIsoDateTime(values.promotionStartDate, values.promotionStartTime) ??
       "",
     promotion_ends_at:
       toIsoDateTime(values.promotionEndDate, values.promotionEndTime) ?? "",
-    // coerce discount safely
-    discount_percentage:
-      values.discountPercentage && !isNaN(Number(values.discountPercentage))
-        ? Number(values.discountPercentage)
-        : 0,
-    // coerce multibuy_option to a plain string (pick first if array)
-    multibuy_option:
-      Array.isArray(values.multibuyOption) && values.multibuyOption.length > 0
-        ? String(values.multibuyOption[0])
-        : values.multibuyOption
-          ? String(values.multibuyOption)
-          : "",
+    discount_percentage: isOffer ? 0 : discount,
+    multibuy_option: isOffer ? multibuy : "",
   };
 };

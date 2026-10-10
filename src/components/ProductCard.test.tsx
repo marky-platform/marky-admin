@@ -316,6 +316,24 @@ describe("ProductCard promotion/discount/multibuy badges over the image", () => 
     expect(screen.getByTestId("product-badge")).toBeInTheDocument();
   });
 
+  it("renders exactly one promotion badge for a discount-only effective payload", () => {
+    renderProductCard({
+      product: { ...product, discountPercent: 30, multibuyOption: null },
+    });
+
+    expect(screen.getAllByTestId("product-badge")).toHaveLength(1);
+    expect(screen.getByText("-30%")).toBeInTheDocument();
+  });
+
+  it("renders exactly one promotion badge for a multibuy-only effective payload", () => {
+    renderProductCard({
+      product: { ...product, discountPercent: 0, multibuyOption: "3x2" },
+    });
+
+    expect(screen.getAllByTestId("product-badge")).toHaveLength(1);
+    expect(screen.getByText("3x2")).toBeInTheDocument();
+  });
+
   it("renders the badge container anchored to the image's top-left corner", () => {
     renderProductCard({ product: { ...product, discountPercent: 15 } });
 

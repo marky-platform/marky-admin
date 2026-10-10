@@ -5,9 +5,17 @@ import EmptyProductsImage from "../../../assets/images/producto_sin_imagenes.png
 
 interface EmptyProductsProps {
   businessName?: string;
+  /** Abre la creación de categoría; sin él no se muestra la acción secundaria. */
+  onCreateCategory?: () => void;
+  /** Confirmación breve (p. ej. categoría recién creada, que aún no tiene productos). */
+  notice?: string;
 }
 
-const EmptyProducts: React.FC<EmptyProductsProps> = ({ businessName }) => {
+const EmptyProducts: React.FC<EmptyProductsProps> = ({
+  businessName,
+  onCreateCategory,
+  notice,
+}) => {
   const navigate = useNavigate();
 
   return (
@@ -40,14 +48,40 @@ const EmptyProducts: React.FC<EmptyProductsProps> = ({ businessName }) => {
           gastronómica.
         </Typography>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate(ROUTES.PRODUCT_CREATE)}
-        sx={{ paddingX: 4, boxShadow: 0 }}
+      {notice && (
+        <Typography
+          role="status"
+          sx={{ fontSize: 14, fontWeight: 500, color: "success.main" }}
+        >
+          {notice}
+        </Typography>
+      )}
+      <Box
+        display="flex"
+        gap={3}
+        sx={{
+          flexDirection: { xs: "column", md: "row" },
+          width: { xs: "100%", md: "auto" },
+        }}
       >
-        Agregar mi primer producto
-      </Button>
+        {onCreateCategory && (
+          <Button
+            variant="grey1"
+            onClick={onCreateCategory}
+            sx={{ paddingX: 4, boxShadow: 0, color: "#4B4B4B" }}
+          >
+            Crear una categoría
+          </Button>
+        )}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(ROUTES.PRODUCT_CREATE)}
+          sx={{ paddingX: 4, boxShadow: 0 }}
+        >
+          Agregar mi primer producto
+        </Button>
+      </Box>
     </Box>
   );
 };

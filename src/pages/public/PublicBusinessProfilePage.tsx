@@ -7,6 +7,7 @@ import usePublicBusinessProfile from "../../hooks/usePublicBusinessProfile";
 import usePublicCategories from "../../hooks/usePublicCategories";
 import { mapSocialLinksToChannels } from "../../mappers/channelMapper";
 import PublicProductGrid from "./components/PublicProductGrid";
+import PublicMobileTopBar from "./components/PublicMobileTopBar";
 import PublicNotFound from "./components/PublicNotFound";
 
 // Public, unauthenticated business profile — marky.one/<businessId>. Mirrors
@@ -52,6 +53,7 @@ const PublicBusinessProfilePage: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <PublicMobileTopBar businessPhoto={profile.profile_image} />
       <Box
         sx={{
           flex: 1,
