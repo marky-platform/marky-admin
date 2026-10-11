@@ -42,12 +42,22 @@ describe("color mode controller", () => {
     mockSystemScheme("light");
   });
 
-  it("starts in light when nothing is stored", () => {
+  it("follows the OS (light) when nothing is stored", () => {
     renderWithTheme();
 
-    expect(controller.mode).toBe("light");
+    expect(controller.mode).toBe("system");
     expect(controller.resolvedMode).toBe("light");
     expect(getActiveColorScheme()).toBe("light");
+  });
+
+  it("follows the OS (dark) when nothing is stored", () => {
+    mockSystemScheme("dark");
+
+    renderWithTheme();
+
+    expect(controller.mode).toBe("system");
+    expect(controller.resolvedMode).toBe("dark");
+    expect(getActiveColorScheme()).toBe("dark");
   });
 
   it("toggles between light and dark and persists the choice", () => {

@@ -9,11 +9,10 @@ export const COLOR_SCHEMES = ["light", "dark"] as const;
 export type ColorSchemeName = (typeof COLOR_SCHEMES)[number];
 
 /**
- * Mode used when nothing is stored. Kept at "light" while dark mode is being
- * migrated (a dark OS would otherwise get a half-themed UI by default). Flip
- * to "system" in the final phase so first-time visitors follow the OS.
+ * Mode used when nothing is stored: first-time visitors follow the OS
+ * (prefers-color-scheme). Once the user toggles, their choice is persisted.
  */
-export const DEFAULT_COLOR_MODE: "light" | "dark" | "system" = "light";
+export const DEFAULT_COLOR_MODE: "light" | "dark" | "system" = "system";
 
 /** localStorage key shared by admin and public pages (one preference). */
 export const COLOR_MODE_STORAGE_KEY = "marky-color-mode";
