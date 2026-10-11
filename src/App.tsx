@@ -25,7 +25,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <CustomThemeProvider>
           <LoadingProvider>
-            <CssBaseline />
+            <CssBaseline enableColorScheme />
             <BrowserRouter>
               <Routes>
                 {/* Loop over public routes */}

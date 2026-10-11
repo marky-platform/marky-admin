@@ -1,62 +1,64 @@
-import colors from "./colors";
+import type { Palette, TypographyVariantsOptions } from "@mui/material/styles";
 
-const typography = {
+// Text colors are read from the active scheme's palette. The light values are
+// identical to the previous hardcoded `colors.light.text.*`.
+const typography = (palette: Palette): TypographyVariantsOptions => ({
   fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   h1: {
     fontSize: "34px",
     lineHeight: "34px",
     letterSpacing: "-0.1px",
     fontWeight: 700,
-    color: colors.light.text.primary,
+    color: palette.text.primary,
   },
   h2: {
     fontSize: "24px",
     lineHeight: "34px",
     letterSpacing: "-0.1px",
     fontWeight: 500,
-    color: colors.light.text.primary,
+    color: palette.text.primary,
   },
   h3: {
     fontSize: "18px",
     lineHeight: "23px",
     letterSpacing: "-0.1px",
     fontWeight: 400,
-    color: colors.light.text.primary,
+    color: palette.text.primary,
   },
   h4: {
     fontSize: "16px",
     lineHeight: "23px",
     letterSpacing: "-0.1px",
     fontWeight: 400,
-    color: colors.light.text.primary,
+    color: palette.text.primary,
   },
   h5: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "-0.1px",
     fontWeight: 500,
-    color: colors.light.text.primary,
+    color: palette.text.primary,
   },
   subtitle2: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "0.1px",
     fontWeight: 700,
-    color: colors.light.text.secondary,
+    color: palette.text.secondary,
   },
   body1: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "0.1px",
     fontWeight: 300,
-    color: colors.light.text.primary,
+    color: palette.text.primary,
   },
   body2: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "0.1px",
     fontWeight: 400,
-    color: colors.light.text.primary,
+    color: palette.text.primary,
   },
   link: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -75,6 +77,6 @@ const typography = {
   button: {
     fontSize: "15px",
   },
-};
+});
 
 export default typography;

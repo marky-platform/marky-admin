@@ -1,18 +1,20 @@
-import colors from "./colors";
+import type { Components, Theme } from "@mui/material/styles";
 
-const components = {
+// Overrides read colors from the active scheme's palette (`theme.palette`),
+// so the same definitions serve every color scheme.
+const components: Components<Theme> = {
   MuiButton: {
     variants: [
       {
         props: { variant: "grey1" },
-        style: {
-          backgroundColor: "#EDEDED",
-          color: "#4B4B4B",
+        style: ({ theme }) => ({
+          backgroundColor: theme.palette.grey[400],
+          color: theme.palette.text.title,
           boxShadow: "none",
           "&:hover": {
-            backgroundColor: "#dcdcdc",
+            backgroundColor: theme.palette.surface.pressed,
           },
-        },
+        }),
       },
     ],
     styleOverrides: {
@@ -23,30 +25,37 @@ const components = {
         borderRadius: "6px",
         opacity: 1,
       },
+      containedPrimary: ({ theme }) => ({
+        backgroundColor: theme.palette.accent.button,
+        color: theme.palette.accent.onButton,
+        "&:hover": {
+          backgroundColor: theme.palette.primary.dark,
+        },
+      }),
     },
   },
   MuiFormLabel: {
     styleOverrides: {
-      root: {
-        color: colors.light.text.primary,
+      root: ({ theme }) => ({
+        color: theme.palette.text.primary,
         "&.MuiFormLabel-root": {
-          color: colors.light.text.primary,
+          color: theme.palette.text.primary,
         },
         fontSize: "14px",
         lineHeight: "22px",
         letterSpacing: "-0.1px",
         fontWeight: 500,
-      },
+      }),
     },
   },
   MuiCheckbox: {
     styleOverrides: {
-      root: {
-        color: colors.light.grey[800],
+      root: ({ theme }) => ({
+        color: theme.palette.grey[800],
         "&.Mui-checked": {
-          color: colors.light.primary,
+          color: theme.palette.primary.main,
         },
-      },
+      }),
     },
   },
   MuiInputBase: {
@@ -59,20 +68,20 @@ const components = {
     },
   },
   MuiCssBaseline: {
-    styleOverrides: {
+    styleOverrides: (theme) => ({
       // For Chrome, Safari, Edge, Opera
       "*::-webkit-scrollbar": {
         width: "6px",
       },
       "*::-webkit-scrollbar-track": {
-        background: "#f1f1f1",
+        background: theme.palette.scrollbar.track,
         borderRadius: "4px",
       },
       "*::-webkit-scrollbar-thumb": {
-        backgroundColor: "#c1c1c1",
+        backgroundColor: theme.palette.scrollbar.thumb,
         borderRadius: "4px",
       },
-    },
+    }),
   },
 };
 

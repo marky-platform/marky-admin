@@ -1,34 +1,79 @@
 // ThemeContext.tsx
-import React, { createContext, useContext, useState } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import lightTheme from "./light";
-import darkTheme from "./dark";
+import React, { createContext, useCallback, useContext, useMemo } from "react";
+import { ThemeProvider, useColorScheme } from "@mui/material/styles";
+import theme, { COLOR_MODE_STORAGE_KEY, DEFAULT_COLOR_MODE } from "./theme";
+import type { ColorSchemeName } from "./theme";
 
-// Create the context
-const ThemeContext = createContext({
-  toggleTheme: () => {},
+export type ColorMode = "light" | "dark" | "system";
+
+interface ColorModeContextValue {
+  /** Stored preference (`system` follows prefers-color-scheme). */
+  mode: ColorMode;
+  /** Scheme actually applied right now. */
+  resolvedMode: ColorSchemeName;
+  setMode: (mode: ColorMode) => void;
+  /** Switches between light and dark (leaves `system`). */
+  toggleMode: () => void;
+  /** @deprecated use `toggleMode`. */
+  toggleTheme: () => void;
+}
+
+const noop = () => {};
+
+const ColorModeContext = createContext<ColorModeContextValue>({
+  mode: "light",
+  resolvedMode: "light",
+  setMode: noop,
+  toggleMode: noop,
+  toggleTheme: noop,
 });
 
-// Custom hook to use the theme context
-export const useTheme = () => useContext(ThemeContext);
+// Custom hook to use the color mode controller
+export const useTheme = () => useContext(ColorModeContext);
 
-// ThemeProvider component
-export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+const ColorModeBridge: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [theme, setTheme] = useState(lightTheme);
+  const { mode, systemMode, setMode } = useColorScheme();
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) =>
-      prevTheme.palette.mode === "light" ? darkTheme : lightTheme
-    );
-  };
+  const currentMode: ColorMode = mode ?? "system";
+  const resolvedMode: ColorSchemeName =
+    (currentMode === "system" ? systemMode : currentMode) === "dark"
+      ? "dark"
+      : "light";
+
+  const toggleMode = useCallback(() => {
+    setMode(resolvedMode === "dark" ? "light" : "dark");
+  }, [resolvedMode, setMode]);
+
+  const value = useMemo<ColorModeContextValue>(
+    () => ({
+      mode: currentMode,
+      resolvedMode,
+      setMode,
+      toggleMode,
+      toggleTheme: toggleMode,
+    }),
+    [currentMode, resolvedMode, setMode, toggleMode]
+  );
 
   return (
-    <ThemeProvider theme={theme}>
-      <ThemeContext.Provider value={{ toggleTheme }}>
-        {children}
-      </ThemeContext.Provider>
-    </ThemeProvider>
+    <ColorModeContext.Provider value={value}>
+      {children}
+    </ColorModeContext.Provider>
   );
 };
+
+// ThemeProvider component: one theme, many color schemes. The preference is
+// persisted and shared by admin and public pages.
+export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <ThemeProvider
+    theme={theme}
+    defaultMode={DEFAULT_COLOR_MODE}
+    modeStorageKey={COLOR_MODE_STORAGE_KEY}
+  >
+    <ColorModeBridge>{children}</ColorModeBridge>
+  </ThemeProvider>
+);

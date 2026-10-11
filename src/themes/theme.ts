@@ -1,0 +1,55 @@
+import { createTheme } from "@mui/material/styles";
+import colors, { fixedColors } from "./utils/colors";
+import type { SchemeColors } from "./utils/colors";
+import typography from "./utils/typography";
+import components from "./utils/components";
+
+/** Names of the registered color schemes. Add new palette themes here. */
+export const COLOR_SCHEMES = ["light", "dark"] as const;
+export type ColorSchemeName = (typeof COLOR_SCHEMES)[number];
+
+/**
+ * Mode used when nothing is stored. Kept at "light" while dark mode is being
+ * migrated (a dark OS would otherwise get a half-themed UI by default). Flip
+ * to "system" in the final phase so first-time visitors follow the OS.
+ */
+export const DEFAULT_COLOR_MODE: "light" | "dark" | "system" = "light";
+
+/** localStorage key shared by admin and public pages (one preference). */
+export const COLOR_MODE_STORAGE_KEY = "marky-color-mode";
+
+const toPalette = (scheme: SchemeColors) => ({
+  primary: scheme.primary,
+  secondary: scheme.secondary,
+  error: scheme.error,
+  success: scheme.success,
+  text: scheme.text,
+  grey: scheme.grey,
+  background: scheme.background,
+  surface: scheme.surface,
+  border: scheme.border,
+  accent: scheme.accent,
+  scrollbar: scheme.scrollbar,
+  shadow: scheme.shadow,
+  fixed: fixedColors,
+});
+
+const schemes: Record<ColorSchemeName, SchemeColors> = {
+  light: colors.light,
+  dark: colors.dark,
+};
+
+// `colorSchemes` without `cssVariables` on purpose: `theme.palette` then
+// follows the active scheme (existing `theme.palette.*` reads keep working)
+// and the emitted light CSS stays byte-identical (e.g. spacing in px).
+const theme = createTheme({
+  colorSchemes: {
+    light: { palette: toPalette(schemes.light) },
+    dark: { palette: toPalette(schemes.dark) },
+  },
+  spacing: 4,
+  typography,
+  components,
+});
+
+export default theme;

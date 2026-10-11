@@ -18,13 +18,14 @@ import {
 import { useTheme } from "@mui/material/styles";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logoMarky from "../assets/images/marky-logo.svg";
 import defaultUserAvatar from "../assets/images/user_default.png";
 import { ROUTES } from "../routes/paths";
 import { useSessionStore } from "../stores/sessionStore";
 import { HEADER_HEIGHT } from "../constants/layout";
 import BusinessAvatar from "../pages/home/components/BusinessAvatar";
 import NotificationsMenu from "./NotificationsMenu";
+import ThemeModeToggle from "./ThemeModeToggle";
+import { useThemeAssets } from "../themes/useThemeAssets";
 
 interface HeaderProps {
   /** Opt-in (solo Home admin, mobile): foto del negocio en el avatar de la
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
+  const { logo: logoMarky } = useThemeAssets();
   const navigate = useNavigate();
   const { user } = useSessionStore();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -149,6 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
             </ListItemIcon>
             <ListItemText>Mi cuenta</ListItemText>
           </MenuItem>
+          <ThemeModeToggle variant="menuItem" onToggle={handleClose} />
           <MenuItem
             sx={{ p: 4 }}
             onClick={() => {
