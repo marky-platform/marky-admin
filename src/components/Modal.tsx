@@ -135,7 +135,7 @@ const CustomModalContent: React.FC<CustomModalProps> = ({
             sx={
               isFullScreen
                 ? {
-                    borderTop: "1px solid lightgray",
+                    borderTop: `1px solid ${theme.palette.border.modal}`,
                     display: "flex",
                     paddingX: theme.spacing(5.25),
                     paddingY: theme.spacing(2.75),
@@ -145,7 +145,7 @@ const CustomModalContent: React.FC<CustomModalProps> = ({
                     mt: "auto",
                   }
                 : {
-                    borderTop: "1px solid lightgray",
+                    borderTop: `1px solid ${theme.palette.border.modal}`,
                     display: "flex",
                     p: 4,
                     justifyContent: "flex-end",
