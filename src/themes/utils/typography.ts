@@ -1,62 +1,57 @@
-import colors from "./colors";
+import type { TypographyVariantsOptions } from "@mui/material/styles";
 
-const typography = {
+// Variant colors are NOT set here: `theme.typography` is built once and would
+// freeze the light palette. They live in `MuiTypography.styleOverrides`
+// (components.ts), which reads the active scheme's palette.
+const typography: TypographyVariantsOptions = {
   fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   h1: {
     fontSize: "34px",
     lineHeight: "34px",
     letterSpacing: "-0.1px",
     fontWeight: 700,
-    color: colors.light.text.primary,
   },
   h2: {
     fontSize: "24px",
     lineHeight: "34px",
     letterSpacing: "-0.1px",
     fontWeight: 500,
-    color: colors.light.text.primary,
   },
   h3: {
     fontSize: "18px",
     lineHeight: "23px",
     letterSpacing: "-0.1px",
     fontWeight: 400,
-    color: colors.light.text.primary,
   },
   h4: {
     fontSize: "16px",
     lineHeight: "23px",
     letterSpacing: "-0.1px",
     fontWeight: 400,
-    color: colors.light.text.primary,
   },
   h5: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "-0.1px",
     fontWeight: 500,
-    color: colors.light.text.primary,
   },
   subtitle2: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "0.1px",
     fontWeight: 700,
-    color: colors.light.text.secondary,
   },
   body1: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "0.1px",
     fontWeight: 300,
-    color: colors.light.text.primary,
   },
   body2: {
     fontSize: "14px",
     lineHeight: "22px",
     letterSpacing: "0.1px",
     fontWeight: 400,
-    color: colors.light.text.primary,
   },
   link: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',

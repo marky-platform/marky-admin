@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Dialog, Typography, ButtonBase } from "@mui/material";
 import XButton from "../../../components/XButton";
-import colors from "../../../themes/utils/colors";
+import InsetSurface from "../../../themes/InsetSurface";
 
 export interface EntryListPopupItem {
   id: string | number;
@@ -41,6 +41,7 @@ const EntryListPopup: React.FC<EntryListPopupProps> = ({
         },
       }}
     >
+      <InsetSurface>
       <Box sx={{ position: "absolute", top: 12, right: 12 }}>
         <XButton onClick={onClose} />
       </Box>
@@ -51,7 +52,7 @@ const EntryListPopup: React.FC<EntryListPopupProps> = ({
               width: 56,
               height: 56,
               borderRadius: "50%",
-              backgroundColor: colors.light.secondary.main,
+              backgroundColor: "secondary.main",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -60,10 +61,10 @@ const EntryListPopup: React.FC<EntryListPopupProps> = ({
             {icon}
           </Box>
           <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
-            <Typography sx={{ fontWeight: 700, fontSize: 16, color: "#292929" }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 16, color: "text.heading" }}>
               {businessName}
             </Typography>
-            <Typography sx={{ fontSize: 14, color: colors.light.grey[900] }}>
+            <Typography sx={{ fontSize: 14, color: "grey.900" }}>
               {subtitle}
             </Typography>
           </Box>
@@ -80,9 +81,9 @@ const EntryListPopup: React.FC<EntryListPopupProps> = ({
                 width: "100%",
                 py: 3,
                 px: 3,
-                border: `1px solid ${colors.light.grey[800]}`,
+                border: (theme) => `1px solid ${theme.palette.grey[800]}`,
                 borderRadius: "9999px",
-                backgroundColor: colors.light.grey[100],
+                backgroundColor: "grey.100",
               }}
             >
               <Typography
@@ -94,6 +95,7 @@ const EntryListPopup: React.FC<EntryListPopupProps> = ({
           ))}
         </Box>
       </Box>
+      </InsetSurface>
     </Dialog>
   );
 };

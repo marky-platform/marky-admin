@@ -116,7 +116,7 @@ const CategorySelectionList: React.FC<CategorySelectionListProps> = ({
                     justifyContent: "center",
                   }}
                 >
-                  <CheckIcon sx={{ color: "white", fontSize: 14 }} />
+                  <CheckIcon sx={{ color: "fixed.white", fontSize: 14 }} />
                 </Box>
               )}
             </Box>

@@ -32,10 +32,9 @@ export const VideoThumbnail = ({
         // Dark fallback so the (white) play icon stays visible before the
         // video element has decoded a first frame to show, instead of
         // rendering white-on-white and looking blank. This app's `grey.900`
-        // token (#9E9EA6) is too light for that purpose, so use a literal
-        // dark grey (matches other one-off dark greys already used
-        // elsewhere in this codebase, e.g. "#4B4B4B").
-        backgroundColor: "#4B4B4B",
+        // token (#9E9EA6) is too light for that purpose, so use the fixed
+        // dark fallback (#4B4B4B in every color scheme).
+        backgroundColor: "fixed.mediaFallback",
       }}
     >
       <video
@@ -51,7 +50,7 @@ export const VideoThumbnail = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          color: "white",
+          color: "fixed.white",
           fontSize: "1.5rem",
         }}
       />

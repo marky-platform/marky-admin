@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Dialog, DialogContent } from "@mui/material";
 import XButton from "./XButton";
+import InsetSurface from "../themes/InsetSurface";
 import { Formik, Form, useFormikContext } from "formik";
 import * as Yup from "yup";
 import {
@@ -177,7 +178,7 @@ const PromotionInitializer: React.FC<{
   return null;
 };
 
-const CategoryPromotionModal: React.FC<Props> = ({
+const CategoryPromotionModalContent: React.FC<Props> = ({
   open,
   category,
   onClose,
@@ -288,7 +289,7 @@ const CategoryPromotionModal: React.FC<Props> = ({
             display: "flex",
             justifyContent: "space-between",
             width: "100%",
-            borderBottom: "1px solid lightgrey",
+            borderBottom: (theme) => `1px solid ${theme.palette.border.modal}`,
           }}
         >
           <Box display={"flex"} alignItems="center">
@@ -321,9 +322,9 @@ const CategoryPromotionModal: React.FC<Props> = ({
                       sx={{
                         mb: 2,
                         p: 1,
-                        border: "1px solid #eee",
+                        border: (theme) => `1px solid ${theme.palette.border.light}`,
                         borderRadius: 1,
-                        backgroundColor: "#fafafa",
+                        backgroundColor: "grey.50",
                       }}
                     >
                       <Box
@@ -333,9 +334,10 @@ const CategoryPromotionModal: React.FC<Props> = ({
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          backgroundColor: "white",
+                          backgroundColor: "surface.inset",
                           borderRadius: 1,
-                          boxShadow: "0 1px 0 rgba(0,0,0,0.02)",
+                          boxShadow: (theme) =>
+                            `0 1px 0 ${theme.palette.shadow.hairline}`,
                           mr: 2,
                         }}
                       >
@@ -569,5 +571,12 @@ const CategoryPromotionModal: React.FC<Props> = ({
     </Dialog>
   );
 };
+
+// Fields inside a modal read as inset in dark mode (see InsetSurface).
+const CategoryPromotionModal: React.FC<Props> = (props) => (
+  <InsetSurface>
+    <CategoryPromotionModalContent {...props} />
+  </InsetSurface>
+);
 
 export default CategoryPromotionModal;

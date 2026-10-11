@@ -24,10 +24,10 @@ export const Welcome: React.FC<WelcomeProps> = ({ setActiveScreen }) => {
         sx={{ width: 272, height: 272 }}
       />
       <Box display="flex" flexDirection="column" alignItems="center">
-        <Typography sx={{ fontSize: 16, fontWeight: 500, color: "#292929" }}>
+        <Typography sx={{ fontSize: 16, fontWeight: 500, color: "text.heading" }}>
           Crea tus categorías
         </Typography>
-        <Typography sx={{ fontSize: 14, color: "#828282" }}>
+        <Typography sx={{ fontSize: 14, color: "text.muted" }}>
           Organiza tus productos relacionados
         </Typography>
       </Box>

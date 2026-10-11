@@ -1,5 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { ThemeProvider } from "@mui/material/styles";
 import SortableList from "./SortableList";
+import lightTheme from "../themes/light";
 
 const items = [
   { id: 1, name: "Uno" },
@@ -12,12 +14,14 @@ const renderList = (
   > = {},
 ) =>
   render(
-    <SortableList
-      items={items}
-      renderItem={(item) => <span>{item.name}</span>}
-      onSave={jest.fn()}
-      {...props}
-    />,
+    <ThemeProvider theme={lightTheme}>
+      <SortableList
+        items={items}
+        renderItem={(item) => <span>{item.name}</span>}
+        onSave={jest.fn()}
+        {...props}
+      />
+    </ThemeProvider>,
   );
 
 describe("SortableList", () => {

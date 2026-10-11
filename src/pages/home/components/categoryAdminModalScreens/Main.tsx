@@ -53,7 +53,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       pl={1.5}
       pr={1}
       sx={{
-        boxShadow: "0px 1px 0px #E8E9EB",
+        boxShadow: (theme) => `0px 1px 0px ${theme.palette.border.layout}`,
         width: "100%",
       }}
     >
@@ -85,7 +85,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
           sx={{
             cursor: "pointer",
             fontSize: 12,
-            color: "#4F4F4F",
+            color: "text.body",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -161,7 +161,7 @@ export const Main: React.FC<MainProps> = ({
             flex: 3,
             "& .MuiOutlinedInput-root": {
               height: "100%",
-              "& fieldset": { borderColor: "#E0E0E0" },
+              "& fieldset": { borderColor: "border.field" },
             },
             "& .MuiInputBase-input::placeholder": {
               color: "grey.900",
@@ -175,7 +175,7 @@ export const Main: React.FC<MainProps> = ({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: "#333" }} />
+                <SearchIcon sx={{ color: "text.strong" }} />
               </InputAdornment>
             ),
           }}
@@ -200,7 +200,7 @@ export const Main: React.FC<MainProps> = ({
         justifyContent="space-between"
         mb={2}
       >
-        <Typography variant="subtitle2" sx={{ color: "#333" }}>
+        <Typography variant="subtitle2" sx={{ color: "text.strong" }}>
           Categorías creadas ({categories.length})
         </Typography>
         <Button
@@ -217,7 +217,7 @@ export const Main: React.FC<MainProps> = ({
           maxHeight: 300,
           overflowY: "auto",
           border: 1,
-          borderColor: "#E0E0E0",
+          borderColor: "border.field",
           borderRadius: 1.5,
           py: 0.25,
         }}

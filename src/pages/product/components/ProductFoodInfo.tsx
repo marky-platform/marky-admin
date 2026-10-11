@@ -1,7 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import allergensBadge from "../../../assets/icons/product-detail/allergens-badge.svg";
-import celiacBadge from "../../../assets/icons/product-detail/celiac-badge.svg";
+import { useThemeAssets } from "../../../themes/useThemeAssets";
 import { Product } from "../../../types/product";
 import {
   getAllergenLabels,
@@ -59,6 +58,7 @@ const FoodRow: React.FC<FoodRowProps> = ({
 // "Información alimentaria": alérgenos presentes + declaración SIN TACC.
 // Cada fila se oculta si no hay datos; sin ninguna, no se muestra la sección.
 const ProductFoodInfo: React.FC<{ product: Product }> = ({ product }) => {
+  const { allergensBadge, celiacBadge } = useThemeAssets();
   const allergens = getAllergenLabels(product.allergens);
   const celiacEnabled = Boolean(product.celiacInfo);
   const declarations = getCeliacDeclarations(product.celiacInfo);

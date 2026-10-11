@@ -1,3 +1,4 @@
+import { withInsetSurface } from "../../../themes/InsetSurface";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
@@ -23,7 +24,7 @@ interface AssignCategoryModalProps {
   onSelectCategory: (category: Category | null) => void;
 }
 
-export const AssignCategoryModal: React.FC<AssignCategoryModalProps> = ({
+const AssignCategoryModalContent: React.FC<AssignCategoryModalProps> = ({
   open,
   onClose,
   selectedCategory,
@@ -88,7 +89,7 @@ export const AssignCategoryModal: React.FC<AssignCategoryModalProps> = ({
           justifyContent: "space-between",
           alignItems: "center",
           p: 2,
-          borderBottom: "1px solid #e0e0e0",
+          borderBottom: (theme) => `1px solid ${theme.palette.border.field}`,
         }}
       >
         <DialogTitle sx={{ px: 2, py: 0 }}>Asignar categoría</DialogTitle>
@@ -126,7 +127,7 @@ export const AssignCategoryModal: React.FC<AssignCategoryModalProps> = ({
           justifyContent: "flex-end",
           gap: 2,
           p: 2,
-          borderTop: "1px solid #e0e0e0",
+          borderTop: (theme) => `1px solid ${theme.palette.border.field}`,
         }}
       >
         <Button onClick={onClose} variant="outlined" sx={{ px: 3 }}>
@@ -144,5 +145,9 @@ export const AssignCategoryModal: React.FC<AssignCategoryModalProps> = ({
     </Dialog>
   );
 };
+
+export const AssignCategoryModal = withInsetSurface(
+  AssignCategoryModalContent
+);
 
 export default AssignCategoryModal;

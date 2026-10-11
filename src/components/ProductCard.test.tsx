@@ -6,6 +6,7 @@ import lightTheme from "../themes/light";
 import ProductCard from "./ProductCard";
 import { ProductGridItem } from "../types/product";
 import { truncateText } from "../utils/format";
+import { cssFor } from "./cssTestUtils";
 
 // productService transitively imports axiosConfig -> axios, whose installed
 // version ships ESM-only and breaks CRA's default Jest transform. Mock it out,
@@ -396,5 +397,20 @@ describe("ProductCard 'No disponible' availability overlay", () => {
 
     expect(screen.getByText("-15%")).toBeInTheDocument();
     expect(screen.getAllByText("No disponible").length).toBeGreaterThan(0);
+  });
+
+  it("keeps promotion pills at their content width next to 'No disponible' (no stretching)", () => {
+    renderProductCard({
+      product: {
+        ...product,
+        is_available: false,
+        multibuyOption: "2x1",
+        discountPercent: 0,
+      },
+    });
+
+    expect(cssFor(screen.getByTestId("product-badge-container"))).toMatch(
+      /align-items: flex-start/,
+    );
   });
 });

@@ -257,8 +257,8 @@ const Register: React.FC = () => {
                   backgroundColor: theme.palette.primary.dark,
                 },
                 "&.Mui-disabled": {
-                  backgroundColor: "#E5E7EB",
-                  color: "#9CA3AF",
+                  backgroundColor: "surface.disabled",
+                  color: "text.placeholder",
                   boxShadow: "none",
                   cursor: "not-allowed",
                   pointerEvents: "auto",

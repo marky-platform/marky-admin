@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../themes/light";
 import CategoryGroup from "./CategoryGroup";
 import { CategoryWithProducts } from "../types/categoryWithProducts";
+import { cssForParent } from "./cssTestUtils";
 
 // productService transitively imports axiosConfig -> axios, whose installed
 // version ships ESM-only and breaks CRA's default Jest transform. Mock it out,
@@ -227,3 +228,26 @@ describe("CategoryGroup view mode", () => {
     expect(onProductClick).toHaveBeenCalledWith(category.products[0]);
   });
 });
+
+describe("CategoryGroup empty tile in list view", () => {
+  const empty = { ...category, products: [] };
+
+  it("is bounded to 70–108px on desktop in list mode", () => {
+    renderCategoryGroup({ category: empty, viewMode: "list" });
+    const css = cssForParent(screen.getByText("Añade tu producto"));
+    expect(css).toMatch(/min-width:\s*900px[^}]*\{[^}]*clamp\(70px, 7\.5vw, 108px\)/s);
+  });
+
+  it("keeps the grid tile unchanged", () => {
+    renderCategoryGroup({ category: empty, viewMode: "grid" });
+    expect(cssForParent(screen.getByText("Añade tu producto"))).not.toMatch(
+      /108px/,
+    );
+  });
+
+  it("stays hidden in read-only", () => {
+    renderCategoryGroup({ category: empty, viewMode: "list", readOnly: true });
+    expect(screen.queryByText("Añade tu producto")).not.toBeInTheDocument();
+  });
+});
+

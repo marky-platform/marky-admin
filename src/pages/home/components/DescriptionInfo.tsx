@@ -19,8 +19,9 @@ const DescriptionInfo: React.FC<DescriptionInfoProps> = ({
     <Box
       onClick={readOnly ? undefined : onOpen}
       sx={{
-        border: isEmpty ? "1px dashed #B8CDF5" : "none",
-        backgroundColor: isEmpty ? "#FAFCFF" : "transparent",
+        border: (theme) =>
+          isEmpty ? `1px dashed ${theme.palette.border.dashed}` : "none",
+        backgroundColor: isEmpty ? "surface.tintFaint" : "transparent",
         borderRadius: isEmpty ? "6px" : 0,
         py: isEmpty ? 4 : 0,
         px: isEmpty ? 3 : 0,
@@ -30,7 +31,7 @@ const DescriptionInfo: React.FC<DescriptionInfoProps> = ({
       {isEmpty ? (
         <Typography
           sx={{
-            color: "#2563EB",
+            color: "primary.main",
             fontWeight: 700,
             fontSize: 14,
             lineHeight: "22px",
@@ -45,7 +46,7 @@ const DescriptionInfo: React.FC<DescriptionInfoProps> = ({
             whiteSpace: "pre-line",
             wordBreak: "break-word",
             fontSize: 14,
-            color: "#374151",
+            color: "text.primary",
             lineHeight: "18px",
             fontWeight: 400,
           }}

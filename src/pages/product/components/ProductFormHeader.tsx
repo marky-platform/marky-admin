@@ -143,11 +143,11 @@ const ProductFormHeader: React.FC<ProductFormHeaderProps> = ({
           PaperProps={{
             sx: {
               marginTop: 2,
-              backgroundColor: "white",
+              backgroundColor: "surface.main",
               p: 2,
               width: 260,
               borderRadius: 3,
-              boxShadow: "1px 2px 3.5px rgba(194, 194, 194, 0.6)",
+              boxShadow: (theme) => `1px 2px 3.5px ${theme.palette.shadow.soft}`,
             },
           }}
         >

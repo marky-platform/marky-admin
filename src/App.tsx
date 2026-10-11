@@ -7,6 +7,7 @@ import PublicBusinessProfilePage from "./pages/public/PublicBusinessProfilePage"
 import PublicProductDetailPage from "./pages/public/PublicProductDetailPage";
 import { publicRoutes } from "./routes/publicRoutes";
 import { CustomThemeProvider } from "./themes/ThemeContext";
+import { useThemeAssets } from "./themes/useThemeAssets";
 import { protectedRoutes } from "./routes/protectedRoutes";
 import { useSessionStore } from "./stores/sessionStore";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -15,6 +16,12 @@ import { ROUTES } from "./routes/paths";
 import { CssBaseline } from "@mui/material";
 import { LoadingProvider } from "./contexts/LoadingContext";
 import AppErrorBoundary from "./components/AppErrorBoundary";
+
+// Container theme from the asset map (light keeps the library default).
+const ThemedToastContainer = () => {
+  const { toastContainerTheme } = useThemeAssets();
+  return <ToastContainer theme={toastContainerTheme} />;
+};
 
 const App = () => {
   const isAuthenticated = useSessionStore((state) => state.isAuthenticated());
@@ -25,7 +32,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <CustomThemeProvider>
           <LoadingProvider>
-            <CssBaseline />
+            <CssBaseline enableColorScheme />
             <BrowserRouter>
               <Routes>
                 {/* Loop over public routes */}
@@ -92,7 +99,7 @@ const App = () => {
                 />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-              <ToastContainer />
+              <ThemedToastContainer />
             </BrowserRouter>
           </LoadingProvider>
         </CustomThemeProvider>

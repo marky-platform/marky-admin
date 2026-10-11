@@ -117,7 +117,7 @@ function ProductActionsMenu<P extends ProductActionsMenuProduct>({
         PaperProps={{
           sx: {
             marginTop: 2,
-            backgroundColor: "white",
+            backgroundColor: "surface.main",
             p: 1.5, // inner padding
             maxWidth: 320, // optional, for spacing
           },

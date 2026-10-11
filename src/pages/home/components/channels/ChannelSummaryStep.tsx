@@ -79,7 +79,7 @@ const ChannelSummaryStep: React.FC<ChannelSummaryStepProps> = ({
                 pb: 4,
                 mb: 2,
                 borderBottom: "1px solid",
-                borderColor: "#ededed",
+                borderColor: "border.divider",
                 cursor: "pointer",
                 "&:hover": { backgroundColor: "grey.50" },
               }}
@@ -103,7 +103,7 @@ const ChannelSummaryStep: React.FC<ChannelSummaryStepProps> = ({
                       {iconBox}
                       <Typography
                         variant="body2"
-                        sx={{ color: "#333333" }}
+                        sx={{ color: "text.strong" }}
                         noWrap
                       >
                         {meta.label}
@@ -134,7 +134,7 @@ const ChannelSummaryStep: React.FC<ChannelSummaryStepProps> = ({
                     {iconBox}
                     <Typography
                       variant="body2"
-                      sx={{ color: "#333333" }}
+                      sx={{ color: "text.strong" }}
                       noWrap
                     >
                       {meta.label}
@@ -143,7 +143,7 @@ const ChannelSummaryStep: React.FC<ChannelSummaryStepProps> = ({
                   <Typography
                     variant="body2"
                     fontWeight={700}
-                    sx={{ color: "#374151", mt: 2 }}
+                    sx={{ color: "text.primary", mt: 2 }}
                     noWrap
                   >
                     {singleValueText}

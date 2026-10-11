@@ -9,6 +9,10 @@ interface CatalogViewToggleProps {
   onChange: (mode: CatalogViewMode) => void;
 }
 
+/** Alto total del selector (32px de botón + 2×5px padding + 2×1px borde). Es
+ * la altura canónica de los controles de filtro en desktop. */
+export const CATALOG_CONTROL_HEIGHT = 44;
+
 const OPTIONS: {
   mode: CatalogViewMode;
   label: string;
@@ -51,7 +55,7 @@ const CatalogViewToggle: React.FC<CatalogViewToggleProps> = ({
             height: 32,
             borderRadius: 1.5,
             bgcolor: active ? "primary.main" : "transparent",
-            color: active ? "common.white" : "grey.600",
+            color: active ? "fixed.white" : "grey.600",
             "&:hover": {
               bgcolor: active ? "primary.main" : "grey.100",
             },

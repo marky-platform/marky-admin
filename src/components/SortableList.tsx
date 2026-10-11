@@ -52,7 +52,7 @@ const SortableRow: React.FC<SortableRowProps> = ({ id, children }) => {
       {...attributes}
       {...listeners}
       sx={{
-        boxShadow: "0px 1px 0px #E8E9EB",
+        boxShadow: (theme) => `0px 1px 0px ${theme.palette.border.layout}`,
         transform: CSS.Transform.toString(transform),
         transition,
         touchAction: "none", // helps on mobile
@@ -112,7 +112,7 @@ function SortableList<T extends SortableListItem>({
     >
       <Box display="flex" alignItems="center" mb={3} gap={1}>
         <ImportExportIcon />
-        <Typography sx={{ fontSize: 14, fontWeight: 700, color: "#333" }}>
+        <Typography sx={{ fontSize: 14, fontWeight: 700, color: "text.strong" }}>
           {hint}
         </Typography>
       </Box>
@@ -122,7 +122,7 @@ function SortableList<T extends SortableListItem>({
           maxHeight: 360,
           overflowY: "auto",
           border: 1,
-          borderColor: "#E0E0E0",
+          borderColor: "border.field",
           py: 0.25,
           borderRadius: 1.5,
         }}
@@ -145,7 +145,9 @@ function SortableList<T extends SortableListItem>({
         )}
       </Box>
 
-      <Box mt={4} pt={3} sx={{ boxShadow: "0px -1px 0px #E8E9EB" }}>
+      <Box mt={4} pt={3} sx={{
+          boxShadow: (theme) => `0px -1px 0px ${theme.palette.border.layout}`,
+        }}>
         <Button
           variant="contained"
           color="primary"

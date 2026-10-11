@@ -1,5 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import type { ReactElement } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import lightTheme from "../../../themes/light";
 import { CategoryAdminModal } from "./CategoryAdminModal";
+
+// The modal reads palette tokens (border.layout, …) added by the app theme.
+const renderWithTheme = (ui: ReactElement) =>
+  render(<ThemeProvider theme={lightTheme}>{ui}</ThemeProvider>);
 
 // La referencia de `data` debe ser estable: el modal la usa como dependencia
 // de un effect que hace setState (un objeto nuevo por render => loop infinito).
@@ -50,7 +57,7 @@ describe("CategoryAdminModal reuse", () => {
   it("opens on the create screen, notifies the created category and closes", () => {
     const onClose = jest.fn();
     const onCategoryCreated = jest.fn();
-    render(
+    renderWithTheme(
       <CategoryAdminModal
         open
         initialScreen="createEdit"
@@ -71,7 +78,7 @@ describe("CategoryAdminModal reuse", () => {
   it("does not notify anything when the modal is just closed (cancel)", () => {
     const onClose = jest.fn();
     const onCategoryCreated = jest.fn();
-    render(
+    renderWithTheme(
       <CategoryAdminModal
         open
         initialScreen="createEdit"
@@ -86,7 +93,7 @@ describe("CategoryAdminModal reuse", () => {
 
   it("keeps the Home behaviour: creating goes back to the list and nothing is auto-closed", () => {
     const onClose = jest.fn();
-    render(<CategoryAdminModal open onClose={onClose} />);
+    renderWithTheme(<CategoryAdminModal open onClose={onClose} />);
     expect(screen.getByText("pantalla-main")).toBeInTheDocument();
   });
 });

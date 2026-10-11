@@ -1,6 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import glutenFreeIcon from "../../../assets/icons/product-form/gluten-free.svg";
-import glutenFreeBadge from "../../../assets/icons/product-form/gluten-free-badge.svg";
+import ThemeAssetImage from "../../../components/ThemeAssetImage";
 import CheckboxWithLabel from "../../../components/CheckboxWithLabel";
 import CustomSwitch from "../../../components/CustomSwitch";
 import { CeliacFormState } from "../../../types/product";
@@ -24,11 +23,10 @@ const DECLARATIONS: {
 ];
 
 const CeliacSection = ({ value, onChange }: CeliacSectionProps) => (
-  <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 2, p: 5, mb: 3 }}>
+  <Box sx={{ border: (theme) => `1px solid ${theme.palette.border.field}`, borderRadius: 2, p: 5, mb: 3 }}>
     <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-      <Box
-        component="img"
-        src={glutenFreeIcon}
+      <ThemeAssetImage
+        asset="glutenFreeIcon"
         alt=""
         sx={{ width: 24, height: 24 }}
       />
@@ -70,9 +68,8 @@ const CeliacSection = ({ value, onChange }: CeliacSectionProps) => (
             borderRadius: 4,
           }}
         >
-          <Box
-            component="img"
-            src={glutenFreeBadge}
+          <ThemeAssetImage
+            asset="glutenFreeBadge"
             alt=""
             sx={{ width: 40, height: 40, flexShrink: 0 }}
           />

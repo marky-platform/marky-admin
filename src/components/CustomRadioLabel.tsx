@@ -10,8 +10,8 @@ interface CustomRadioLabelProps {
 
 const CustomRadioLabel: React.FC<CustomRadioLabelProps> = ({
   label,
-  backgroundColor = "#FFD600",
-  color = "#333",
+  backgroundColor = "fixed.radioDot",
+  color = "fixed.stopperFavoriteTextCard",
   fontColor,
 }) => {
   return (

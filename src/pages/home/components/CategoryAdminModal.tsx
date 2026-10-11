@@ -6,6 +6,7 @@ import {
   DialogTitle,
   IconButton,
 } from "@mui/material";
+import InsetSurface from "../../../themes/InsetSurface";
 import React, { useEffect, useState } from "react";
 import XButton from "../../../components/XButton";
 import useProductCategories from "../../../hooks/useProductCategories";
@@ -151,25 +152,30 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
 
   return (
     <Dialog open={open} onClose={handleModalClose} fullWidth maxWidth="md">
-      <>
+      <InsetSurface>
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-            boxShadow: "0px 1px 0px #E8E9EB",
+            boxShadow: (theme) => `0px 1px 0px ${theme.palette.border.layout}`,
             p: 3,
           }}
         >
           <Box display={"flex"} alignItems={"center"}>
             {["createEdit", "sort", "promotion"].includes(activeScreen) && (
               <IconButton onClick={goBack} sx={{ mr: 1 }}>
-                <ArrowBackIcon sx={{ color: "#333", fontSize: 18 }} />
+                <ArrowBackIcon sx={{ color: "text.strong", fontSize: 18 }} />
               </IconButton>
             )}
             <DialogTitle
-              sx={{ p: 0, fontSize: 16, fontWeight: 500, color: "#292929" }}
+              sx={{
+                p: 0,
+                fontSize: 16,
+                fontWeight: 500,
+                color: "text.heading",
+              }}
             >
               {["main", "welcome"].includes(activeScreen) &&
                 "Administrar categorías"}
@@ -255,7 +261,7 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
             />
           )}
         </DialogContent>
-      </>
+      </InsetSurface>
     </Dialog>
   );
 };

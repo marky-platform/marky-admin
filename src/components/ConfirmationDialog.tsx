@@ -98,11 +98,11 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             )}
           </Box>
           <Box sx={{ textAlign: "center" }}>
-            <Typography sx={{ fontSize: 16, fontWeight: 500, color: "#292929" }}>
+            <Typography sx={{ fontSize: 16, fontWeight: 500, color: "text.heading" }}>
               {title}
             </Typography>
             {typeof content === "string" ? (
-              <Typography sx={{ fontSize: 14, color: "#828282", mt: 0.5 }}>
+              <Typography sx={{ fontSize: 14, color: "text.muted", mt: 0.5 }}>
                 {content}
               </Typography>
             ) : (
@@ -112,7 +112,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           {confirmationCheckboxLabel && (
             <CheckboxWithLabel
               label={
-                <Typography sx={{ fontSize: 14, color: "#4A4A4A" }}>
+                <Typography sx={{ fontSize: 14, color: "text.soft" }}>
                   {confirmationCheckboxLabel}
                 </Typography>
               }
@@ -148,7 +148,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             ? {
                 display: "flex",
                 gap: 1.5,
-                boxShadow: "0px -1px 0px #E8E9EB",
+                boxShadow: (theme) => `0px -1px 0px ${theme.palette.border.layout}`,
                 px: 2.5,
                 py: 1.5,
               }
@@ -160,7 +160,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           disabled={isLoading}
           sx={
             image
-              ? { flex: 1, backgroundColor: "grey.400", color: "#4B4B4B", paddingY: 2 }
+              ? { flex: 1, backgroundColor: "grey.400", color: "text.title", paddingY: 2 }
               : { paddingX: 2, paddingY: 2 }
           }
         >
@@ -177,7 +177,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             ...(confirmColor === "error" && {
               "&.Mui-disabled": {
                 backgroundColor: "error.light",
-                color: "white",
+                color: "fixed.white",
               },
             }),
           }}

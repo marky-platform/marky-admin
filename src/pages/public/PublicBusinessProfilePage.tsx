@@ -6,6 +6,7 @@ import BusinessProfilePanel from "../../components/BusinessProfilePanel";
 import usePublicBusinessProfile from "../../hooks/usePublicBusinessProfile";
 import usePublicCategories from "../../hooks/usePublicCategories";
 import { mapSocialLinksToChannels } from "../../mappers/channelMapper";
+import ThemeModeToggle from "../../components/ThemeModeToggle";
 import PublicProductGrid from "./components/PublicProductGrid";
 import PublicMobileTopBar from "./components/PublicMobileTopBar";
 import PublicNotFound from "./components/PublicNotFound";
@@ -79,10 +80,11 @@ const PublicBusinessProfilePage: React.FC = () => {
               maxWidth: { xs: "100%", md: "296px" },
               flexGrow: 0,
               flexShrink: 0,
+              position: { md: "relative" },
               px: { xs: 0, md: 8 },
               borderRight: (theme) => ({
                 xs: "none",
-                md: `1px solid ${theme.palette.grey[600]}`,
+                md: `1px solid ${theme.palette.border.soft}`,
               }),
             }}
           >
@@ -107,6 +109,17 @@ const PublicBusinessProfilePage: React.FC = () => {
                 readOnly
               />
             </Box>
+            {/* Desktop: sin header público, el switch de tema va en la
+                esquina superior derecha del rail (fuera del flujo). */}
+            <ThemeModeToggle
+              variant="icon"
+              sx={{
+                display: { xs: "none", md: "inline-flex" },
+                position: "absolute",
+                top: 0,
+                right: 8,
+              }}
+            />
           </Box>
           <Box
             sx={{

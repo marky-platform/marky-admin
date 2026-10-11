@@ -59,6 +59,24 @@ describe("NotificationsMenu", () => {
     await screen.findByText("2");
   });
 
+  it("renders the trigger in a 34x34 container", async () => {
+    mockedGetNotifications.mockResolvedValue({
+      count: 0,
+      next: null,
+      previous: null,
+      unread_count: 0,
+      results: [],
+    });
+
+    renderMenu();
+
+    expect(screen.getByLabelText("notifications")).toHaveStyle({
+      width: "34px",
+      height: "34px",
+    });
+    await waitFor(() => expect(mockedGetNotifications).toHaveBeenCalled());
+  });
+
   it("lists notifications when opened and marks one read on click", async () => {
     mockedGetNotifications.mockResolvedValue({
       count: 1,

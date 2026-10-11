@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog, DialogContent } from "@mui/material";
 import XButton from "./XButton";
+import InsetSurface from "../themes/InsetSurface";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -178,7 +179,7 @@ const validationSchema = Yup.object({
   },
 );
 
-const ProductPromotionModal: React.FC<Props> = ({ open, product, onClose }) => {
+const ProductPromotionModalContent: React.FC<Props> = ({ open, product, onClose }) => {
   const updateProductPromotion = useUpdateProductPromotion();
   const hasExistingPromotion = !!(
     product?.multibuyOption ||
@@ -248,7 +249,7 @@ const ProductPromotionModal: React.FC<Props> = ({ open, product, onClose }) => {
             display: "flex",
             justifyContent: "space-between",
             width: "100%",
-            borderBottom: "1px solid lightgrey",
+            borderBottom: (theme) => `1px solid ${theme.palette.border.modal}`,
           }}
         >
           <Box display={"flex"} alignItems="center">
@@ -500,5 +501,12 @@ const ProductPromotionModal: React.FC<Props> = ({ open, product, onClose }) => {
     </Dialog>
   );
 };
+
+// Fields inside a modal read as inset in dark mode (see InsetSurface).
+const ProductPromotionModal: React.FC<Props> = (props) => (
+  <InsetSurface>
+    <ProductPromotionModalContent {...props} />
+  </InsetSurface>
+);
 
 export default ProductPromotionModal;

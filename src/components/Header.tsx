@@ -18,13 +18,14 @@ import {
 import { useTheme } from "@mui/material/styles";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logoMarky from "../assets/images/marky-logo.svg";
 import defaultUserAvatar from "../assets/images/user_default.png";
 import { ROUTES } from "../routes/paths";
 import { useSessionStore } from "../stores/sessionStore";
 import { HEADER_HEIGHT } from "../constants/layout";
 import BusinessAvatar from "../pages/home/components/BusinessAvatar";
 import NotificationsMenu from "./NotificationsMenu";
+import ThemeModeToggle from "./ThemeModeToggle";
+import { useThemeAssets } from "../themes/useThemeAssets";
 
 interface HeaderProps {
   /** Opt-in (solo Home admin, mobile): foto del negocio en el avatar de la
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
+  const { logo: logoMarky } = useThemeAssets();
   const navigate = useNavigate();
   const { user } = useSessionStore();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -61,8 +63,8 @@ export const Header: React.FC<HeaderProps> = ({
       elevation={0}
       sx={{
         backgroundColor: hasProfileVariant
-          ? { xs: "#F8F8FA", md: "white" }
-          : "white",
+          ? { xs: "surface.header", md: "surface.base" }
+          : "surface.base",
       }}
     >
       <Toolbar
@@ -78,8 +80,8 @@ export const Header: React.FC<HeaderProps> = ({
           maxHeight: HEADER_HEIGHT,
           py: 2,
           px: { xs: 4, md: 8 },
-          gap: { xs: 4, md: 6 },
-          borderBottom: "1px solid #E5E7EB",
+          gap: 4,
+          borderBottom: (theme) => `1px solid ${theme.palette.border.header}`,
           boxSizing: "border-box",
         }}
       >
@@ -101,12 +103,12 @@ export const Header: React.FC<HeaderProps> = ({
           color="inherit"
           onClick={handleProfileClick}
           aria-label="user-menu"
-          sx={{ p: showProfileVariant ? 0.5 : 1 }}
+          sx={{ width: 34, height: 34, p: 0, flexShrink: 0 }}
         >
           {showProfileVariant ? (
             <BusinessAvatar photo={businessPhoto} size={34} />
           ) : (
-            <Avatar src={defaultUserAvatar} />
+            <Avatar src={defaultUserAvatar} sx={{ width: 34, height: 34 }} />
           )}
         </IconButton>
         {showProfileVariant && mobileActionsSlot}
@@ -123,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
               minWidth: 260,
               px: 1,
               py: 2,
-              backgroundColor: "white",
+              backgroundColor: "surface.main",
               borderRadius: 2,
             },
           }}
@@ -149,6 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
             </ListItemIcon>
             <ListItemText>Mi cuenta</ListItemText>
           </MenuItem>
+          <ThemeModeToggle variant="menuItem" onToggle={handleClose} />
           <MenuItem
             sx={{ p: 4 }}
             onClick={() => {

@@ -155,15 +155,15 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
                     height: 48,
                     borderRadius: "12px",
                     overflow: "hidden",
-                    border: "1px solid #E0E0E0",
-                    backgroundColor: "white",
+                    border: (theme) => `1px solid ${theme.palette.border.field}`,
+                    backgroundColor: "surface.main",
                     flexShrink: 0,
                   }}
                 >
                   {variant.image && <MediaPreviewThumb file={variant.image} />}
                 </Box>
                 <Box flex={1} minWidth={0}>
-                  <Typography variant="body2" noWrap sx={{ color: "#4F4F4F" }}>
+                  <Typography variant="body2" noWrap sx={{ color: "text.body" }}>
                     {variant.name || "Presentación"}
                   </Typography>
                   {variant.description && (
@@ -171,7 +171,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
                       variant="caption"
                       noWrap
                       display="block"
-                      sx={{ color: "#4F4F4F" }}
+                      sx={{ color: "text.body" }}
                     >
                       {variant.description}
                     </Typography>
@@ -213,7 +213,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
                 justifyContent="space-between"
                 gap={2}
                 sx={{
-                  bgcolor: "white",
+                  bgcolor: "surface.inset",
                   border: "1px solid",
                   borderColor: "grey.400",
                   borderTopLeftRadius: isFirst ? 12 : 0,
@@ -271,7 +271,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
                 top: 8,
                 left: 8,
                 backgroundColor: "error.main",
-                color: "white",
+                color: "fixed.white",
                 fontWeight: "bold",
                 fontSize: 12,
                 px: 1,
@@ -290,8 +290,8 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
           {!!values.stopper && (
             <Box
               sx={{
-                backgroundColor: values.stopper === "FAVORITE" ? "#FFD401" : "primary.main",
-                color: values.stopper === "FAVORITE" ? "#4B4B4B" : "white",
+                backgroundColor: values.stopper === "FAVORITE" ? "fixed.stopperFavorite" : "primary.main",
+                color: values.stopper === "FAVORITE" ? "fixed.stopperFavoriteText" : "fixed.white",
                 fontSize: 12,
                 fontWeight: "bold",
                 px: 1,

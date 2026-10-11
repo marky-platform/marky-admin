@@ -4,7 +4,7 @@ import { Box, Button, IconButton, Modal, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
-import colors from "../themes/utils/colors";
+import InsetSurface from "../themes/InsetSurface";
 
 interface CustomModalProps {
   open: boolean;
@@ -28,7 +28,7 @@ interface CustomModalProps {
   fullScreenOnMobile?: boolean;
 }
 
-const CustomModal: React.FC<CustomModalProps> = ({
+const CustomModalContent: React.FC<CustomModalProps> = ({
   open,
   title = "Insert title here",
   onClose,
@@ -83,7 +83,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
       >
         <Box
           sx={{
-            borderBottom: "1px solid lightgray",
+            borderBottom: `1px solid ${theme.palette.border.modal}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -111,7 +111,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             <IconButton
               onClick={onClose}
               sx={{
-                backgroundColor: colors.light.grey[400],
+                backgroundColor: theme.palette.grey[400],
                 borderRadius: "50%",
               }}
             >
@@ -135,7 +135,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             sx={
               isFullScreen
                 ? {
-                    borderTop: "1px solid lightgray",
+                    borderTop: `1px solid ${theme.palette.border.modal}`,
                     display: "flex",
                     paddingX: theme.spacing(5.25),
                     paddingY: theme.spacing(2.75),
@@ -145,7 +145,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                     mt: "auto",
                   }
                 : {
-                    borderTop: "1px solid lightgray",
+                    borderTop: `1px solid ${theme.palette.border.modal}`,
                     display: "flex",
                     p: 4,
                     justifyContent: "flex-end",
@@ -161,13 +161,13 @@ const CustomModal: React.FC<CustomModalProps> = ({
                   type="button"
                   variant="contained"
                   sx={{
-                    backgroundColor: colors.light.grey[600],
-                    color: colors.light.text.secondary,
+                    backgroundColor: theme.palette.grey[600],
+                    color: theme.palette.text.secondary,
                     paddingX: "1rem",
                     ...(isFullScreen
                       ? {
                           flex: 1,
-                          backgroundColor: colors.light.grey[400],
+                          backgroundColor: theme.palette.grey[400],
                           borderRadius: theme.spacing(1.5),
                           padding: theme.spacing(3),
                         }
@@ -187,7 +187,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                       ...(isFullScreen
                         ? {
                             flex: 1,
-                            backgroundColor: "#337AEA",
+                            backgroundColor: theme.palette.accent.link,
                             borderRadius: theme.spacing(1.5),
                             padding: theme.spacing(3),
                           }
@@ -205,5 +205,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
     </Modal>
   );
 };
+
+// Fields inside a modal read as inset in dark mode (see InsetSurface).
+const CustomModal: React.FC<CustomModalProps> = (props) => (
+  <InsetSurface>
+    <CustomModalContent {...props} />
+  </InsetSurface>
+);
 
 export default CustomModal;

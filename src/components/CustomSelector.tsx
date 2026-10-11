@@ -71,7 +71,7 @@ const CustomSelectorField: React.FC<CustomSelectorFieldProps> = ({
             variant="outlined"
             placeholder={placeholder}
             sx={{
-              backgroundColor: "#FAFAFA",
+              backgroundColor: "grey.50",
             }}
             InputProps={{
               readOnly: true,
@@ -100,7 +100,7 @@ const CustomSelectorField: React.FC<CustomSelectorFieldProps> = ({
             variant="contained"
             color="inherit"
             sx={{
-              color: "#4B4B4B",
+              color: "text.title",
               boxShadow: "unset",
             }}
           >

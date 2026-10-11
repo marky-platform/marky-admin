@@ -114,8 +114,8 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
         <Box
           onClick={onEmptyState}
           sx={{
-            border: "1px dashed #B8CDF5",
-            backgroundColor: "#FAFCFF",
+            border: (theme) => `1px dashed ${theme.palette.border.dashed}`,
+            backgroundColor: "surface.tintFaint",
             borderRadius: "6px",
             py: 4,
             px: 3,
@@ -124,7 +124,7 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
         >
           <Typography
             sx={{
-              color: "#2563EB",
+              color: "primary.main",
               fontWeight: 700,
               fontSize: 14,
               lineHeight: "22px",

@@ -287,14 +287,14 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                 alignItems="center"
                 gap={1.5}
                 mb={2}
-                sx={{ boxShadow: "0px 1px 0px #E8E9EB", pb: 2 }}
+                sx={{ boxShadow: (theme) => `0px 1px 0px ${theme.palette.border.layout}`, pb: 2 }}
               >
                 {category && (
                   <Box
                     sx={{
                       width: 46,
                       height: 46,
-                      bgcolor: "#F2F2F2",
+                      bgcolor: "surface.muted",
                       borderRadius: 1.5,
                       display: "flex",
                       alignItems: "center",
@@ -304,13 +304,13 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                     {getIconComponent(category)}
                   </Box>
                 )}
-                <Typography sx={{ fontSize: 14, color: "#4B4B4B" }}>
+                <Typography sx={{ fontSize: 14, color: "text.title" }}>
                   {category?.label || "Categoría"}
                 </Typography>
               </Box>
 
               {/* ================== Sección Promoción ================ */}
-              <Typography sx={{ fontSize: 14, fontWeight: 500, color: "#333" }} mb={1}>
+              <Typography sx={{ fontSize: 14, fontWeight: 500, color: "text.strong" }} mb={1}>
                 Promoción
               </Typography>
               <Box display="flex" flexDirection={"column"} gap={2} mb={2}>
@@ -326,7 +326,7 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                       />
                     }
                     label="Activar promoción"
-                    sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "#4F4F4F" } }}
+                    sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "text.body" } }}
                   />
 
                   {values.isPromotionActive && (
@@ -343,7 +343,7 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                           />
                         }
                         label="Descuento"
-                        sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "#4F4F4F" } }}
+                        sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "text.body" } }}
                       />
                       {values.promotionOption === "descuento" && (
                         <FormControl
@@ -365,15 +365,15 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                             }
                             renderValue={(value) =>
                               value === "" ? (
-                                <Typography sx={{ fontSize: 14, color: "#828282" }}>
+                                <Typography sx={{ fontSize: 14, color: "text.muted" }}>
                                   Selecciona un porcentaje
                                 </Typography>
                               ) : (
                                 <Box
                                   component="span"
                                   sx={{
-                                    bgcolor: "#FF3E3E",
-                                    color: "white",
+                                    bgcolor: "accent.danger",
+                                    color: "fixed.white",
                                     fontSize: 14,
                                     fontWeight: 500,
                                     borderRadius: 0.5,
@@ -387,7 +387,7 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                             }
                             sx={{
                               "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#D7D7D7",
+                                borderColor: "border.input",
                               },
                             }}
                           >
@@ -417,7 +417,7 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                         />
                       }
                       label="Oferta"
-                      sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "#4F4F4F" } }}
+                      sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "text.body" } }}
                     />
                     {values.promotionOption === "oferta" && (
                       <FormControl
@@ -435,7 +435,7 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                           }
                           sx={{
                             "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#D7D7D7",
+                              borderColor: "border.input",
                             },
                           }}
                         >
@@ -454,7 +454,7 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
               {/* Sección Tiempo limitado */}
               {values.isPromotionActive && (
                 <>
-                  <Typography sx={{ fontSize: 14, fontWeight: 500, color: "#333" }} mb={1}>
+                  <Typography sx={{ fontSize: 14, fontWeight: 500, color: "text.strong" }} mb={1}>
                     Tiempo limitado
                   </Typography>
                   <FormControlLabel
@@ -468,7 +468,7 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
                       />
                     }
                     label="Activar cuenta regresiva"
-                    sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "#4F4F4F" } }}
+                    sx={{ "& .MuiFormControlLabel-label": { fontSize: 14, color: "text.body" } }}
                   />
 
                   {values.countdownActive && (

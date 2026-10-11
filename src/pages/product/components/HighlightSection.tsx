@@ -95,7 +95,7 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
               <CustomRadioLabel
                 label="Recomendado"
                 backgroundColor="primary.main"
-                fontColor="white"
+                fontColor="fixed.white"
               />
             }
           />
@@ -142,7 +142,7 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
         </Alert>
       )}
       {values.isPromotionActive && (
-        <Box ml={4}>
+        <Box ml={{ xs: 0, md: 4 }}>
           {errors.promotionOption && (
             <Typography variant="caption" color="error.main" display="block" mb={1}>
               {errors.promotionOption as string}
@@ -182,7 +182,6 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
                 inputProps={{
                   max: 100,
                   min: 0,
-                  style: { padding: 12 },
                 }}
                 InputProps={{
                   endAdornment: (
@@ -193,8 +192,14 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
                 }}
                 sx={{
                   mb: 2,
-                  ml: 8,
+                  ml: { xs: 0, md: 8 },
                   width: { xs: "100%", md: "50%" },
+                  minWidth: 0,
+                  boxSizing: "border-box",
+                  // Más compacto en mobile; desktop conserva los 12px.
+                  "& .MuiInputBase-input": {
+                    padding: { xs: "8px 10px", md: "12px" },
+                  },
                 }}
               />
             )}
@@ -222,8 +227,10 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
                 size="small"
                 sx={{
                   mb: 2,
-                  ml: 8,
+                  ml: { xs: 0, md: 8 },
                   width: { xs: "100%", md: "50%" },
+                  minWidth: 0,
+                  boxSizing: "border-box",
                 }}
               >
                 <Select

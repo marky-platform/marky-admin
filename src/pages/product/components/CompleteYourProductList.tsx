@@ -37,7 +37,7 @@ const StatusDot = ({ state }: { state: ReturnType<typeof getSectionNavState> }) 
           flexShrink: 0,
         }}
       >
-        <CheckIcon sx={{ fontSize: 14, color: "white" }} />
+        <CheckIcon sx={{ fontSize: 14, color: "fixed.white" }} />
       </Box>
     );
   }
@@ -55,7 +55,7 @@ const StatusDot = ({ state }: { state: ReturnType<typeof getSectionNavState> }) 
           flexShrink: 0,
         }}
       >
-        <PriorityHighIcon sx={{ fontSize: 14, color: "white" }} />
+        <PriorityHighIcon sx={{ fontSize: 14, color: "fixed.white" }} />
       </Box>
     );
   }

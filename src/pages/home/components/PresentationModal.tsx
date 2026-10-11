@@ -1,3 +1,4 @@
+import { withInsetSurface } from "../../../themes/InsetSurface";
 import React from "react";
 import {
   Dialog,
@@ -10,12 +11,11 @@ import {
   IconButton,
   useMediaQuery,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Theme, useTheme } from "@mui/material/styles";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import XButton from "../../../components/XButton";
 import BusinessAvatar from "./BusinessAvatar";
-import colors from "../../../themes/utils/colors";
 import { ShowNotification } from "../../../utils/utils";
 import { ALL_CHANNEL_KEYS, CHANNEL_META } from "./channels/channels.constants";
 
@@ -56,21 +56,23 @@ const MobileRow: React.FC<MobileRowProps> = ({
     gap: 2,
     px: 4,
     py: 3,
-    borderBottom: last ? "none" : `1px solid ${colors.light.grey[400]}`,
+    borderBottom: last
+      ? "none"
+      : (theme: Theme) => `1px solid ${theme.palette.border.divider}`,
   };
   const content = (
     <>
       <Box flex={1} minWidth={0} textAlign="left">
         <Typography
           variant="body2"
-          sx={{ color: colors.light.text.secondary, mb: 1 }}
+          sx={{ color: "text.secondary", mb: 1 }}
         >
           {label}
         </Typography>
         <Typography
           variant="body2"
           sx={{
-            color: value ? colors.light.text.primary : colors.light.grey[900],
+            color: value ? "text.primary" : "grey.900",
             fontWeight: value ? 700 : 400,
             wordBreak: "break-word",
           }}
@@ -79,7 +81,7 @@ const MobileRow: React.FC<MobileRowProps> = ({
         </Typography>
       </Box>
       {onClick && (
-        <ChevronRightIcon sx={{ color: colors.light.text.disabled }} />
+        <ChevronRightIcon sx={{ color: "text.disabled" }} />
       )}
     </>
   );
@@ -140,7 +142,7 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
           display: "flex",
           width: "100%",
           alignItems: "center",
-          borderBottom: `1px solid ${colors.light.grey[400]}`,
+          borderBottom: (theme) => `1px solid ${theme.palette.border.divider}`,
         }}
       >
         <DialogTitle sx={{ flex: 1 }}>Editar perfil</DialogTitle>
@@ -150,9 +152,9 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             sx={{
               marginRight: 3,
               ...(isMobile && {
-                backgroundColor: colors.light.grey[400],
+                backgroundColor: "grey.400",
                 borderRadius: "6px",
-                "&:hover": { backgroundColor: colors.light.grey[400] },
+                "&:hover": { backgroundColor: "grey.400" },
               }),
             }}
           />
@@ -167,7 +169,7 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
           sx={{
             px: 4,
             py: 3,
-            borderBottom: `1px solid ${colors.light.grey[400]}`,
+            borderBottom: (theme) => `1px solid ${theme.palette.border.divider}`,
           }}
         >
           <BusinessAvatar photo={profilePhoto} size={92} />
@@ -175,8 +177,8 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             variant="outlined"
             onClick={onEditPhoto}
             sx={{
-              borderColor: colors.light.grey[800],
-              color: colors.light.text.primary,
+              borderColor: "grey.800",
+              color: "text.primary",
               px: 3,
               boxShadow: 0,
               textTransform: "none",
@@ -205,13 +207,13 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             width: "100%",
             px: 4,
             py: 3,
-            borderBottom: `1px solid ${colors.light.grey[400]}`,
+            borderBottom: (theme) => `1px solid ${theme.palette.border.divider}`,
           }}
         >
           <Box flex={1} minWidth={0}>
             <Typography
               variant="body2"
-              sx={{ color: colors.light.text.primary, mb: 1 }}
+              sx={{ color: "text.primary", mb: 1 }}
             >
               Tu enlace público
             </Typography>
@@ -273,4 +275,4 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
   );
 };
 
-export default PresentationModal;
+export default withInsetSurface(PresentationModal);

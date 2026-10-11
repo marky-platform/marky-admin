@@ -14,8 +14,8 @@ import {
 import { useTheme } from "@mui/material/styles";
 import * as Yup from "yup";
 import CancelButton from "../../../components/CancelButton";
-import colors from "../../../themes/utils/colors";
 import XButton from "../../../components/XButton";
+import InsetSurface from "../../../themes/InsetSurface";
 import BackButton from "../../../components/BackButton";
 
 const MAX_NAME_LENGTH = 50;
@@ -44,12 +44,13 @@ const EditNameModal = ({
       maxWidth="sm"
       fullScreen={isMobile}
     >
+      <InsetSurface>
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           width: "100%",
-          borderBottom: "1px solid lightgrey",
+          borderBottom: (theme) => `1px solid ${theme.palette.border.modal}`,
         }}
       >
         <Box display={"flex"}>
@@ -66,9 +67,9 @@ const EditNameModal = ({
             sx={{
               marginRight: 2,
               ...(isMobile && {
-                backgroundColor: colors.light.grey[400],
+                backgroundColor: "grey.400",
                 borderRadius: "6px",
-                "&:hover": { backgroundColor: colors.light.grey[400] },
+                "&:hover": { backgroundColor: "grey.400" },
               }),
             }}
           />
@@ -133,7 +134,7 @@ const EditNameModal = ({
             </DialogContent>
             <DialogActions
               sx={{
-                borderTop: "1px solid lightgrey",
+                borderTop: (theme) => `1px solid ${theme.palette.border.modal}`,
                 display: "flex",
                 gap: 2,
                 padding: 4,
@@ -157,6 +158,7 @@ const EditNameModal = ({
           </Form>
         )}
       </Formik>
+      </InsetSurface>
     </Dialog>
   );
 };

@@ -85,7 +85,7 @@ const ChannelDetailStep: React.FC<ChannelDetailStepProps> = ({ channel }) => {
                   sx={{
                     px: 2,
                     py: 1,
-                    backgroundColor: "#DBE9F9",
+                    backgroundColor: "surface.tint",
                     borderRadius: 2,
                     mr: 2,
                   }}

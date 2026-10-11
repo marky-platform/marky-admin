@@ -24,13 +24,14 @@ interface ProductListItemProps {
 
 const pill = (bg: string) => ({
   bgcolor: bg,
-  color: "common.white",
+  color: "fixed.white",
   px: 1.5,
-  py: 0.5,
+  // Desktop: misma altura (28px) y tipografía (14px) que ProductStopperTag.
+  py: { xs: 0.5, md: 0 },
   borderRadius: "24px",
-  fontSize: 12,
+  fontSize: { xs: 12, md: 14 },
   fontWeight: 500,
-  lineHeight: "16px",
+  lineHeight: { xs: "16px", md: "28px" },
   width: "fit-content",
 });
 
@@ -106,15 +107,15 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
         cursor: "pointer",
         minWidth: 0,
         transition: "background-color 0.2s",
-        "&:hover": { backgroundColor: "#EEF6FF" },
+        "&:hover": { backgroundColor: "surface.hover" },
       }}
     >
       <Box
         sx={{
           position: "relative",
           flexShrink: 0,
-          width: { xs: 70, md: 64 },
-          height: { xs: 70, md: 64 },
+          width: { xs: 70, md: 90 },
+          height: { xs: 70, md: 90 },
           borderRadius: "12px",
           overflow: "hidden",
           border: "1px solid",
@@ -140,9 +141,9 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
               gap: 0.5,
             }}
           >
-            {showDiscount && <Box sx={pill("#E53935")}>-{discount}%</Box>}
+            {showDiscount && <Box sx={pill("fixed.discount")}>-{discount}%</Box>}
             {hasMultibuy && (
-              <Box sx={pill("#1E5BE8")}>{product.multibuyOption}</Box>
+              <Box sx={pill("fixed.multibuy")}>{product.multibuyOption}</Box>
             )}
           </Box>
         )}
@@ -162,16 +163,16 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
           >
             {/* Desktop: etiquetas en línea antes del nombre (Figma). */}
             {showDiscount && (
-              <Box sx={{ ...pill("#E53935"), display: { xs: "none", md: "block" } }}>
+              <Box sx={{ ...pill("fixed.discount"), display: { xs: "none", md: "block" } }}>
                 -{discount}%
               </Box>
             )}
             {hasMultibuy && (
-              <Box sx={{ ...pill("#1E5BE8"), display: { xs: "none", md: "block" } }}>
+              <Box sx={{ ...pill("fixed.multibuy"), display: { xs: "none", md: "block" } }}>
                 {product.multibuyOption}
               </Box>
             )}
-            {!isAvailable && <Box sx={pill("#BDBDBD")}>No disponible</Box>}
+            {!isAvailable && <Box sx={pill("fixed.unavailable")}>No disponible</Box>}
             {countdown && (
               <Box
                 sx={{
@@ -203,7 +204,7 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
             ...clamp(1),
             fontSize: { xs: 13, md: 15 },
             fontWeight: 500,
-            color: "#4F4F4F",
+            color: "text.body",
             lineHeight: "20px",
           }}
         >
@@ -214,7 +215,7 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
             sx={{
               ...clamp(2),
               fontSize: 12,
-              color: "#4F4F4F",
+              color: "text.body",
               lineHeight: "16px",
               mt: 0.5,
             }}

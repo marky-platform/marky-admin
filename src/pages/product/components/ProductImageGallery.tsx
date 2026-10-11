@@ -172,7 +172,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const imageSlots = [0, 1, 2].map((slotIndex) => images[slotIndex] ?? null);
 
   return (
-    <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 2, padding: { xs: 4, md: 5 } }}>
+    <Box sx={{ border: (theme) => `1px solid ${theme.palette.border.field}`, borderRadius: 2, padding: { xs: 4, md: 5 } }}>
       <ImageCropModal
         open={!!croppingMedia}
         onClose={handleCloseCropModal}

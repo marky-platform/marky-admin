@@ -58,7 +58,10 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       height={44}
       pl={1.5}
       pr={3}
-      sx={{ boxShadow: "0px 1px 0px #E8E9EB", ...style }}
+      sx={{
+        boxShadow: (theme) => `0px 1px 0px ${theme.palette.border.layout}`,
+        ...style,
+      }}
     >
       <Box display="flex" alignItems="center" gap={1.5}>
         {isSortable && (
@@ -83,7 +86,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
           )}
         </Box>
         <Typography
-          sx={{ cursor: "pointer", fontSize: 14, color: "#4F4F4F" }}
+          sx={{ cursor: "pointer", fontSize: 14, color: "text.body" }}
           // onClick={() => {
           //   setFieldValue("editingCategoryId", cat.id);
           //   setFieldValue("newCategoryName", cat.label);

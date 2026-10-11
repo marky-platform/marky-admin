@@ -26,7 +26,7 @@ const EmptyProducts: React.FC<EmptyProductsProps> = ({
       textAlign="center"
       gap={3}
       sx={{
-        border: "1px solid #E6E6E6",
+        border: (theme) => `1px solid ${theme.palette.border.soft}`,
         borderRadius: "13px",
         px: 3,
         py: 10,
@@ -38,12 +38,12 @@ const EmptyProducts: React.FC<EmptyProductsProps> = ({
         style={{ maxWidth: 273, width: "100%" }}
       />
       <Box display="flex" flexDirection="column" gap={1}>
-        <Typography sx={{ fontSize: 16, fontWeight: 500, color: "#292929" }}>
+        <Typography sx={{ fontSize: 16, fontWeight: 500, color: "text.heading" }}>
           {businessName
             ? `${businessName}, tu catálogo comienza aquí`
             : "Tu catálogo comienza aquí"}
         </Typography>
-        <Typography sx={{ fontSize: 14, color: "#6B7280" }}>
+        <Typography sx={{ fontSize: 14, color: "text.disabled" }}>
           Agrega tu primer producto para empezar a mostrar tu propuesta
           gastronómica.
         </Typography>
@@ -68,7 +68,7 @@ const EmptyProducts: React.FC<EmptyProductsProps> = ({
           <Button
             variant="grey1"
             onClick={onCreateCategory}
-            sx={{ paddingX: 4, boxShadow: 0, color: "#4B4B4B" }}
+            sx={{ paddingX: 4, boxShadow: 0, color: "text.title" }}
           >
             Crear una categoría
           </Button>

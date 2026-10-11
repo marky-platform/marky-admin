@@ -17,8 +17,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import * as Yup from "yup";
 import CancelButton from "../../../components/CancelButton";
 import Input from "../../../components/Input";
-import colors from "../../../themes/utils/colors";
 import XButton from "../../../components/XButton";
+import InsetSurface from "../../../themes/InsetSurface";
 import BackButton from "../../../components/BackButton";
 
 const MAX_LOCATIONS = 4;
@@ -78,7 +78,7 @@ const LocationEntryRow: React.FC<LocationEntryRowProps> = ({
     <Box
       sx={{
         border: "1px solid",
-        borderColor: colors.light.grey[400],
+        borderColor: "grey.400",
         borderRadius: 1,
         p: 3,
         mb: 2,
@@ -160,12 +160,13 @@ const LocationsModal = ({
       maxWidth="sm"
       fullScreen={isMobile}
     >
+      <InsetSurface>
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           width: "100%",
-          borderBottom: "1px solid lightgrey",
+          borderBottom: (theme) => `1px solid ${theme.palette.border.modal}`,
         }}
       >
         <Box display={"flex"}>
@@ -182,9 +183,9 @@ const LocationsModal = ({
             sx={{
               marginRight: 2,
               ...(isMobile && {
-                backgroundColor: colors.light.grey[400],
+                backgroundColor: "grey.400",
                 borderRadius: "6px",
-                "&:hover": { backgroundColor: colors.light.grey[400] },
+                "&:hover": { backgroundColor: "grey.400" },
               }),
             }}
           />
@@ -233,7 +234,7 @@ const LocationsModal = ({
               >
                 <Typography
                   variant="body2"
-                  sx={{ mb: 4, color: colors.light.grey[900] }}
+                  sx={{ mb: 4, color: "grey.900" }}
                 >
                   Añade tus direcciones más importantes: locales, sucursales o
                   zonas donde opera tu negocio.
@@ -276,7 +277,7 @@ const LocationsModal = ({
                           sx={{
                             px: 2,
                             py: 1,
-                            backgroundColor: "#DBE9F9",
+                            backgroundColor: "surface.tint",
                             borderRadius: 2,
                             mr: 2,
                           }}
@@ -300,7 +301,7 @@ const LocationsModal = ({
               </DialogContent>
               <DialogActions
                 sx={{
-                  borderTop: "1px solid lightgrey",
+                  borderTop: (theme) => `1px solid ${theme.palette.border.modal}`,
                   display: "flex",
                   gap: 2,
                   padding: 4,
@@ -325,6 +326,7 @@ const LocationsModal = ({
           );
         }}
       </Formik>
+      </InsetSurface>
     </Dialog>
   );
 };

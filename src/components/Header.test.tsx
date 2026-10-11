@@ -3,6 +3,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { MemoryRouter } from "react-router-dom";
 import lightTheme from "../themes/light";
 import { Header } from "./Header";
+import { cssForClosest } from "./cssTestUtils";
 
 // NotificationsMenu pulls in react-query + axios; it is irrelevant here.
 jest.mock("./NotificationsMenu", () => ({
@@ -75,4 +76,20 @@ describe("Header", () => {
 
     expect(screen.queryByLabelText("Más acciones")).not.toBeInTheDocument();
   });
+
+  it.each([true, false])(
+    "sizes the avatar trigger 34x34 and spaces header items 16px (mobile=%s)",
+    (isMobile) => {
+      mockMobile(isMobile);
+      renderHeader({ businessPhoto: "", mobileActionsSlot: actions });
+
+      expect(screen.getByLabelText("user-menu")).toHaveStyle({
+        width: "34px",
+        height: "34px",
+      });
+      expect(
+        cssForClosest(screen.getByLabelText("user-menu"), ".MuiToolbar-root"),
+      ).toMatch(/gap: 16px/);
+    },
+  );
 });

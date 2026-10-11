@@ -48,7 +48,6 @@ import { Category } from "../services/categoriesService";
 import { buildBusinessProfilePayload } from "./Configuration.payload";
 import { useSessionStore } from "../stores/sessionStore";
 import { BUSINESS_CATEGORY_ICON_MAP } from "../utils/businessCategoryIcons";
-import colors from "../themes/utils/colors";
 import {
   sanitizeBusinessId,
   sanitizeBusinessIdLive,
@@ -89,7 +88,7 @@ const NumberedStepIcon: React.FC<StepIconProps> = ({
         justifyContent: "center",
         backgroundColor: filled ? theme.palette.primary.main : "transparent",
         border: filled ? "none" : `2px solid ${theme.palette.grey[300]}`,
-        color: filled ? "#fff" : theme.palette.grey[300],
+        color: filled ? theme.palette.primary.contrastText : theme.palette.grey[300],
         fontWeight: 700,
         fontSize: 14,
       }}
@@ -494,7 +493,7 @@ const Configuration = () => {
                           flexDirection: "column",
                           alignItems: "stretch",
                           justifyContent: "flex-start",
-                          border: `1px solid ${colors.light.grey[800]}`,
+                          border: `1px solid ${theme.palette.grey[800]}`,
                           borderRadius: theme.spacing(1.5),
                           paddingX: theme.spacing(6),
                           paddingTop: theme.spacing(4),
@@ -625,7 +624,7 @@ const Configuration = () => {
                           flexDirection: "column",
                           alignItems: "stretch",
                           justifyContent: "flex-start",
-                          border: `1px solid ${colors.light.grey[600]}`,
+                          border: `1px solid ${theme.palette.border.soft}`,
                           borderRadius: theme.spacing(1.5),
                           paddingX: theme.spacing(6),
                           paddingTop: theme.spacing(4),
@@ -714,7 +713,7 @@ const Configuration = () => {
                           flexDirection: "column",
                           alignItems: "stretch",
                           justifyContent: "flex-start",
-                          border: `1px solid ${colors.light.grey[400]}`,
+                          border: `1px solid ${theme.palette.border.divider}`,
                           borderRadius: theme.spacing(1.5),
                           paddingX: theme.spacing(3),
                           paddingY: theme.spacing(3),
@@ -808,7 +807,7 @@ const Configuration = () => {
                                     sx={{
                                       width: "fit-content",
                                       whiteSpace: "nowrap",
-                                      backgroundColor: "#FFF4E8",
+                                      backgroundColor: "surface.warning",
                                       paddingX: 2,
                                       paddingY: 4,
                                       borderRadius: 2,
@@ -868,7 +867,7 @@ const Configuration = () => {
                                     variant="outlined"
                                     sx={{
                                       border: 0,
-                                      backgroundColor: colors.light.grey[400],
+                                      backgroundColor: theme.palette.grey[400],
                                     }}
                                     onClick={() => {
                                       setFieldValue(
@@ -885,7 +884,7 @@ const Configuration = () => {
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      color: colors.light.grey[900],
+                                      color: theme.palette.grey[900],
                                     }}
                                   >
                                     Podrás ajustar esto en cualquier momento
@@ -912,8 +911,8 @@ const Configuration = () => {
                       variant="contained"
                       color="inherit"
                       sx={{
-                        backgroundColor: colors.light.grey[400],
-                        color: "#4B4B4B",
+                        backgroundColor: theme.palette.grey[400],
+                        color: "text.title",
                         boxShadow: "unset",
                       }}
                       onClick={() => handlePrevious(setFieldTouched)}

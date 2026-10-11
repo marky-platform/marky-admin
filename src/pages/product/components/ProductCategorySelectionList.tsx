@@ -99,7 +99,7 @@ const ProductCategorySelectionList: React.FC<CategorySelectionListProps> = ({
                     justifyContent: "center",
                   }}
                 >
-                  <CheckIcon sx={{ color: "white", fontSize: 14 }} />
+                  <CheckIcon sx={{ color: "primary.contrastText", fontSize: 14 }} />
                 </Box>
               )}
             </Box>
