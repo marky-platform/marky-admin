@@ -63,8 +63,8 @@ export const Header: React.FC<HeaderProps> = ({
       elevation={0}
       sx={{
         backgroundColor: hasProfileVariant
-          ? { xs: "#F8F8FA", md: "white" }
-          : "white",
+          ? { xs: "surface.header", md: "surface.base" }
+          : "surface.base",
       }}
     >
       <Toolbar
@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
           py: 2,
           px: { xs: 4, md: 8 },
           gap: 4,
-          borderBottom: "1px solid #E5E7EB",
+          borderBottom: (theme) => `1px solid ${theme.palette.border.header}`,
           boxSizing: "border-box",
         }}
       >
@@ -125,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
               minWidth: 260,
               px: 1,
               py: 2,
-              backgroundColor: "white",
+              backgroundColor: "surface.main",
               borderRadius: 2,
             },
           }}

@@ -24,7 +24,7 @@ const DECLARATIONS: {
 ];
 
 const CeliacSection = ({ value, onChange }: CeliacSectionProps) => (
-  <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 2, p: 5, mb: 3 }}>
+  <Box sx={{ border: (theme) => `1px solid ${theme.palette.border.field}`, borderRadius: 2, p: 5, mb: 3 }}>
     <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
       <Box
         component="img"

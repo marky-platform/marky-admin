@@ -129,10 +129,10 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
           <Box mb={4}>
             <Typography
               component="label"
-              sx={{ fontSize: 14, fontWeight: 700, color: "#333" }}
+              sx={{ fontSize: 14, fontWeight: 700, color: "text.strong" }}
             >
               Nombre de la categoría{" "}
-              <Box component="span" sx={{ color: "#FF3E3E" }}>
+              <Box component="span" sx={{ color: "accent.danger" }}>
                 *
               </Box>
             </Typography>
@@ -156,7 +156,7 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
 
           {/* Icon picker */}
           <Typography
-            sx={{ fontSize: 14, fontWeight: 700, color: "#333" }}
+            sx={{ fontSize: 14, fontWeight: 700, color: "text.strong" }}
             mb={2}
           >
             Íconos disponibles ({iconKeys.length})
@@ -168,7 +168,7 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
             mb={2}
             sx={{
               border: 1,
-              borderColor: "#E0E0E0",
+              borderColor: "border.field",
               borderRadius: 1.5,
               p: 3,
             }}
@@ -210,7 +210,7 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
             gap={3}
             mt={5}
             pt={4}
-            sx={{ boxShadow: "0px -1px 0px #E8E9EB" }}
+            sx={{ boxShadow: (theme) => `0px -1px 0px ${theme.palette.border.layout}` }}
           >
             <Button
               type="submit"
@@ -231,7 +231,7 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
                 disabled={!isValid}
                 sx={{
                   backgroundColor: "grey.400",
-                  color: "#4B4B4B",
+                  color: "text.title",
                   boxShadow: 0,
                 }}
                 // onClick={() => {

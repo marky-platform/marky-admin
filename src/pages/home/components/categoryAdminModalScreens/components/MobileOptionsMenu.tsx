@@ -35,7 +35,7 @@ const MobileOptionsMenu: React.FC<Props> = ({ onPromo, onDelete }) => {
             sx: {
               borderRadius: 2,
               p: 1,
-              boxShadow: "1px 2px 3.5px rgba(194,194,194,0.6)",
+              boxShadow: (theme) => `1px 2px 3.5px ${theme.palette.shadow.soft}`,
             },
           },
         }}
@@ -48,11 +48,11 @@ const MobileOptionsMenu: React.FC<Props> = ({ onPromo, onDelete }) => {
           sx={{
             borderRadius: 1.5,
             gap: 1.5,
-            "&:hover": { bgcolor: "#FAFAFA" },
+            "&:hover": { bgcolor: "grey.50" },
           }}
         >
-          <LocalOfferIcon fontSize="small" sx={{ color: "#4F4F4F" }} />
-          <Typography sx={{ fontSize: 14, color: "#4F4F4F" }}>
+          <LocalOfferIcon fontSize="small" sx={{ color: "text.body" }} />
+          <Typography sx={{ fontSize: 14, color: "text.body" }}>
             Promo
           </Typography>
         </MenuItem>
@@ -63,8 +63,8 @@ const MobileOptionsMenu: React.FC<Props> = ({ onPromo, onDelete }) => {
           }}
           sx={{ borderRadius: 1.5, gap: 1.5 }}
         >
-          <DeleteIcon fontSize="small" sx={{ color: "#FF3E3E" }} />
-          <Typography sx={{ fontSize: 14, color: "#FF3E3E" }}>
+          <DeleteIcon fontSize="small" sx={{ color: "accent.danger" }} />
+          <Typography sx={{ fontSize: 14, color: "accent.danger" }}>
             Eliminar
           </Typography>
         </MenuItem>

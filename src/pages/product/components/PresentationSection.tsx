@@ -118,7 +118,7 @@ const PresentationSection = ({ formik }: { formik: FormikProps<Product> }) => {
   };
 
   return (
-    <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 2, p: 5, mb: 3 }}>
+    <Box sx={{ border: (theme) => `1px solid ${theme.palette.border.field}`, borderRadius: 2, p: 5, mb: 3 }}>
       <Box sx={{ display: "flex", alignItems: "baseline", gap: 3 }}>
         <Typography variant="h6" fontWeight="bold">
           Presentación

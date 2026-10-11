@@ -42,14 +42,22 @@ const schemes: Record<ColorSchemeName, SchemeColors> = {
 // `colorSchemes` without `cssVariables` on purpose: `theme.palette` then
 // follows the active scheme (existing `theme.palette.*` reads keep working)
 // and the emitted light CSS stays byte-identical (e.g. spacing in px).
-const theme = createTheme({
-  colorSchemes: {
-    light: { palette: toPalette(schemes.light) },
-    dark: { palette: toPalette(schemes.dark) },
-  },
-  spacing: 4,
-  typography,
-  components,
-});
+//
+// A factory (not `createTheme(theme, …)`): MUI rebuilds `colorSchemes` from
+// the options it is given, so scheme overrides must be passed in at creation.
+export const createAppTheme = (
+  darkOverrides: Partial<ReturnType<typeof toPalette>> = {}
+) =>
+  createTheme({
+    colorSchemes: {
+      light: { palette: toPalette(schemes.light) },
+      dark: { palette: { ...toPalette(schemes.dark), ...darkOverrides } },
+    },
+    spacing: 4,
+    typography,
+    components,
+  });
+
+const theme = createAppTheme();
 
 export default theme;

@@ -34,6 +34,38 @@ const components: Components<Theme> = {
       }),
     },
   },
+  MuiPaper: {
+    styleOverrides: {
+      // MUI paints a translucent white elevation overlay on Paper in dark
+      // mode, which tints surfaces away from the palette token. No effect in
+      // light mode (no overlay exists there).
+      root: { backgroundImage: "none" },
+    },
+  },
+  MuiTypography: {
+    styleOverrides: {
+      // Same colors the typography variants used to carry (light values are
+      // unchanged), but read from the active scheme.
+      root: ({ theme, ownerState }) => {
+        // An explicit `color` prop wins, exactly as it did over the variant.
+        if (ownerState.color) return {};
+        switch (ownerState.variant) {
+          case "h1":
+          case "h2":
+          case "h3":
+          case "h4":
+          case "h5":
+          case "body1":
+          case "body2":
+            return { color: theme.palette.text.primary };
+          case "subtitle2":
+            return { color: theme.palette.text.secondary };
+          default:
+            return {};
+        }
+      },
+    },
+  },
   MuiFormLabel: {
     styleOverrides: {
       root: ({ theme }) => ({
@@ -80,6 +112,13 @@ const components: Components<Theme> = {
       "*::-webkit-scrollbar-thumb": {
         backgroundColor: theme.palette.scrollbar.thumb,
         borderRadius: "4px",
+      },
+      // Category icons are inline SVGs with a fixed #4B4B4B fill. Light value
+      // of text.title is the same #4B4B4B, so light is unchanged; in dark the
+      // icons follow the heading color. Scoped by class so other icons that
+      // share the fill (flags, brand art) are left alone.
+      '.category-icon [fill="#4B4B4B"]': {
+        fill: theme.palette.text.title,
       },
     }),
   },

@@ -67,7 +67,7 @@ const SubmitSection: React.FC<SubmitSectionProps> = ({
         bottom: 0,
         left: 0,
         right: 0,
-        bgcolor: "white",
+        bgcolor: "surface.base",
         width: "100%",
       }}
     >
@@ -103,7 +103,7 @@ const SubmitSection: React.FC<SubmitSectionProps> = ({
                   letterSpacing: "-0.1px",
                   "&.Mui-disabled": {
                     backgroundColor: "grey.600",
-                    color: "white",
+                    color: "fixed.white",
                   },
                 }
               : { px: 3 }

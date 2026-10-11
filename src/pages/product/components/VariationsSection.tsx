@@ -269,7 +269,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                       }
                       InputProps={{
                         sx: {
-                          backgroundColor: "white",
+                          backgroundColor: "surface.inset",
                         },
                       }}
                     />
@@ -305,7 +305,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                           }
                           InputProps={{
                             sx: {
-                              backgroundColor: "white",
+                              backgroundColor: "surface.inset",
                             },
                           }}
                         />
@@ -327,7 +327,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                           margin="normal"
                           InputProps={{
                             sx: {
-                              backgroundColor: "white",
+                              backgroundColor: "surface.inset",
                             },
                             endAdornment: currencyCode ? (
                               <InputAdornment position="end">
@@ -386,7 +386,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                   sx={{
                     px: 2,
                     py: 1,
-                    backgroundColor: "#DBE9F9",
+                    backgroundColor: "surface.tint",
                     borderRadius: 2,
                     mr: 2,
                   }}

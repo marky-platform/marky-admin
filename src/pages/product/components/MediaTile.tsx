@@ -55,9 +55,9 @@ const MediaTile: React.FC<MediaTileProps> = ({
           sx={{
             aspectRatio: "1 / 1",
             border: "2px dashed",
-            borderColor: isVideo ? "#EE84F8" : "primary.main",
+            borderColor: isVideo ? "fixed.video" : "primary.main",
             borderRadius: 3,
-            backgroundColor: "white",
+            backgroundColor: "surface.inset",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -76,7 +76,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
               variant="body2"
               fontWeight="bold"
               textAlign="center"
-              sx={{ color: isVideo ? "#EE84F8" : "primary.main", lineHeight: "16px" }}
+              sx={{ color: isVideo ? "fixed.video" : "primary.main", lineHeight: "16px" }}
             >
               {isVideo ? (
                 <>
@@ -170,7 +170,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
         <Box
           sx={{
             display: "inline-block",
-            backgroundColor: "rgb(255, 212, 1)",
+            backgroundColor: "fixed.stopperFavorite",
             borderRadius: "999px",
             paddingInline: "8px",
             position: "absolute",
@@ -185,7 +185,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
           <Typography
             variant="caption"
             fontWeight="bold"
-            sx={{ color: "#4B4B4B", whiteSpace: "nowrap", textOverflow: "ellipsis" }}
+            sx={{ color: "fixed.stopperFavoriteText", whiteSpace: "nowrap", textOverflow: "ellipsis" }}
           >
             Imagen de portada
           </Typography>

@@ -77,7 +77,7 @@ const MoveToCategoryModal: React.FC<MoveToCategoryModalProps> = ({
           justifyContent: "space-between",
           alignItems: "center",
           p: 2,
-          borderBottom: "1px solid #e0e0e0",
+          borderBottom: (theme) => `1px solid ${theme.palette.border.field}`,
         }}
       >
         <DialogTitle sx={{ px: 2, py: 0 }}>

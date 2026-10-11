@@ -58,6 +58,8 @@ export interface SchemeColors {
     inset: string;
     /** #F8F8FA header tint. */
     header: string;
+    /** #FAFAFA read-only field box on a card. */
+    field: string;
     /** #F9F9F9 */
     subtle: string;
     /** #F2F2F2 */
@@ -98,6 +100,8 @@ export interface SchemeColors {
     input: string;
     /** #D1D5DB */
     avatar: string;
+    /** lightgray (#D3D3D3) modal header rule. */
+    modal: string;
     /** #B8CDF5 dashed empty-state border. */
     dashed: string;
   };
@@ -130,6 +134,8 @@ export const fixedColors = {
   unavailable: "#BDBDBD",
   discount: "#E53935",
   multibuy: "#1E5BE8",
+  stopperFavoriteText: "#4B4B4B",
+  mediaFallback: "#4B4B4B",
   radioDot: "#FFD600",
   video: "#EE84F8",
   scrim: "rgba(0, 0, 0, 0.4)",
@@ -188,6 +194,7 @@ const light: SchemeColors = {
     main: "#FFFFFF",
     inset: "#FFFFFF",
     header: "#F8F8FA",
+    field: "#FAFAFA",
     subtle: "#F9F9F9",
     muted: "#F2F2F2",
     avatar: "#F3F4F6",
@@ -209,6 +216,7 @@ const light: SchemeColors = {
     soft: "#E6E6E6",
     input: "#D7D7D7",
     avatar: "#D1D5DB",
+    modal: "#D3D3D3",
     dashed: "#B8CDF5",
   },
   accent: {
@@ -276,6 +284,7 @@ const dark: SchemeColors = {
     main: "#1E293B", // Figma
     inset: "#0F172A", // (proposal) layer rule
     header: "#0F172A", // Figma: top nav
+    field: "#0F172A", // (proposal) inset on a #1E293B card
     subtle: "#1E293B", // (proposal)
     muted: "#2A2F36", // (proposal)
     avatar: "#1E293B", // Figma: avatar
@@ -297,6 +306,7 @@ const dark: SchemeColors = {
     soft: "#334155", // (proposal)
     input: "#334155", // (proposal)
     avatar: "#334155", // (proposal)
+    modal: "#334155", // (proposal)
     dashed: "#2F4F8F", // (proposal)
   },
   accent: {

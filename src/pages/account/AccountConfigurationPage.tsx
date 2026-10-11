@@ -62,8 +62,8 @@ const SettingsCard: React.FC<{
         pb: 6,
         px: 6,
         mb: "25px",
-        bgcolor: "white",
-        border: "1px solid #EDEDED",
+        bgcolor: "surface.main",
+        border: (theme) => `1px solid ${theme.palette.border.divider}`,
         ...paperSx,
       }}
     >
@@ -73,7 +73,7 @@ const SettingsCard: React.FC<{
           <IconButton
             size="small"
             onClick={onEdit}
-            sx={{ bgcolor: "#EDEDED", borderRadius: "6px", p: 2 }}
+            sx={{ bgcolor: "surface.iconButton", borderRadius: "6px", p: 2 }}
           >
             <EditOutlinedIcon sx={{ fontSize: 18 }} />
           </IconButton>
@@ -91,13 +91,13 @@ const FieldDisplay: React.FC<{
 }> = ({ label, value, sx }) => (
   <Box sx={sx}>
     <Typography
-      sx={{ fontSize: 14, fontWeight: 700, color: "#4b4b4b", mb: 0.5 }}
+      sx={{ fontSize: 14, fontWeight: 700, color: "text.title", mb: 0.5 }}
     >
       {label}
     </Typography>
     <Box
       sx={{
-        backgroundColor: "#FAFAFA",
+        backgroundColor: "surface.field",
         borderRadius: "6px",
         py: 1.5,
         px: 3,
@@ -209,8 +209,8 @@ const sidebarNavItemSx = {
   borderRadius: "6px",
   mb: 1,
   "&.Mui-selected": {
-    backgroundColor: "#F9F9F9",
-    "&:hover": { backgroundColor: "#F9F9F9" },
+    backgroundColor: "surface.subtle",
+    "&:hover": { backgroundColor: "surface.subtle" },
   },
 };
 
@@ -257,14 +257,14 @@ const AccountConfigurationPage: React.FC = () => {
           px: { xs: 4, md: "38px" },
           pt: "18px",
           pb: "12px",
-          borderBottom: "1px solid #EDEDED",
-          bgcolor: "white",
+          borderBottom: (theme) => `1px solid ${theme.palette.border.divider}`,
+          bgcolor: "surface.base",
         }}
       >
         <IconButton
           onClick={() => navigate(-1)}
           aria-label="Volver"
-          sx={{ bgcolor: "#EDEDED", borderRadius: "6px", p: 2 }}
+          sx={{ bgcolor: "surface.iconButton", borderRadius: "6px", p: 2 }}
         >
           <ArrowBackIcon />
         </IconButton>
@@ -272,7 +272,7 @@ const AccountConfigurationPage: React.FC = () => {
           sx={{
             fontWeight: 700,
             fontSize: isMobile ? 16 : 24,
-            color: "#292929",
+            color: "text.heading",
           }}
         >
           Mi cuenta
@@ -280,7 +280,7 @@ const AccountConfigurationPage: React.FC = () => {
       </Box>
 
       {isMobile && (
-        <Box sx={{ display: "flex", bgcolor: "white" }}>
+        <Box sx={{ display: "flex", bgcolor: "surface.base" }}>
           {(
             [
               { key: "configuration", label: "Configuración" },
@@ -297,15 +297,16 @@ const AccountConfigurationPage: React.FC = () => {
                   textAlign: "center",
                   py: 3.25,
                   cursor: "pointer",
-                  borderBottom: active
-                    ? "2px solid #2563EB"
-                    : "1px solid #EEEEEE",
+                  borderBottom: (theme) =>
+                    active
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : `1px solid ${theme.palette.border.light}`,
                 }}
               >
                 <Typography
                   sx={{
                     fontSize: 14,
-                    color: active ? "#2563EB" : "#6B7280",
+                    color: active ? "primary.main" : "text.disabled",
                   }}
                 >
                   {label}
@@ -326,7 +327,7 @@ const AccountConfigurationPage: React.FC = () => {
             }}
           >
             <Typography
-              sx={{ fontSize: 14, fontWeight: 700, color: "#374151", mb: 1 }}
+              sx={{ fontSize: 14, fontWeight: 700, color: "text.primary", mb: 1 }}
             >
               Tu cuenta
             </Typography>
@@ -379,8 +380,8 @@ const AccountConfigurationPage: React.FC = () => {
                           <Box
                             key={c.id}
                             sx={{
-                              bgcolor: "#E8F3FF",
-                              color: "#337AEA",
+                              bgcolor: "secondary.main",
+                              color: "accent.link",
                               fontSize: 14,
                               px: 2,
                               py: 1,
@@ -399,8 +400,8 @@ const AccountConfigurationPage: React.FC = () => {
                   ) : (
                     <Box
                       sx={{
-                        bgcolor: "#E8F3FF",
-                        color: "#337AEA",
+                        bgcolor: "secondary.main",
+                        color: "accent.link",
                         fontSize: 14,
                         px: 2,
                         py: 1,
@@ -434,7 +435,7 @@ const AccountConfigurationPage: React.FC = () => {
                                 sx={{
                                   fontSize: 14,
                                   fontWeight: 700,
-                                  color: "#374151",
+                                  color: "text.primary",
                                 }}
                               >
                                 {data.country_name}
@@ -461,7 +462,7 @@ const AccountConfigurationPage: React.FC = () => {
                       <Typography
                         sx={{
                           fontWeight: 700,
-                          color: "#337AEA",
+                          color: "accent.link",
                           fontSize: 14,
                         }}
                       >
@@ -471,7 +472,7 @@ const AccountConfigurationPage: React.FC = () => {
                             ? "Emprendedor"
                             : data?.business_type || "Sin definir"}
                       </Typography>
-                      <Typography sx={{ fontSize: 12, color: "#333" }}>
+                      <Typography sx={{ fontSize: 12, color: "text.strong" }}>
                         {data?.business_type === "commercial"
                           ? "Tu negocio dispone de sucursal para recibir clientes o comensales"
                           : data?.business_type === "entrepreneur"
@@ -523,7 +524,7 @@ const AccountConfigurationPage: React.FC = () => {
                     <Box display="flex" alignItems="center" gap={2} mt={2}>
                       <Box
                         sx={{
-                          backgroundColor: "#FFF4E8",
+                          backgroundColor: "surface.warning",
                           px: 2,
                           py: 1,
                           borderRadius: 1,
@@ -532,14 +533,14 @@ const AccountConfigurationPage: React.FC = () => {
                       <Box>es igual a:</Box>
                       <Box
                         sx={{
-                          backgroundColor: "#FFF4E8",
+                          backgroundColor: "surface.warning",
                           px: 2,
                           py: 1,
                           borderRadius: 1,
                         }}
                       >{`${data?.exchange_rate} ${exchangeToCode ?? ""}`}</Box>
                       <IconButton
-                        sx={{ bgcolor: "#EDEDED", borderRadius: "6px", p: 2 }}
+                        sx={{ bgcolor: "surface.iconButton", borderRadius: "6px", p: 2 }}
                       >
                         <ExchangeIcon />
                       </IconButton>
@@ -551,14 +552,14 @@ const AccountConfigurationPage: React.FC = () => {
               {!isMobile && (
                 <Box width={330} flexShrink={0}>
                   <Typography
-                    sx={{ fontSize: 18, fontWeight: 500, color: "#333", mb: 3 }}
+                    sx={{ fontSize: 18, fontWeight: 500, color: "text.strong", mb: 3 }}
                   >
                     Previsualización
                   </Typography>
                   <Paper
                     elevation={0}
                     sx={{
-                      border: "1px solid #E5E7EB",
+                      border: (theme) => `1px solid ${theme.palette.border.header}`,
                       borderRadius: "12px",
                       py: 6,
                       display: "flex",
@@ -572,21 +573,21 @@ const AccountConfigurationPage: React.FC = () => {
                       sx={{ mb: 3 }}
                     />
                     <Typography
-                      sx={{ fontSize: 18, fontWeight: 500, color: "#374151" }}
+                      sx={{ fontSize: 18, fontWeight: 500, color: "text.primary" }}
                     >
                       {data?.business_name ?? "Nombre del comercio"}
                     </Typography>
                     <Typography
-                      sx={{ fontSize: 14, color: "#4F4F4F", mt: 1 }}
+                      sx={{ fontSize: 14, color: "text.body", mt: 1 }}
                     >
                       {(data?.categories ?? []).map((c) => c.name).join(", ") ||
                         "Sin categoría"}
                     </Typography>
                     <Box display="flex" alignItems="center" gap={0.5} mt={1}>
                       <StorefrontOutlinedIcon
-                        sx={{ fontSize: 14, color: "#2563EB" }}
+                        sx={{ fontSize: 14, color: "primary.main" }}
                       />
-                      <Typography sx={{ fontSize: 12, color: "#2563EB" }}>
+                      <Typography sx={{ fontSize: 12, color: "primary.main" }}>
                         Negocio
                       </Typography>
                     </Box>
@@ -619,7 +620,7 @@ const AccountConfigurationPage: React.FC = () => {
               </SettingsCard>
 
               <SettingsCard title="Contraseña">
-                <Typography sx={{ fontSize: 14, color: "#4F4F4F", mb: 1 }}>
+                <Typography sx={{ fontSize: 14, color: "text.body", mb: 1 }}>
                   Cambia tu contraseña en cualquier momento.
                 </Typography>
                 {/* No hay endpoint de cambio de contraseña autenticado todavía
@@ -628,7 +629,7 @@ const AccountConfigurationPage: React.FC = () => {
                     backend lo exponga. */}
                 <Typography
                   component="span"
-                  sx={{ fontSize: 14, fontWeight: 500, color: "#337AEA" }}
+                  sx={{ fontSize: 14, fontWeight: 500, color: "accent.link" }}
                 >
                   Cambiar contraseña
                 </Typography>

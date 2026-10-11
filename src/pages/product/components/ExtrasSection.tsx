@@ -124,7 +124,7 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                       }
                       InputProps={{
                         sx: {
-                          backgroundColor: "white",
+                          backgroundColor: "surface.inset",
                         },
                       }}
                     />
@@ -138,7 +138,7 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                       sx={{ width: { xs: "60%", md: "100%" }, minWidth: { xs: 160, md: 0 } }}
                       InputProps={{
                         sx: {
-                          backgroundColor: "white",
+                          backgroundColor: "surface.inset",
                         },
                         endAdornment: currencyCode ? (
                           <InputAdornment position="end">
@@ -189,7 +189,7 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                   sx={{
                     px: 2,
                     py: 1,
-                    backgroundColor: "#DBE9F9",
+                    backgroundColor: "surface.tint",
                     borderRadius: 2,
                     mr: 2,
                   }}
