@@ -10,7 +10,9 @@ import {
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import CatalogFilterPills from "../../../components/CatalogFilterPills";
-import CatalogViewToggle from "../../../components/CatalogViewToggle";
+import CatalogViewToggle, {
+  CATALOG_CONTROL_HEIGHT,
+} from "../../../components/CatalogViewToggle";
 import SelectButtonField from "../../../components/SelectButtonField";
 import { CatalogViewMode } from "../../../hooks/useCatalogViewMode";
 import useDebounce from "../../../hooks/useDebounce";
@@ -19,6 +21,12 @@ import { Category } from "./CategoryFilterModal";
 
 // Achata los campos de filtro (búsqueda y categorías) al alto pedido por diseño.
 const filterFieldSx = { "& .MuiInputBase-input": { height: "1em" } };
+
+// Desktop: búsqueda, categorías, píldoras y selector de vista miden lo mismo.
+const desktopFieldSx = {
+  ...filterFieldSx,
+  "& .MuiOutlinedInput-root": { height: CATALOG_CONTROL_HEIGHT },
+};
 
 // Create a separate component for the filters section
 const FilterSection: React.FC<{
@@ -36,6 +44,9 @@ const FilterSection: React.FC<{
   showViewToggleOnMobile?: boolean;
   /** Totales de Promociones/Destacados para las píldoras. */
   filterCounts?: { promotion?: number; featured?: number };
+  /** El Home admin elimina en mobile el bloque Todos/Promociones/Destacados;
+   * la vista pública conserva el comportamiento anterior (true). */
+  showCatalogFilterPillsOnMobile?: boolean;
 }> = ({
   values,
   onFilterChange,
@@ -45,6 +56,7 @@ const FilterSection: React.FC<{
   onViewModeChange,
   showViewToggleOnMobile = false,
   filterCounts,
+  showCatalogFilterPillsOnMobile = true,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -110,21 +122,24 @@ const FilterSection: React.FC<{
           onFilterChange={onFilterChange}
           categories={categories}
         />
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 2,
-            pt: 1,
-            pb: 2,
-            overflowX: "auto",
-            "&::-webkit-scrollbar": { display: "none" },
-          }}
-        >
-          {pills}
-          {showViewToggleOnMobile && viewToggle}
-        </Box>
+        {(showCatalogFilterPillsOnMobile ||
+          (showViewToggleOnMobile && viewToggle)) && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 2,
+              pt: 1,
+              pb: 2,
+              overflowX: "auto",
+              "&::-webkit-scrollbar": { display: "none" },
+            }}
+          >
+            {showCatalogFilterPillsOnMobile && pills}
+            {showViewToggleOnMobile && viewToggle}
+          </Box>
+        )}
       </Box>
     );
   } else if (!isDesktop) {
@@ -209,14 +224,14 @@ const FilterSection: React.FC<{
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             fullWidth
-            sx={filterFieldSx}
+            sx={desktopFieldSx}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
               ),
-              sx: { paddingY: 2 },
+              sx: { paddingY: 0 },
             }}
           />
         </Box>
@@ -229,7 +244,7 @@ const FilterSection: React.FC<{
                 : undefined
             }
             onClick={setOpenCategoryModal}
-            sx={filterFieldSx}
+            sx={desktopFieldSx}
           />
         </Box>
         <Box

@@ -47,7 +47,7 @@ const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
       }}
     >
       <Chip
-        label={`Todo (${categories.length})`}
+        label="Todo"
         onClick={() => onFilterChange({ categories: [] })}
         sx={{
           flexShrink: 0,

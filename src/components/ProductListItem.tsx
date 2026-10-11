@@ -26,11 +26,12 @@ const pill = (bg: string) => ({
   bgcolor: bg,
   color: "common.white",
   px: 1.5,
-  py: 0.5,
+  // Desktop: misma altura (28px) y tipografía (14px) que ProductStopperTag.
+  py: { xs: 0.5, md: 0 },
   borderRadius: "24px",
-  fontSize: 12,
+  fontSize: { xs: 12, md: 14 },
   fontWeight: 500,
-  lineHeight: "16px",
+  lineHeight: { xs: "16px", md: "28px" },
   width: "fit-content",
 });
 
@@ -113,8 +114,8 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
         sx={{
           position: "relative",
           flexShrink: 0,
-          width: { xs: 70, md: 64 },
-          height: { xs: 70, md: 64 },
+          width: { xs: 70, md: 90 },
+          height: { xs: 70, md: 90 },
           borderRadius: "12px",
           overflow: "hidden",
           border: "1px solid",

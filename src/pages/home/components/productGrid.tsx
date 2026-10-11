@@ -6,7 +6,7 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import DeleteCategoryWarningImage from "../../../assets/images/delete-category-warning.png";
 import useDeleteProductCategory from "../../../hooks/useDeleteProductCategory";
 import useDeleteProduct from "../../../hooks/useDeleteProduct";
-import { useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes/paths";
@@ -74,6 +74,11 @@ export const ProductGrid: React.FC = () => {
     ...(filters.featured ? { has_featured: true } : {}),
     include_counts: true,
     ids: filters.categories.map((c) => c.id).join(","),
+  }, {
+    // Al cambiar de filtro se conservan los datos previos mientras llega la
+    // respuesta, para que el documento no colapse y la página no salte al
+    // inicio (el spinner solo aparece en la primera carga).
+    placeholderData: keepPreviousData,
   });
 
   const categoriesWithProducts = useMemo(() => {
@@ -216,7 +221,7 @@ export const ProductGrid: React.FC = () => {
           display={"flex"}
           sx={{
             width: { xs: "100%", md: "auto" },
-            gap: { xs: "18px", md: 3 },
+            gap: { xs: 2, md: 3 },
           }}
         >
           <Button
@@ -272,6 +277,7 @@ export const ProductGrid: React.FC = () => {
             setOpenCategoryModal={() => setOpenCategoryModal(true)}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
+            showCatalogFilterPillsOnMobile={false}
             filterCounts={{
               promotion: categoriesWithProductsRaw?.filter_counts?.promotion,
               featured: categoriesWithProductsRaw?.filter_counts?.featured,

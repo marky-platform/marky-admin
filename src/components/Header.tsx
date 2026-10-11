@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
           maxHeight: HEADER_HEIGHT,
           py: 2,
           px: { xs: 4, md: 8 },
-          gap: { xs: 4, md: 6 },
+          gap: 4,
           borderBottom: "1px solid #E5E7EB",
           boxSizing: "border-box",
         }}
@@ -101,12 +101,12 @@ export const Header: React.FC<HeaderProps> = ({
           color="inherit"
           onClick={handleProfileClick}
           aria-label="user-menu"
-          sx={{ p: showProfileVariant ? 0.5 : 1 }}
+          sx={{ width: 34, height: 34, p: 0, flexShrink: 0 }}
         >
           {showProfileVariant ? (
             <BusinessAvatar photo={businessPhoto} size={34} />
           ) : (
-            <Avatar src={defaultUserAvatar} />
+            <Avatar src={defaultUserAvatar} sx={{ width: 34, height: 34 }} />
           )}
         </IconButton>
         {showProfileVariant && mobileActionsSlot}

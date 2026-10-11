@@ -146,6 +146,7 @@ const NotificationsMenu: React.FC = () => {
         color="inherit"
         aria-label="notifications"
         onClick={(event) => setAnchorEl(event.currentTarget)}
+        sx={{ width: 34, height: 34, p: 0, flexShrink: 0 }}
       >
         <Badge badgeContent={unreadCount} color="error">
           <NotificationsIcon sx={{ color: "#9E9EA6" }} />

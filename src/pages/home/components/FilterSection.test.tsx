@@ -101,7 +101,7 @@ describe("FilterSection breakpoint scope", () => {
     expect(screen.queryByText("En promoción")).not.toBeInTheDocument();
   });
 
-  it("combines Promociones and Destacados and clears both with Todos", () => {
+  it("keeps Promociones and Destacados mutually exclusive and clears with Todos", () => {
     mockMatchMedia("min-width:900");
     const onFilterChange = jest.fn();
     render(
@@ -117,17 +117,69 @@ describe("FilterSection breakpoint scope", () => {
       </QueryClientProvider>,
     );
 
-    // Counts render inside the pill labels.
+    // Counts render in their own bubble but keep the accessible name.
     fireEvent.click(screen.getByRole("button", { name: "Destacados 1" }));
-    expect(onFilterChange).toHaveBeenCalledWith({ featured: true });
+    expect(onFilterChange).toHaveBeenCalledWith({
+      offer: false,
+      featured: true,
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "Promociones 4" }));
-    expect(onFilterChange).toHaveBeenCalledWith({ offer: false });
+    expect(onFilterChange).toHaveBeenCalledWith({
+      offer: false,
+      featured: false,
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "Todos" }));
     expect(onFilterChange).toHaveBeenCalledWith({
       offer: false,
       featured: false,
+    });
+  });
+
+  describe("mobile", () => {
+    const renderMobile = (
+      extra: Partial<React.ComponentProps<typeof FilterSection>> = {},
+    ) => {
+      mockMatchMedia("max-width");
+      return render(
+        <QueryClientProvider client={new QueryClient()}>
+          <ThemeProvider theme={lightTheme}>
+            <FilterSection
+              values={{}}
+              onFilterChange={jest.fn()}
+              setOpenCategoryModal={jest.fn()}
+              categories={[{ id: 1, name: "Pizzas" } as any]}
+              {...extra}
+            />
+          </ThemeProvider>
+        </QueryClientProvider>,
+      );
+    };
+
+    it("keeps the pills by default (public catalog)", () => {
+      renderMobile();
+      expect(
+        screen.getByRole("button", { name: "Promociones" }),
+      ).toBeInTheDocument();
+    });
+
+    it("hides the Todos / Promociones / Destacados block when scoped out (admin Home)", () => {
+      renderMobile({ showCatalogFilterPillsOnMobile: false });
+      expect(
+        screen.queryByRole("button", { name: "Todos" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Promociones" }),
+      ).not.toBeInTheDocument();
+      // The category chips stay.
+      expect(screen.getByRole("button", { name: "Todo" })).toBeInTheDocument();
+    });
+
+    it("category chip 'Todo' shows no number", () => {
+      renderMobile({ showCatalogFilterPillsOnMobile: false });
+      expect(screen.getByText("Todo")).toBeInTheDocument();
+      expect(screen.queryByText(/Todo \(/)).not.toBeInTheDocument();
     });
   });
 

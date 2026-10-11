@@ -9,6 +9,10 @@ interface CatalogViewToggleProps {
   onChange: (mode: CatalogViewMode) => void;
 }
 
+/** Alto total del selector (32px de botón + 2×5px padding + 2×1px borde). Es
+ * la altura canónica de los controles de filtro en desktop. */
+export const CATALOG_CONTROL_HEIGHT = 44;
+
 const OPTIONS: {
   mode: CatalogViewMode;
   label: string;

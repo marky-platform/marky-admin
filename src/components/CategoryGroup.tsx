@@ -61,6 +61,8 @@ interface CategoryGroupProps {
   viewMode?: CatalogViewMode;
 }
 
+const LIST_EMPTY_TILE_SIZE = "clamp(70px, 7.5vw, 108px)";
+
 const CategoryGroup: React.FC<CategoryGroupProps> = ({
   category,
   onPromotionClick,
@@ -385,6 +387,17 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
                 aspectRatio: "1 / 1",
                 minWidth: 97,
                 minHeight: 97,
+                // Lista en desktop: cuadrado entre 70px y 108px. La grilla y
+                // mobile conservan el tamaño anterior.
+                ...(viewMode === "list" && {
+                  width: { md: LIST_EMPTY_TILE_SIZE },
+                  height: { md: LIST_EMPTY_TILE_SIZE },
+                  minWidth: { xs: 97, md: 70 },
+                  minHeight: { xs: 97, md: 70 },
+                  maxWidth: { md: 108 },
+                  maxHeight: { md: 108 },
+                  justifySelf: { md: "start" },
+                }),
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",

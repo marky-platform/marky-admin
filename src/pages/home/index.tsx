@@ -202,6 +202,13 @@ const Home = () => {
           <ProfileActionsMenu
             items={profileShareItems()}
             placement="below-end"
+            sx={{
+              width: 34,
+              height: 34,
+              p: 0,
+              flexShrink: 0,
+              "& .MuiSvgIcon-root": { width: 24, height: 24 },
+            }}
           />
         }
       />
