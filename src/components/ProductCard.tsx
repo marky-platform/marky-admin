@@ -257,6 +257,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             left: { xs: "12px", md: "15px" },
             display: "flex",
             flexDirection: "column",
+            // Cada pill conserva el ancho de su contenido; sin esto el
+            // flex-column estira "2x1"/"-15%" al ancho de "No disponible".
+            alignItems: "flex-start",
             gap: 1,
             zIndex: 0,
           }}
