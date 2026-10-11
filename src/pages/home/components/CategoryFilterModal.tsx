@@ -172,7 +172,7 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
                   py={5.5}
                   px={5.5}
                   sx={{
-                    backgroundColor: "#F2F2F2",
+                    backgroundColor: "surface.muted",
                     display: { xs: "none", md: "block" },
                   }}
                 >
@@ -235,7 +235,8 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
 
               <Box
                 sx={{
-                  boxShadow: "0px -1px 0px 0px #E8E9EB",
+                  boxShadow: (theme) =>
+                    `0px -1px 0px 0px ${theme.palette.border.layout}`,
                   display: "flex",
                   gap: 3,
                   padding: 5.25,

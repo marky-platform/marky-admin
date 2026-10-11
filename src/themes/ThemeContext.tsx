@@ -1,5 +1,11 @@
 // ThemeContext.tsx
-import React, { createContext, useCallback, useContext, useMemo } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+} from "react";
 import { ThemeProvider, useColorScheme } from "@mui/material/styles";
 import theme, { COLOR_MODE_STORAGE_KEY, DEFAULT_COLOR_MODE } from "./theme";
 import type { ColorSchemeName } from "./theme";
@@ -17,6 +23,11 @@ interface ColorModeContextValue {
   /** @deprecated use `toggleMode`. */
   toggleTheme: () => void;
 }
+
+// Scheme currently applied, for code that runs outside React (toasts fired
+// from services/utils). Kept in sync by ColorModeBridge.
+let activeScheme: ColorSchemeName = "light";
+export const getActiveColorScheme = (): ColorSchemeName => activeScheme;
 
 const noop = () => {};
 
@@ -42,6 +53,10 @@ const ColorModeBridge: React.FC<{ children: React.ReactNode }> = ({
       ? "dark"
       : "light";
 
+  useLayoutEffect(() => {
+    activeScheme = resolvedMode;
+  }, [resolvedMode]);
+
   const toggleMode = useCallback(() => {
     setMode(resolvedMode === "dark" ? "light" : "dark");
   }, [resolvedMode, setMode]);
@@ -54,7 +69,7 @@ const ColorModeBridge: React.FC<{ children: React.ReactNode }> = ({
       toggleMode,
       toggleTheme: toggleMode,
     }),
-    [currentMode, resolvedMode, setMode, toggleMode]
+    [currentMode, resolvedMode, setMode, toggleMode],
   );
 
   return (

@@ -149,7 +149,7 @@ const NotificationsMenu: React.FC = () => {
         sx={{ width: 34, height: 34, p: 0, flexShrink: 0 }}
       >
         <Badge badgeContent={unreadCount} color="error">
-          <NotificationsIcon sx={{ color: "#9E9EA6" }} />
+          <NotificationsIcon sx={{ color: "grey.900" }} />
         </Badge>
       </IconButton>
       <Menu
@@ -163,7 +163,7 @@ const NotificationsMenu: React.FC = () => {
             maxWidth: 400,
             maxHeight: 480,
             py: 2,
-            backgroundColor: "white",
+            backgroundColor: "surface.main",
             borderRadius: 2,
           },
         }}

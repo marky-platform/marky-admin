@@ -14,4 +14,19 @@ const InsetSurface: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => <ThemeProvider theme={insetTheme}>{children}</ThemeProvider>;
 
+/** Wraps a Dialog-based modal so its fields read as inset in dark mode. */
+export const withInsetSurface = <P extends object>(
+  Component: React.ComponentType<P>
+): React.FC<P> => {
+  const Wrapped: React.FC<P> = (props) => (
+    <InsetSurface>
+      <Component {...props} />
+    </InsetSurface>
+  );
+  Wrapped.displayName = `withInsetSurface(${
+    Component.displayName || Component.name || "Component"
+  })`;
+  return Wrapped;
+};
+
 export default InsetSurface;

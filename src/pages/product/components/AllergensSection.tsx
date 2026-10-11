@@ -1,7 +1,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
-import allergenInfoIcon from "../../../assets/icons/product-form/allergen-info.svg";
+import ThemeAssetImage from "../../../components/ThemeAssetImage";
 import { ALLERGENS } from "../../../constants/allergens";
 import AllergenSelectionModal from "./AllergenSelectionModal";
 import RemovableTag from "./RemovableTag";
@@ -18,9 +18,8 @@ const AllergensSection = ({ value, onChange }: AllergensSectionProps) => {
   return (
     <Box sx={{ border: (theme) => `1px solid ${theme.palette.border.field}`, borderRadius: 2, p: 5, mb: 3 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-        <Box
-          component="img"
-          src={allergenInfoIcon}
+        <ThemeAssetImage
+          asset="allergenInfoIcon"
           alt=""
           sx={{ width: 24, height: 24 }}
         />

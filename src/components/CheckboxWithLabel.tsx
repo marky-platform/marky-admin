@@ -12,14 +12,14 @@ interface CheckboxWithLabelProps {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const UncheckedIcon = styled("span")({
+const UncheckedIcon = styled("span")(({ theme }) => ({
   display: "inline-block",
   width: 22,
   height: 22,
   borderRadius: 4,
-  border: "1px solid #AEB7C4",
+  border: `1px solid ${theme.palette.grey[800]}`,
   boxSizing: "border-box",
-});
+}));
 
 const CheckedIcon = styled("span")(({ theme }) => ({
   display: "inline-flex",
@@ -34,8 +34,8 @@ const CheckedIcon = styled("span")(({ theme }) => ({
     content: '""',
     width: 12,
     height: 6,
-    borderLeft: "2px solid #FFFFFF",
-    borderBottom: "2px solid #FFFFFF",
+    borderLeft: `2px solid ${theme.palette.fixed.white}`,
+    borderBottom: `2px solid ${theme.palette.fixed.white}`,
     transform: "rotate(-45deg) translate(1px, -1px)",
   },
 }));

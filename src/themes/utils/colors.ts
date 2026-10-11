@@ -35,6 +35,10 @@ export interface SchemeColors {
     soft: string;
     /** #9CA3AF */
     placeholder: string;
+    /** `black` icon/text. */
+    black: string;
+    /** CSS `grey` (#808080) placeholder text. */
+    grey: string;
   };
   grey: {
     50: string;
@@ -82,6 +86,8 @@ export interface SchemeColors {
     veil: string;
     /** #DCDCDC hover of the grey1 button. */
     pressed: string;
+    /** #E5E7EB disabled button / empty avatar fill. */
+    disabled: string;
   };
   border: {
     /** #E0E0E0 inputs/cards. */
@@ -135,6 +141,7 @@ export const fixedColors = {
   discount: "#E53935",
   multibuy: "#1E5BE8",
   stopperFavoriteText: "#4B4B4B",
+  stopperFavoriteTextCard: "#333333",
   mediaFallback: "#4B4B4B",
   radioDot: "#FFD600",
   video: "#EE84F8",
@@ -172,6 +179,8 @@ const light: SchemeColors = {
     faint: "#757575",
     soft: "#4A4A4A",
     placeholder: "#9CA3AF",
+    black: "#000000",
+    grey: "#808080",
   },
   grey: {
     50: "#FAFAFA",
@@ -206,6 +215,7 @@ const light: SchemeColors = {
     selected: "#E8F3FF",
     veil: "rgba(255, 255, 255, 0.8)",
     pressed: "#DCDCDC",
+    disabled: "#E5E7EB",
   },
   border: {
     field: "#E0E0E0",
@@ -262,6 +272,8 @@ const dark: SchemeColors = {
     faint: "#9E9EA6",
     soft: "#CBD5E1", // (proposal)
     placeholder: "#64748B", // (proposal)
+    black: "#FFFFFF", // (proposal)
+    grey: "#9E9EA6", // (proposal)
   },
   grey: {
     50: "#1E293B", // Figma surface.main
@@ -296,6 +308,7 @@ const dark: SchemeColors = {
     selected: "rgba(74, 136, 236, 0.2)", // (proposal)
     veil: "rgba(15, 23, 42, 0.8)", // (proposal)
     pressed: "#334155", // (proposal)
+    disabled: "#1E293B", // (proposal)
   },
   border: {
     field: "#334155", // Figma

@@ -2,8 +2,8 @@ import React from "react";
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import logoMarky from "../assets/images/marky-logo.png";
 import { ROUTES } from "../routes/paths";
+import { useThemeAssets } from "../themes/useThemeAssets";
 
 interface AuthMobileHeaderProps {
   // Disable on pages reached only once the user is already authenticated
@@ -17,6 +17,7 @@ const AuthMobileHeader: React.FC<AuthMobileHeaderProps> = ({
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { logoPng } = useThemeAssets();
 
   return (
     <Box
@@ -24,7 +25,7 @@ const AuthMobileHeader: React.FC<AuthMobileHeaderProps> = ({
         width: "100%",
         padding: theme.spacing(2.75, 4, 2, 4),
         gap: 0,
-        boxShadow: "0px 1px 0px 0px #E8E9EB",
+        boxShadow: `0px 1px 0px 0px ${theme.palette.border.layout}`,
         display: { xs: "flex", md: "none" },
       }}
       justifyContent="center"
@@ -37,7 +38,7 @@ const AuthMobileHeader: React.FC<AuthMobileHeaderProps> = ({
         }}
       >
         <img
-          src={logoMarky}
+          src={logoPng}
           alt="Marky"
           style={{ width: "112px", height: "auto" }}
         />

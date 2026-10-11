@@ -18,7 +18,7 @@ interface BackButtonProps extends IconButtonProps {}
 const BackButton: React.FC<BackButtonProps> = (props) => {
   return (
     <GreyHoverButton {...props}>
-      <ArrowBackIcon sx={{ color: "black" }} />
+      <ArrowBackIcon sx={{ color: "text.black" }} />
     </GreyHoverButton>
   );
 };

@@ -58,7 +58,7 @@ const CustomPopupMenu: React.FC<CustomPopupMenuProps> = ({
       PaperProps={{
         sx: {
           marginTop: isBelowEnd ? 1 : 2,
-          backgroundColor: "white", // light custom background
+          backgroundColor: "surface.main", // light custom background
           p: 2, // inner padding
           maxWidth: 220, // optional, for spacing
         },

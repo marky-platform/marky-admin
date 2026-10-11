@@ -57,8 +57,9 @@ const SelectButtonField: React.FC<SelectButtonFieldProps> = ({
           sx={{
             pointerEvents: "none",
             "& .MuiInputBase-input.Mui-disabled": {
-              WebkitTextFillColor: displayText ? "black" : "grey",
-              color: displayText ? "black" : "grey",
+              WebkitTextFillColor: (theme) =>
+                displayText ? theme.palette.text.black : theme.palette.text.grey,
+              color: displayText ? "text.black" : "text.grey",
             },
           }}
         />

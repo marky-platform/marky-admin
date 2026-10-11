@@ -18,8 +18,8 @@ const pillSx = (active: boolean) => ({
   fontWeight: 500,
   border: "1px solid",
   borderColor: active ? "primary.main" : "grey.300",
-  bgcolor: active ? "primary.main" : "common.white",
-  color: active ? "common.white" : "#4F4F4F",
+  bgcolor: active ? "primary.main" : "surface.main",
+  color: active ? "fixed.white" : "text.body",
   "&:hover": { bgcolor: active ? "primary.main" : "grey.100" },
 });
 
@@ -43,7 +43,7 @@ const CountBubble: React.FC<{ count: number; active: boolean }> = ({
       fontSize: 12,
       fontWeight: 600,
       lineHeight: 1,
-      bgcolor: active ? "common.white" : "#E8F3FF",
+      bgcolor: active ? "fixed.white" : "secondary.main",
       color: "primary.main",
     }}
   >

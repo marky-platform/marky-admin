@@ -92,7 +92,7 @@ const SortableCategoryList: React.FC<SortableCategoryListProps> = ({
       >
         <Box display={"flex"} alignItems={"center"} mb={3} gap={1}>
           <ImportExportIcon />
-          <Typography sx={{ fontSize: 14, fontWeight: 700, color: "#333" }}>
+          <Typography sx={{ fontSize: 14, fontWeight: 700, color: "text.strong" }}>
             Selecciona y arrastra la categoría
           </Typography>
         </Box>
@@ -102,7 +102,7 @@ const SortableCategoryList: React.FC<SortableCategoryListProps> = ({
             maxHeight: 300,
             overflowY: "auto",
             border: 1,
-            borderColor: "#E0E0E0",
+            borderColor: "border.field",
             py: 0.25,
             borderRadius: 1.5,
           }}
@@ -124,7 +124,7 @@ const SortableCategoryList: React.FC<SortableCategoryListProps> = ({
           )}
         </Box>
       </SortableContext>
-      <Box mt={4} pt={3} sx={{ boxShadow: "0px -1px 0px #E8E9EB" }}>
+      <Box mt={4} pt={3} sx={{ boxShadow: (theme) => `0px -1px 0px ${theme.palette.border.layout}` }}>
         <Button
           variant="contained"
           color="primary"

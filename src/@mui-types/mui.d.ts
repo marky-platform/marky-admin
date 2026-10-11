@@ -49,5 +49,7 @@ declare module "@mui/material/styles" {
     faint: string;
     soft: string;
     placeholder: string;
+    black: string;
+    grey: string;
   }
 }

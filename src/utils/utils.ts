@@ -1,5 +1,7 @@
 import { toast } from "react-toastify";
 import { TypeOptions } from "react-toastify/dist/types";
+import { themeAssets } from "../themes/assets";
+import { getActiveColorScheme } from "../themes/ThemeContext";
 
 type ShowNotificationProps = {
   message: string | undefined;
@@ -13,7 +15,7 @@ export const ShowNotification = ({
   toastId,
 }: ShowNotificationProps): void => {
   const otherProps = {
-    theme: "dark",
+    theme: themeAssets[getActiveColorScheme()].toastTheme,
   };
   toast(message, { type: type, toastId, ...otherProps });
 };

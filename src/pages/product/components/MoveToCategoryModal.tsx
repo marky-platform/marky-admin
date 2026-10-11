@@ -1,3 +1,4 @@
+import { withInsetSurface } from "../../../themes/InsetSurface";
 import React, { useState } from "react";
 import {
   Box,
@@ -159,4 +160,4 @@ const MoveToCategoryModal: React.FC<MoveToCategoryModalProps> = ({
   );
 };
 
-export default MoveToCategoryModal;
+export default withInsetSurface(MoveToCategoryModal);

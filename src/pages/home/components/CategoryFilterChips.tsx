@@ -55,10 +55,10 @@ const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
           px: 1,
           py: 2.5,
           fontWeight: 500,
-          bgcolor: isAllActive ? "primary.main" : "#E8F3FF",
-          color: isAllActive ? "common.white" : "primary.main",
+          bgcolor: isAllActive ? "primary.main" : "secondary.main",
+          color: isAllActive ? "fixed.white" : "primary.main",
           "&:hover": {
-            bgcolor: isAllActive ? "primary.main" : "#E8F3FF",
+            bgcolor: isAllActive ? "primary.main" : "secondary.main",
           },
         }}
       />
@@ -75,10 +75,10 @@ const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
               px: 1,
               py: 2.5,
               fontWeight: 500,
-              bgcolor: active ? "primary.main" : "#E8F3FF",
-              color: active ? "common.white" : "primary.main",
+              bgcolor: active ? "primary.main" : "secondary.main",
+              color: active ? "fixed.white" : "primary.main",
               "&:hover": {
-                bgcolor: active ? "primary.main" : "#E8F3FF",
+                bgcolor: active ? "primary.main" : "secondary.main",
               },
             }}
           />

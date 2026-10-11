@@ -13,8 +13,8 @@ const ProductStopperTag: React.FC<ProductStopperTagProps> = ({ stopper }) => {
   if (!isFavorite && !isRecommended) return null;
 
   const label = isFavorite ? "Favorito del mes" : "Recomendado";
-  const bg = isFavorite ? "#FFD401" : "primary.main";
-  const color = isFavorite ? "#333" : "#FFF";
+  const bg = isFavorite ? "fixed.stopperFavorite" : "primary.main";
+  const color = isFavorite ? "fixed.stopperFavoriteTextCard" : "fixed.white";
 
   return (
     <Box

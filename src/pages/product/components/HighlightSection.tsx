@@ -95,7 +95,7 @@ const HighlightSection: React.FC<FormikProps<any>> = ({
               <CustomRadioLabel
                 label="Recomendado"
                 backgroundColor="primary.main"
-                fontColor="white"
+                fontColor="fixed.white"
               />
             }
           />

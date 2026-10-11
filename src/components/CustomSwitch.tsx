@@ -1,6 +1,5 @@
 import Switch, { SwitchProps } from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
-import colors from "../themes/utils/colors";
 
 // Réplica del switch de Figma: pista celeste (secondary.main) con el
 // thumb en azul oscuro (#337AEA) cuando está activo — al revés del patrón
@@ -9,7 +8,7 @@ import colors from "../themes/utils/colors";
 // iOS" documentado por MUI, así que solo se ajustan los colores.
 const CustomSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-))(() => ({
+))(({ theme }) => ({
   width: 37,
   height: 22,
   padding: 0,
@@ -19,9 +18,9 @@ const CustomSwitch = styled((props: SwitchProps) => (
     transitionDuration: "300ms",
     "&.Mui-checked": {
       transform: "translateX(15px)",
-      color: "#337AEA",
+      color: theme.palette.accent.link,
       "& + .MuiSwitch-track": {
-        backgroundColor: colors.light.secondary.main,
+        backgroundColor: theme.palette.secondary.main,
         opacity: 1,
         border: 0,
       },
@@ -34,7 +33,7 @@ const CustomSwitch = styled((props: SwitchProps) => (
   },
   "& .MuiSwitch-track": {
     borderRadius: 22 / 2,
-    backgroundColor: colors.light.grey[400],
+    backgroundColor: theme.palette.grey[400],
     opacity: 1,
   },
 }));

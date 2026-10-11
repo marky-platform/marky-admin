@@ -105,7 +105,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
             promotionCountdown.phase === "starts"
               ? "warning.main"
               : "error.main",
-          color: "white",
+          color: "fixed.white",
           px: 2,
           py: 0.5,
           borderRadius: 1,
@@ -126,8 +126,8 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
     return (
       <Box
         sx={{
-          backgroundColor: "#BDBDBD",
-          color: "white",
+          backgroundColor: "fixed.unavailable",
+          color: "fixed.white",
           px: 2,
           py: 1,
           borderRadius: 1,
@@ -137,7 +137,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
           ml: 2,
         }}
       >
-        <Typography color="white" fontWeight={500}>
+        <Typography color="fixed.white" fontWeight={500}>
           No disponible
         </Typography>
       </Box>
@@ -198,9 +198,9 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
           // the highest of which is zIndex 2) so products always scroll
           // underneath the category header instead of bleeding over it.
           zIndex: 20,
-          backgroundColor: "white",
+          backgroundColor: "surface.base",
           borderBottom: "1px solid",
-          borderColor: isStuck ? "#E5E7EB" : "transparent",
+          borderColor: isStuck ? "border.header" : "transparent",
           py: 2,
         }}
       >
@@ -234,7 +234,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
               PaperProps={{
                 sx: {
                   marginTop: 2,
-                  backgroundColor: "white",
+                  backgroundColor: "surface.main",
                   p: 1.5, // inner padding
                   maxWidth: 320, // optional, for spacing
                 },
@@ -406,7 +406,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
                 border: "2px dashed",
                 borderColor: "primary.main",
                 borderRadius: "16px",
-                backgroundColor: "white",
+                backgroundColor: "surface.main",
                 cursor: "pointer",
               }}
             >

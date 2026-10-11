@@ -31,7 +31,7 @@ const ProductAddonsList: React.FC<{ addons: ProductAddon[] }> = ({
             <Box
               key={a.id ?? index}
               sx={{
-                backgroundColor: "common.white",
+                backgroundColor: "surface.main",
                 border: "1px solid",
                 borderColor: "grey.400",
                 mb: isLast ? 0 : "-1px",

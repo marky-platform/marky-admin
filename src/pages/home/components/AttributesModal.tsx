@@ -16,8 +16,8 @@ import * as Yup from "yup";
 import CancelButton from "../../../components/CancelButton";
 import { Attribute } from "..";
 import XButton from "../../../components/XButton";
+import InsetSurface from "../../../themes/InsetSurface";
 import BackButton from "../../../components/BackButton";
-import colors from "../../../themes/utils/colors";
 import { useAttributes } from "../../../hooks/useAttributes";
 
 interface AttributesModalProps {
@@ -48,12 +48,13 @@ const AttributesModal: React.FC<AttributesModalProps> = ({
       maxWidth="sm"
       fullScreen={isMobile}
     >
+      <InsetSurface>
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           width: "100%",
-          borderBottom: "1px solid lightgrey",
+          borderBottom: (theme) => `1px solid ${theme.palette.border.modal}`,
         }}
       >
         <Box display={"flex"}>
@@ -70,9 +71,9 @@ const AttributesModal: React.FC<AttributesModalProps> = ({
             sx={{
               marginRight: 2,
               ...(isMobile && {
-                backgroundColor: colors.light.grey[400],
+                backgroundColor: "grey.400",
                 borderRadius: "6px",
-                "&:hover": { backgroundColor: colors.light.grey[400] },
+                "&:hover": { backgroundColor: "grey.400" },
               }),
             }}
           />
@@ -155,7 +156,7 @@ const AttributesModal: React.FC<AttributesModalProps> = ({
 
             <DialogActions
               sx={{
-                borderTop: "1px solid lightgrey",
+                borderTop: (theme) => `1px solid ${theme.palette.border.modal}`,
                 display: "flex",
                 gap: 2,
                 padding: 4,
@@ -179,6 +180,7 @@ const AttributesModal: React.FC<AttributesModalProps> = ({
           </Form>
         )}
       </Formik>
+      </InsetSurface>
     </Dialog>
   );
 };

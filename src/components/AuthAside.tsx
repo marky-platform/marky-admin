@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import logoMarky from "../assets/images/marky-logo.png";
+import { useThemeAssets } from "../themes/useThemeAssets";
 
 interface AuthAsideProps {
   title: string;
@@ -17,6 +17,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
   image,
 }) => {
   const theme = useTheme();
+  const { logoPng } = useThemeAssets();
 
   return (
     <Box
@@ -38,7 +39,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
         }}
       >
         <img
-          src={logoMarky}
+          src={logoPng}
           alt="Marky"
           style={{ marginBottom: theme.spacing(6) }}
         />

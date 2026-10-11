@@ -56,7 +56,7 @@ const styles = {
     transition: "background-color 0.2s",
     cursor: "pointer", // 👈 makes it feel clickable
     "&:hover": {
-      backgroundColor: "#EEF6FF", // 👈 hover surface (design spec)
+      backgroundColor: "surface.hover", // 👈 hover surface (design spec)
     },
     "&:hover .menu-button": {
       opacity: 1,
@@ -77,7 +77,7 @@ const ProductBadge: React.FC<{
     data-testid="product-badge"
     sx={{
       bgcolor: backgroundColor,
-      color: "common.white",
+      color: "fixed.white",
       px: 2,
       py: 1,
       borderRadius: "24px",
@@ -87,7 +87,7 @@ const ProductBadge: React.FC<{
     <Typography
       component="span"
       variant="caption"
-      sx={{ fontWeight: 500, fontSize: 14, color: "common.white" }}
+      sx={{ fontWeight: 500, fontSize: 14, color: "fixed.white" }}
     >
       {children}
     </Typography>
@@ -108,15 +108,15 @@ const AvailabilityCornerBadge: React.FC = () => (
   <Box
     sx={{
       display: { xs: "none", md: "inline-flex" },
-      backgroundColor: "#BDBDBD",
-      color: "white",
+      backgroundColor: "fixed.unavailable",
+      color: "fixed.white",
       px: 2,
       py: 1,
       borderRadius: "24px",
       alignItems: "center",
     }}
   >
-    <Typography color="white" fontWeight={500} fontSize={14}>
+    <Typography color="fixed.white" fontWeight={500} fontSize={14}>
       No disponible
     </Typography>
   </Box>
@@ -136,15 +136,15 @@ const AvailabilityOverlayBadge: React.FC = () => (
   >
     <Box
       sx={{
-        backgroundColor: "#BDBDBD",
-        color: "white",
+        backgroundColor: "fixed.unavailable",
+        color: "fixed.white",
         p: 1,
         borderRadius: "24px",
         display: "flex",
         alignItems: "center",
       }}
     >
-      <Typography color="white" fontWeight={500} fontSize={14}>
+      <Typography color="fixed.white" fontWeight={500} fontSize={14}>
         No disponible
       </Typography>
     </Box>
@@ -353,7 +353,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             fontSize: { xs: 12, md: 14 },
             lineHeight: { xs: "14px", md: "18px" },
             fontWeight: 500,
-            color: "#4F4F4F",
+            color: "text.body",
           }}
         >
           {product.name}
@@ -374,7 +374,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 mt: 1,
                 mb: { xs: 0, md: 1 },
                 fontSize: 12,
-                color: "#4F4F4F",
+                color: "text.body",
                 lineHeight: { xs: "14px", md: "18px" },
                 fontWeight: 400,
               }}

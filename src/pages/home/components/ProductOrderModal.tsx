@@ -1,3 +1,4 @@
+import { withInsetSurface } from "../../../themes/InsetSurface";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
@@ -66,7 +67,7 @@ const ProductRow: React.FC<{
     pl={1.5}
     pr={3}
   >
-    {draggable && <DragIndicatorIcon sx={{ color: "#757575" }} />}
+    {draggable && <DragIndicatorIcon sx={{ color: "text.faint" }} />}
     <ProductThumbnail product={product} />
     <Typography variant="body2" noWrap sx={{ flex: 1, minWidth: 0 }}>
       {product.name}
@@ -136,13 +137,13 @@ const ProductOrderModal: React.FC<ProductOrderModalProps> = ({
           pinned.length > 0 && (
             <Box sx={{ backgroundColor: "grey.50" }}>
               <Box display="flex" alignItems="center" gap={1} px={1.5} py={1}>
-                <LockOutlinedIcon sx={{ fontSize: 16, color: "#757575" }} />
+                <LockOutlinedIcon sx={{ fontSize: 16, color: "text.faint" }} />
                 <Typography variant="caption" color="textSecondary">
                   Los productos destacados siempre aparecen primero
                 </Typography>
               </Box>
               {pinned.map((product) => (
-                <Box key={product.id} sx={{ boxShadow: "0px 1px 0px #E8E9EB" }}>
+                <Box key={product.id} sx={{ boxShadow: (theme) => `0px 1px 0px ${theme.palette.border.layout}` }}>
                   <Box display="flex" alignItems="center" pr={1.5}>
                     <Box flex={1} minWidth={0}>
                       <ProductRow product={product} draggable={false} />
@@ -174,12 +175,12 @@ const ProductOrderModal: React.FC<ProductOrderModalProps> = ({
           alignItems: "center",
           justifyContent: "space-between",
           width: "100%",
-          boxShadow: "0px 1px 0px #E8E9EB",
+          boxShadow: (theme) => `0px 1px 0px ${theme.palette.border.layout}`,
           p: 3,
         }}
       >
         <DialogTitle
-          sx={{ p: 0, fontSize: 16, fontWeight: 500, color: "#292929" }}
+          sx={{ p: 0, fontSize: 16, fontWeight: 500, color: "text.heading" }}
         >
           Organizar productos
         </DialogTitle>
@@ -194,4 +195,4 @@ const ProductOrderModal: React.FC<ProductOrderModalProps> = ({
   );
 };
 
-export default ProductOrderModal;
+export default withInsetSurface(ProductOrderModal);

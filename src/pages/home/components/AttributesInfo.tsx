@@ -21,8 +21,9 @@ const AttributesInfo: React.FC<AttributesInfoProps> = ({
     <Box
       onClick={readOnly ? undefined : onOpen}
       sx={{
-        border: isEmpty ? "1px dashed #B8CDF5" : "none",
-        backgroundColor: isEmpty ? "#FAFCFF" : "transparent",
+        border: (theme) =>
+          isEmpty ? `1px dashed ${theme.palette.border.dashed}` : "none",
+        backgroundColor: isEmpty ? "surface.tintFaint" : "transparent",
         borderRadius: isEmpty ? "6px" : 0,
         py: isEmpty ? 4 : 0,
         px: isEmpty ? 3 : 0,
@@ -33,7 +34,7 @@ const AttributesInfo: React.FC<AttributesInfoProps> = ({
       {isEmpty ? (
         <Typography
           sx={{
-            color: "#2563EB",
+            color: "primary.main",
             fontWeight: 700,
             fontSize: 14,
             lineHeight: "22px",
@@ -61,13 +62,13 @@ const AttributesInfo: React.FC<AttributesInfoProps> = ({
                 sx={{ flexShrink: 0 }}
               >
                 {Icon && (
-                  <Icon sx={{ fontSize: 18, color: "#4F4F4F", flexShrink: 0 }} />
+                  <Icon sx={{ fontSize: 18, color: "text.body", flexShrink: 0 }} />
                 )}
                 <Typography
                   sx={{
                     fontSize: 12,
                     lineHeight: "16px",
-                    color: "#4F4F4F",
+                    color: "text.body",
                     whiteSpace: "nowrap",
                     fontWeight: 400,
                   }}

@@ -1,3 +1,4 @@
+import { withInsetSurface } from "../../../themes/InsetSurface";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
@@ -23,7 +24,7 @@ interface AssignCategoryModalProps {
   onSelectCategory: (category: Category | null) => void;
 }
 
-export const AssignCategoryModal: React.FC<AssignCategoryModalProps> = ({
+const AssignCategoryModalContent: React.FC<AssignCategoryModalProps> = ({
   open,
   onClose,
   selectedCategory,
@@ -144,5 +145,9 @@ export const AssignCategoryModal: React.FC<AssignCategoryModalProps> = ({
     </Dialog>
   );
 };
+
+export const AssignCategoryModal = withInsetSurface(
+  AssignCategoryModalContent
+);
 
 export default AssignCategoryModal;

@@ -9,7 +9,6 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { FieldProps } from "formik";
-import colors from "../themes/utils/colors";
 import { ReactComponent as LocationIcon } from "../assets/icons/location-marker.svg";
 import { ReactComponent as DinnerIcon } from "../assets/icons/cutlery.svg";
 
@@ -61,7 +60,7 @@ const BusinessTypeSelectorField: React.FC<BusinessTypeSelectorFieldProps> = ({
                 borderColor: isSelected ? "primary.main" : "grey.300",
                 flex: 1,
                 textAlign: "center",
-                backgroundColor: "white",
+                backgroundColor: "surface.main",
               }}
             >
               <CardActionArea sx={{ paddingY: 2 }}>
@@ -92,7 +91,7 @@ const BusinessTypeSelectorField: React.FC<BusinessTypeSelectorFieldProps> = ({
                   </Typography>
                   <Typography
                     variant="caption"
-                    sx={{ color: colors.light.grey[900] }}
+                    sx={{ color: "grey.900" }}
                     textAlign={"right"}
                   >
                     {option.description}

@@ -206,7 +206,8 @@ export const ProductGrid: React.FC = () => {
       <Box
         mb={4}
         sx={{
-          boxShadow: "0px 1px 0px 0px #E8E9EB",
+          boxShadow: (theme) =>
+            `0px 1px 0px 0px ${theme.palette.border.layout}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -231,7 +232,7 @@ export const ProductGrid: React.FC = () => {
               flex: { xs: "1 1 0", md: "0 0 auto" },
               minWidth: 0,
               padding: "8px 12px 8px 12px",
-              color: "#4B4B4B",
+              color: "text.title",
               boxShadow: 0,
             }}
             startIcon={<AppsIcon />}

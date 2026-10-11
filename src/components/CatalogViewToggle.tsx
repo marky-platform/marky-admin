@@ -55,7 +55,7 @@ const CatalogViewToggle: React.FC<CatalogViewToggleProps> = ({
             height: 32,
             borderRadius: 1.5,
             bgcolor: active ? "primary.main" : "transparent",
-            color: active ? "common.white" : "grey.600",
+            color: active ? "fixed.white" : "grey.600",
             "&:hover": {
               bgcolor: active ? "primary.main" : "grey.100",
             },

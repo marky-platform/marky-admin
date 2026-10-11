@@ -75,7 +75,7 @@ export const BusinessInfo: React.FC<{
             onClick={onOpenEditProfile}
             sx={{
               position: "relative",
-              bgcolor: "#EDEDED",
+              bgcolor: "surface.iconButton",
               borderRadius: "56px",
               px: 2,
               py: 0.5,
@@ -114,8 +114,8 @@ export const BusinessInfo: React.FC<{
               left: 0,
               width: "100%",
               height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.4)",
-              color: "white",
+              backgroundColor: "fixed.scrim",
+              color: "fixed.white",
               display: "none",
               alignItems: "center",
               justifyContent: "center",
@@ -130,7 +130,7 @@ export const BusinessInfo: React.FC<{
         isProfileIncomplete && (
           <Typography
             sx={{
-              color: "#374151",
+              color: "text.primary",
               fontWeight: 700,
               fontSize: 14,
               lineHeight: "18px",

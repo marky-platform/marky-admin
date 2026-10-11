@@ -174,7 +174,7 @@ const FilterSection: React.FC<{
             aria-label="Mostrar filtros"
             aria-pressed={showFilters}
             sx={{
-              backgroundColor: hasActiveFilters ? "secondary.main" : "#EDEDED",
+              backgroundColor: hasActiveFilters ? "secondary.main" : "surface.iconButton",
               color: hasActiveFilters ? "primary.main" : "action.active",
               borderRadius: 1,
               p: 3,

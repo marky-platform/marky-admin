@@ -117,13 +117,13 @@ const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
                   left: 24,
                   top: 24,
                   bgcolor: theme.palette.error.main,
-                  color: theme.palette.common.white,
+                  color: theme.palette.fixed.white,
                   px: 1.5,
                   py: 1,
                   borderRadius: "3px",
                 }}
               >
-                <Typography variant="body2" color="white" fontWeight={500}>
+                <Typography variant="body2" color="fixed.white" fontWeight={500}>
                   -{formattedDiscount}%
                 </Typography>
               </Box>

@@ -2,7 +2,7 @@ import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 
 const CancelButton = styled(Button)(({ theme }) => ({
-  color: "#000", // texto negro
+  color: theme.palette.text.black, // texto negro
   backgroundColor: theme.palette.grey[200], // gris claro
   boxShadow: "none",
   textTransform: "none",
