@@ -34,7 +34,6 @@ const Login: React.FC = () => {
         username: values.email,
         password: values.password,
       });
-      console.log("Login response:", response);
       const { user } = response;
       ShowNotification({ message: "Login con éxito", type: "success" });
       if (!!user && user.has_configuration) {

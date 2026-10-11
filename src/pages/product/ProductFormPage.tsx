@@ -316,8 +316,12 @@ const ProductFormPage = () => {
 
   // Attempt a navigation action; if the form is dirty, store the action and
   // show the confirmation dialog. Otherwise execute immediately.
+  // Formik's `dirty` covers edits made through setFieldValue (media reorder,
+  // category pills, crop), which never fire a DOM change event.
+  const hasUnsavedChanges = () => isFormDirty || !!formikRef.current?.dirty;
+
   const attemptNavigate = (action: () => void) => {
-    if (isFormDirty) {
+    if (hasUnsavedChanges()) {
       pendingNavigationRef.current = action;
       setOpenExitDialog(true);
     } else {
@@ -444,6 +448,13 @@ const ProductFormPage = () => {
           }
         } catch (error) {
           console.error("Failed to fetch product", error);
+          // A blank form bound to this id would let a Publicar PATCH wipe the
+          // real product, so leave the editor instead.
+          ShowNotification({
+            message: "No se pudo cargar el producto. Intenta de nuevo.",
+            type: "error",
+          });
+          navigate(ROUTES.HOME, { replace: true });
         } finally {
           setIsLoadingProduct(false);
         }
@@ -514,7 +525,7 @@ const ProductFormPage = () => {
   // Browser-level refresh / tab close: show native confirmation when dirty.
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (!isFormDirty) return;
+      if (!hasUnsavedChanges()) return;
       // Standard way to trigger browser confirmation dialog
       e.preventDefault();
       // Some browsers require setting returnValue to a non-empty string
@@ -524,6 +535,8 @@ const ProductFormPage = () => {
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    // hasUnsavedChanges reads the latest state through closure + refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFormDirty]);
 
   const handleSectionSelect = (sectionName: string) => {
@@ -649,8 +662,6 @@ const ProductFormPage = () => {
           setSubmitting(false);
           return;
         }
-        console.log("submitting.....", values);
-
         // 1) Basic cleaned copy (map category to id if object)
         const submissionValues: any = {
           ...values,
@@ -773,19 +784,8 @@ const ProductFormPage = () => {
             .filter(Boolean);
         }
 
-        console.log("submissionValues (clean):", submissionValues);
-
         // 6) build FormData using the improved helper
         const formData = objectToFormData(submissionValues);
-
-        // debug helper: iterate and show formData entries in console
-        // (use only in dev)
-        if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-restricted-syntax
-          for (const pair of (formData as any).entries()) {
-            console.log("FormData entry:", pair[0], pair[1]);
-          }
-        }
 
         // 7) submit using your existing mutations
         const handleSuccess = () => {
@@ -819,8 +819,6 @@ const ProductFormPage = () => {
       }}
     >
       {(formikProps: FormikProps<Product>) => {
-        console.log("Formik values:", formikProps.values);
-        console.log("Formik errors:", formikProps.errors);
         // Whether each section currently has active content — drives the
         // Secciones nav's green/empty distinction (see sectionNavState.ts).
         // "Producto" is always mandatory so its flag is unused by the state
