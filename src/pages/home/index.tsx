@@ -24,9 +24,8 @@ import LocationsModal, {
 } from "./components/LocationsModal";
 import { useUpdateBusinessLocations } from "../../hooks/useUpdateBusinessLocations";
 import { Header } from "../../components/Header";
-import ProfileActionsMenu, {
-  profileShareItems,
-} from "../../components/ProfileActionsMenu";
+import ProfileActionsMenu from "../../components/ProfileActionsMenu";
+import useProfileShareActions from "../../hooks/useProfileShareActions";
 import PresentationModal from "./components/PresentationModal";
 import { ProductGrid } from "./components/productGrid";
 
@@ -64,6 +63,10 @@ const Home = () => {
   // Fetch home page data
   const { data: homePageData, isLoading, error } = useHomePageData();
   const { data: businessAccountInfo } = useBusinessAccountInfo();
+  const shareItems = useProfileShareActions({
+    businessId: businessAccountInfo?.business_id,
+    businessName: homePageData?.business_name,
+  });
 
   // Foto de perfil: se comparte entre el avatar de BusinessInfo y el botón
   // "Cambiar foto" de PresentationModal, así ambos disparan la misma acción.
@@ -200,7 +203,7 @@ const Home = () => {
         businessPhoto={homePageData?.profile_image}
         mobileActionsSlot={
           <ProfileActionsMenu
-            items={profileShareItems()}
+            items={shareItems}
             placement="below-end"
             sx={{
               width: 34,
@@ -290,6 +293,7 @@ const Home = () => {
                       <BusinessInfo
                         values={values}
                         homePageData={homePageData}
+                        businessId={businessAccountInfo?.business_id}
                         setFieldValue={setFieldValue}
                         locations={values.locations}
                         onOpenPhotoPicker={handleOpenPhotoPicker}

@@ -8,7 +8,6 @@ import usePublicCategories from "../../hooks/usePublicCategories";
 import { mapSocialLinksToChannels } from "../../mappers/channelMapper";
 import ThemeModeToggle from "../../components/ThemeModeToggle";
 import PublicProductGrid from "./components/PublicProductGrid";
-import PublicMobileTopBar from "./components/PublicMobileTopBar";
 import PublicNotFound from "./components/PublicNotFound";
 
 // Public, unauthenticated business profile — marky.one/<businessId>. Mirrors
@@ -54,12 +53,11 @@ const PublicBusinessProfilePage: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <PublicMobileTopBar businessPhoto={profile.profile_image} />
       <Box
         sx={{
           flex: 1,
           px: { xs: 4, sm: 6, md: 0 },
-          pt: { xs: 3, md: 8 },
+          pt: 8,
           pb: 3,
           height: "100%",
         }}
@@ -89,8 +87,9 @@ const PublicBusinessProfilePage: React.FC = () => {
             }}
           >
             <Box
+              data-testid="profile-sticky-box"
               sx={{
-                position: { xs: "static", md: "sticky" },
+                position: { xs: "relative", md: "sticky" },
                 top: { md: "1rem" },
                 width: "100%",
                 maxWidth: { md: "232px" },
@@ -108,18 +107,18 @@ const PublicBusinessProfilePage: React.FC = () => {
                 locations={profile.locations || []}
                 readOnly
               />
+              {/* Sin header público, el switch de tema vive a la derecha del
+                  hero. Dentro del contenedor sticky (md+) para no salirse de
+                  vista al hacer scroll en desktop. */}
+              <ThemeModeToggle
+                variant="icon"
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                }}
+              />
             </Box>
-            {/* Desktop: sin header público, el switch de tema va en la
-                esquina superior derecha del rail (fuera del flujo). */}
-            <ThemeModeToggle
-              variant="icon"
-              sx={{
-                display: { xs: "none", md: "inline-flex" },
-                position: "absolute",
-                top: 0,
-                right: 8,
-              }}
-            />
           </Box>
           <Box
             sx={{
@@ -131,7 +130,11 @@ const PublicBusinessProfilePage: React.FC = () => {
             }}
           >
             {businessId && (
-              <PublicProductGrid businessId={businessId} categories={categories} />
+              <PublicProductGrid
+                businessId={businessId}
+                businessName={profile.business_name}
+                categories={categories}
+              />
             )}
           </Box>
         </Box>

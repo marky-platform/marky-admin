@@ -11,3 +11,8 @@ export const getPublicProductUrl = (
     ":businessId",
     businessId,
   ).replace(":id", String(productId))}`;
+
+// Enlace público del perfil de un negocio: `/<businessId>`. Única fuente para
+// compartir, copiar enlace y generar el QR.
+export const getPublicBusinessUrl = (businessId: string): string =>
+  `${window.location.origin}/${encodeURIComponent(businessId)}`;

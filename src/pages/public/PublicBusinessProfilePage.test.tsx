@@ -34,22 +34,44 @@ jest.mock("./components/PublicProductGrid", () => ({
   default: () => <div />,
 }));
 
-describe("PublicBusinessProfilePage mobile top bar", () => {
-  it("is read-only and never touches authenticated notification data", () => {
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <MemoryRouter initialEntries={["/mi-negocio"]}>
-          <Routes>
-            <Route path="/:businessId" element={<PublicBusinessProfilePage />} />
-          </Routes>
-        </MemoryRouter>
-      </ThemeProvider>,
-    );
+jest.mock("../../utils/utils", () => ({ ShowNotification: jest.fn() }));
 
-    expect(
-      screen.getByRole("button", { name: "Más acciones" }),
-    ).toBeInTheDocument();
+const renderPage = () =>
+  render(
+    <ThemeProvider theme={lightTheme}>
+      <MemoryRouter initialEntries={["/mi-negocio"]}>
+        <Routes>
+          <Route path="/:businessId" element={<PublicBusinessProfilePage />} />
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>,
+  );
+
+describe("PublicBusinessProfilePage", () => {
+  it("is read-only and never touches authenticated notification data", () => {
+    renderPage();
+
     expect(screen.queryByLabelText("Editar perfil")).not.toBeInTheDocument();
     expect(useNotifications).not.toHaveBeenCalled();
+  });
+
+  it("has no mobile top bar (no Marky header, no page-level overflow menu)", () => {
+    renderPage();
+
+    expect(screen.queryByRole("banner")).not.toBeInTheDocument();
+    // El menú "Más acciones" ahora vive en los controles del catálogo.
+    expect(
+      screen.queryByRole("button", { name: "Más acciones" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the theme toggle inside the sticky profile box", () => {
+    renderPage();
+
+    const stickyBox = screen.getByTestId("profile-sticky-box");
+    expect(stickyBox).toContainElement(
+      screen.getByRole("button", { name: /^Modo (oscuro|claro)$/ }),
+    );
+    expect(stickyBox).toContainElement(screen.getByText("Mi Negocio"));
   });
 });

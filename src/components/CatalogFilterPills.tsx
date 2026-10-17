@@ -8,6 +8,9 @@ interface CatalogFilterPillsProps {
   /** Productos que cumplen cada filtro; se omite el número si no hay dato. */
   counts?: { promotion?: number; featured?: number };
   onChange: (next: { offer: boolean; featured: boolean }) => void;
+  /** Muestra la píldora "Todos". El catálogo público mobile la omite: ahí
+   * "Todo" vive en la fila de categorías. */
+  showAll?: boolean;
 }
 
 const pillSx = (active: boolean) => ({
@@ -59,6 +62,7 @@ const CatalogFilterPills: React.FC<CatalogFilterPillsProps> = ({
   featured,
   counts,
   onChange,
+  showAll = true,
 }) => {
   const items = [
     {
@@ -82,7 +86,7 @@ const CatalogFilterPills: React.FC<CatalogFilterPillsProps> = ({
       active: featured,
       onClick: () => onChange({ offer: false, featured: !featured }),
     },
-  ];
+  ].filter((item) => showAll || item.key !== "all");
 
   return (
     <Box
