@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import BusinessProfilePanel from "../../components/BusinessProfilePanel";
@@ -12,6 +12,8 @@ import ThemeModeToggle from "../../components/ThemeModeToggle";
 import useProfileShareActions from "../../hooks/useProfileShareActions";
 import PublicProductGrid from "./components/PublicProductGrid";
 import PublicNotFound from "./components/PublicNotFound";
+
+const ICON_BUTTON_PADDING = 8;
 
 // Public, unauthenticated business profile — marky.one/<businessId>. Mirrors
 // pages/home/index.tsx's two-column shell (296px rail + flex-grow right
@@ -29,6 +31,29 @@ const PublicBusinessProfilePage: React.FC = () => {
     businessId,
     businessName: profile?.business_name,
   });
+
+  // La fila de iconos de contacto está centrada, así que su borde derecho
+  // depende de cuántos canales hay. Medimos el botón de ubicaciones (el último
+  // de la fila) y alineamos a él el borde derecho del menú de acciones.
+  const stickyBoxRef = useRef<HTMLDivElement>(null);
+  const [actionsInset, setActionsInset] = useState(0);
+  const hasProfile = Boolean(profile);
+  useLayoutEffect(() => {
+    const box = stickyBoxRef.current;
+    if (!box) return;
+    const measure = () => {
+      const target = box.querySelector<HTMLElement>('[aria-label="Ubicaciones"]');
+      if (!target) return setActionsInset(0);
+      const inset = box.getBoundingClientRect().right - target.getBoundingClientRect().right;
+      // El IconButton aporta ~8px de padding entre su borde y el glifo.
+      setActionsInset(Math.max(0, Math.round(inset - ICON_BUTTON_PADDING)));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, [hasProfile, profile?.locations, profile?.social_links]);
 
   useEffect(() => {
     if (profile?.business_name) {
@@ -98,6 +123,7 @@ const PublicBusinessProfilePage: React.FC = () => {
             }}
           >
             <Box
+              ref={stickyBoxRef}
               data-testid="profile-sticky-box"
               sx={{
                 position: { xs: "relative", md: "sticky" },
@@ -120,6 +146,7 @@ const PublicBusinessProfilePage: React.FC = () => {
                   alignItems: "center",
                   justifyContent: "flex-end",
                   mb: 2,
+                  pr: `${actionsInset}px`,
                 }}
               >
                 <ThemeModeToggle variant="icon" />
