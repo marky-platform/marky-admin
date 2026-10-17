@@ -43,14 +43,13 @@ describe("CatalogFilterPills", () => {
     expect(onChange).toHaveBeenCalledWith({ offer: false, featured: false });
   });
 
-  it("renders the count in its own bubble and keeps the accessible name", () => {
+  it("renders the count (including 0) in its own bubble and keeps the accessible name", () => {
     renderPills({ counts: { promotion: 4, featured: 0 } });
     const promo = screen.getByRole("button", { name: "Promociones 4" });
     expect(within(promo).getByTestId("filter-count")).toHaveTextContent("4");
-    // Count 0 is not shown.
-    expect(
-      screen.getByRole("button", { name: "Destacados" }),
-    ).toBeInTheDocument();
+    // Count 0 is shown too.
+    const featured = screen.getByRole("button", { name: "Destacados 0" });
+    expect(within(featured).getByTestId("filter-count")).toHaveTextContent("0");
     // Todos never shows a count.
     expect(
       within(screen.getByRole("button", { name: "Todos" })).queryByTestId(

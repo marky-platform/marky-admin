@@ -61,7 +61,9 @@ const LocationProbe = () => (
   <div data-testid="location">{useLocation().pathname}</div>
 );
 
-const renderPublicProductGrid = () => {
+const renderPublicProductGrid = (
+  categories: { id: number; name: string; icon: string }[] = [],
+) => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -69,7 +71,10 @@ const renderPublicProductGrid = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <PublicProductGrid businessId="dulce-momento" categories={[]} />
+          <PublicProductGrid
+            businessId="dulce-momento"
+            categories={categories}
+          />
           <LocationProbe />
         </MemoryRouter>
       </ThemeProvider>
@@ -356,5 +361,124 @@ describe("PublicProductGrid empty and error states keep the controls", () => {
     expect(
       screen.getByRole("button", { name: /^Promociones/ }),
     ).toBeInTheDocument();
+  });
+});
+
+// Contadores de Promociones / Destacados: dependen solo de las categorías
+// seleccionadas, no de las propias píldoras ni de lo renderizado.
+describe("PublicProductGrid filter counters (mobile)", () => {
+  const deferred = <T,>() => {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((res) => {
+      resolve = res;
+    });
+    return { promise, resolve };
+  };
+
+  const response = (counts: { promotion: number; featured: number }) => ({
+    count: 1,
+    next: null,
+    previous: null,
+    products_count: 2,
+    filter_counts: counts,
+    results: [category],
+  });
+
+  const allCounts = { promotion: 3, featured: 2 };
+  const postresCounts = { promotion: 1, featured: 0 };
+  const categories = [
+    { id: 1, name: "Postres", icon: "cookie" },
+    { id: 2, name: "Bebidas", icon: "cup" },
+  ];
+
+  const pillNames = () =>
+    within(screen.getByTestId("catalog-controls-row-1"))
+      .getAllByRole("button")
+      .map((b) => b.getAttribute("aria-label") ?? "")
+      .filter((name) => /^(Promociones|Destacados)/.test(name));
+
+  beforeEach(() => {
+    mockViewport(true);
+    mockedGetPublicCatalog.mockReset();
+  });
+
+  afterEach(() => {
+    delete (window as any).matchMedia;
+  });
+
+  it("keeps both counters visible and unchanged while a pill is toggled", async () => {
+    mockedGetPublicCatalog.mockResolvedValueOnce(response(allCounts));
+    renderPublicProductGrid(categories);
+    await screen.findByRole("button", { name: "Promociones 3" });
+    expect(screen.getByRole("button", { name: "Destacados 2" })).toBeVisible();
+
+    const pending = deferred<ReturnType<typeof response>>();
+    mockedGetPublicCatalog.mockReturnValueOnce(pending.promise);
+    fireEvent.click(screen.getByRole("button", { name: "Promociones 3" }));
+
+    // Request in flight: nothing is cleared or recalculated.
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+    expect(mockedGetPublicCatalog).toHaveBeenLastCalledWith(
+      "dulce-momento",
+      expect.objectContaining({ has_promotion: true }),
+    );
+
+    await act(async () => {
+      pending.resolve(response(allCounts));
+    });
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+
+    // Switching to the other pill and back to none keeps them as well.
+    const pending2 = deferred<ReturnType<typeof response>>();
+    mockedGetPublicCatalog.mockReturnValueOnce(pending2.promise);
+    fireEvent.click(screen.getByRole("button", { name: "Destacados 2" }));
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+    await act(async () => {
+      pending2.resolve(response(allCounts));
+    });
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+  });
+
+  it("recalculates both counters from the selected categories, keeping the old pair while loading", async () => {
+    mockedGetPublicCatalog.mockResolvedValueOnce(response(allCounts));
+    renderPublicProductGrid(categories);
+    await screen.findByRole("button", { name: "Promociones 3" });
+
+    const pending = deferred<ReturnType<typeof response>>();
+    mockedGetPublicCatalog.mockReturnValueOnce(pending.promise);
+    fireEvent.click(
+      within(screen.getByTestId("catalog-controls-row-2")).getByRole("button", {
+        name: "Postres",
+      }),
+    );
+
+    expect(mockedGetPublicCatalog).toHaveBeenLastCalledWith(
+      "dulce-momento",
+      expect.objectContaining({ ids: "1" }),
+    );
+    // Still the previous pair while the new one is loading.
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+
+    await act(async () => {
+      pending.resolve(response(postresCounts));
+    });
+    // Both change together, and 0 is shown.
+    await screen.findByRole("button", { name: "Promociones 1" });
+    expect(pillNames()).toEqual(["Promociones 1", "Destacados 0"]);
+    expect(
+      within(screen.getByRole("button", { name: "Destacados 0" })).getByTestId(
+        "filter-count",
+      ),
+    ).toHaveTextContent("0");
+
+    // Back to "Todo" recalculates again.
+    mockedGetPublicCatalog.mockResolvedValueOnce(response(allCounts));
+    fireEvent.click(
+      within(screen.getByTestId("catalog-controls-row-2")).getByRole("button", {
+        name: "Todo",
+      }),
+    );
+    await screen.findByRole("button", { name: "Promociones 3" });
+    expect(screen.getByRole("button", { name: "Destacados 2" })).toBeVisible();
   });
 });

@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   fireEvent,
@@ -13,6 +14,7 @@ import { ProductGrid } from "./productGrid";
 import { CategoryWithProducts } from "../../../types/categoryWithProducts";
 
 import {
+  getProductCategories,
   getProductCategoriesWithProducts,
   deleteProduct,
 } from "../../../services/productService";
@@ -67,6 +69,7 @@ jest.mock("./CategoryAdminModal", () => ({
 }));
 
 const mockedGetCategories = getProductCategoriesWithProducts as jest.Mock;
+const mockedGetProductCategories = getProductCategories as jest.Mock;
 const mockedDeleteProduct = deleteProduct as jest.Mock;
 const mockedGetHomePageData = getHomePageData as jest.Mock;
 
@@ -380,5 +383,101 @@ describe("ProductGrid mobile catalog controls (shared with the public view)", ()
     expect(
       screen.queryByTestId("catalog-controls-row-1"),
     ).not.toBeInTheDocument();
+  });
+});
+
+// Contadores de Promociones / Destacados (mismos que el catálogo público):
+// dependen solo de las categorías seleccionadas.
+describe("ProductGrid filter counters (mobile)", () => {
+  const deferred = <T,>() => {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((res) => {
+      resolve = res;
+    });
+    return { promise, resolve };
+  };
+
+  const response = (counts: { promotion: number; featured: number }) => ({
+    count: 1,
+    next: null,
+    previous: null,
+    products_count: 1,
+    filter_counts: counts,
+    results: [category],
+  });
+
+  const allCounts = { promotion: 3, featured: 2 };
+  const postresCounts = { promotion: 0, featured: 1 };
+
+  const pillNames = () =>
+    within(screen.getByTestId("catalog-controls-row-1"))
+      .getAllByRole("button")
+      .map((b) => b.getAttribute("aria-label") ?? "")
+      .filter((name) => /^(Promociones|Destacados)/.test(name));
+
+  beforeEach(() => {
+    mockViewport(true);
+    mockedGetHomePageData.mockResolvedValue({ business_name: "Test Biz" });
+    mockedGetProductCategories.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [{ id: 1, name: "Postres", icon: "cookie" }],
+    });
+    mockedGetCategories.mockReset();
+  });
+
+  afterEach(() => {
+    delete (window as any).matchMedia;
+  });
+
+  it("keeps both counters unchanged while a pill is toggled", async () => {
+    mockedGetCategories.mockResolvedValueOnce(response(allCounts));
+    renderProductGrid();
+    await screen.findByRole("button", { name: "Promociones 3" });
+
+    const pending = deferred<ReturnType<typeof response>>();
+    mockedGetCategories.mockReturnValueOnce(pending.promise);
+    fireEvent.click(screen.getByRole("button", { name: "Promociones 3" }));
+
+    expect(mockedGetCategories).toHaveBeenLastCalledWith(
+      expect.objectContaining({ has_promotion: true }),
+    );
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+
+    await act(async () => {
+      pending.resolve(response(allCounts));
+    });
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+  });
+
+  it("recalculates both counters when the category selection changes", async () => {
+    mockedGetCategories.mockResolvedValueOnce(response(allCounts));
+    renderProductGrid();
+    await screen.findByRole("button", { name: "Promociones 3" });
+
+    const chip = await within(
+      screen.getByTestId("catalog-controls-row-2"),
+    ).findByRole("button", { name: "Postres" });
+    const pending = deferred<ReturnType<typeof response>>();
+    mockedGetCategories.mockReturnValueOnce(pending.promise);
+    fireEvent.click(chip);
+
+    expect(mockedGetCategories).toHaveBeenLastCalledWith(
+      expect.objectContaining({ ids: "1" }),
+    );
+    // Previous pair stays visible until the new one arrives.
+    expect(pillNames()).toEqual(["Promociones 3", "Destacados 2"]);
+
+    await act(async () => {
+      pending.resolve(response(postresCounts));
+    });
+    await screen.findByRole("button", { name: "Destacados 1" });
+    expect(pillNames()).toEqual(["Promociones 0", "Destacados 1"]);
+    expect(
+      within(screen.getByRole("button", { name: "Promociones 0" })).getByTestId(
+        "filter-count",
+      ),
+    ).toHaveTextContent("0");
   });
 });

@@ -26,6 +26,7 @@ import CategoryFilterModal, { Category } from "./CategoryFilterModal";
 import FilterSection from "./FilterSection";
 import PublicMobileCatalogControls from "../../public/components/PublicMobileCatalogControls";
 import useCatalogViewMode from "../../../hooks/useCatalogViewMode";
+import useRetainedFilterCounts from "../../../hooks/useRetainedFilterCounts";
 import EmptyProducts from "./EmptyProducts";
 import { useHomePageData } from "../../../hooks/useHomePageData";
 
@@ -126,10 +127,9 @@ export const ProductGrid: React.FC = () => {
   // zero products in total (`products_count` includes categorized and
   // uncategorized ones), even if empty categories already exist. Filtered
   // zero-results keep their own "No se han encontrado productos" message.
-  const filterCounts = {
-    promotion: categoriesWithProductsRaw?.filter_counts?.promotion,
-    featured: categoriesWithProductsRaw?.filter_counts?.featured,
-  };
+  const filterCounts = useRetainedFilterCounts(
+    categoriesWithProductsRaw?.filter_counts,
+  );
   const showEmptyState = !hasFiltered && !isLoading && productCount === 0;
   const [openCreateCategoryModal, setOpenCreateCategoryModal] = useState(false);
   // Una categoría recién creada no tiene productos, así que no cambia el

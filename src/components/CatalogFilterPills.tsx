@@ -5,7 +5,8 @@ import { CATALOG_CONTROL_HEIGHT } from "./CatalogViewToggle";
 interface CatalogFilterPillsProps {
   offer: boolean;
   featured: boolean;
-  /** Productos que cumplen cada filtro; se omite el número si no hay dato. */
+  /** Productos que cumplen cada filtro; se omite el número si no hay dato
+   * (0 sí se muestra). */
   counts?: { promotion?: number; featured?: number };
   onChange: (next: { offer: boolean; featured: boolean }) => void;
   /** Muestra la píldora "Todos". El catálogo público mobile la omite: ahí
@@ -95,7 +96,7 @@ const CatalogFilterPills: React.FC<CatalogFilterPillsProps> = ({
       sx={{ display: "flex", gap: 2, flexShrink: 0 }}
     >
       {items.map((item) => {
-        const showCount = typeof item.count === "number" && item.count > 0;
+        const showCount = typeof item.count === "number";
         return (
           <Chip
             key={item.key}
