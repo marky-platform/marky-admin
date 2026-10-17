@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { Navigate, useParams } from "react-router-dom";
 import usePublicProduct from "../../hooks/usePublicProduct";
@@ -9,6 +10,7 @@ import { PublicProductDetailView } from "./PublicProductDetailPage";
 // el producto aún no tiene slug, muestra el detalle con lo ya obtenido.
 const LegacyPublicProductRedirect: React.FC = () => {
   const { businessId, id } = useParams<{ businessId: string; id: string }>();
+  const queryClient = useQueryClient();
   const numericId = id ? Number(id) : undefined;
   const { data: product, isLoading, error } = usePublicProduct(
     businessId,
@@ -18,6 +20,12 @@ const LegacyPublicProductRedirect: React.FC = () => {
   // Sin slug de producto o de categoría (filas de la ventana de deploy) la
   // ruta canónica no resolvería: se muestra el detalle sin redirigir.
   if (product?.slug && product.categorySlug && businessId) {
+    // Precarga la consulta canónica para que la redirección no vuelva a
+    // pedir el mismo producto (misma clave que usePublicProductBySlug).
+    queryClient.setQueryData(
+      ["public", "product", businessId, product.categorySlug, product.slug],
+      product,
+    );
     return (
       <Navigate
         replace
