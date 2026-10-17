@@ -300,9 +300,6 @@ const Home = () => {
                           setOpenDescriptionModal(true)
                         }
                         openAttributesModal={() => setOpenAttributesModal(true)}
-                        onSettings={() => {
-                          console.log("Abrir configuración");
-                        }}
                       />
                     </Box>
 
@@ -486,6 +483,8 @@ const Home = () => {
               flexBasis: { xs: "100%", md: 0 },
               flexGrow: { xs: 0, md: 1 },
               maxWidth: { xs: "100%", md: "100%" },
+              // Mismo 32px superior que la columna izquierda (solo desktop).
+              pt: { xs: 0, md: 8 },
             }}
           >
             <ProductGrid />
