@@ -5,11 +5,15 @@ import BackButton from "../../components/BackButton";
 import { Header } from "../../components/Header";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useBusinessAccountInfo } from "../../hooks/useBusinessAccountInfo";
+import { HEADER_HEIGHT } from "../../constants/layout";
 import useProductDetail from "../../hooks/useProductDetail";
 import ProductDetailContent, {
   PRODUCT_INFO_MAX_WIDTH,
   PRODUCT_PAGE_MAX_WIDTH,
 } from "./components/ProductDetailContent";
+
+// Separación (px) entre el borde inferior del header y la galería sticky.
+const GALLERY_STICKY_GAP = 24;
 
 export { PRODUCT_INFO_MAX_WIDTH, PRODUCT_PAGE_MAX_WIDTH };
 
@@ -65,7 +69,10 @@ const ProductDetailPage: React.FC = () => {
               : "Volver"}
           </Typography>
         </Box>
-        <ProductDetailContent product={product} />
+        <ProductDetailContent
+          product={product}
+          galleryStickyTop={HEADER_HEIGHT + GALLERY_STICKY_GAP}
+        />
       </Box>
     </Box>
   );

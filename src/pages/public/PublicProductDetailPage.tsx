@@ -79,6 +79,7 @@ const PublicProductDetailPage: React.FC = () => {
           product={product}
           readOnly
           businessId={businessId}
+          galleryStickyTop={24}
         />
       </Box>
     </Box>

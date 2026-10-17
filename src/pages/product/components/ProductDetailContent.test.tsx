@@ -240,3 +240,58 @@ describe("ProductDetailContent page width", () => {
     expect(PRODUCT_PAGE_MAX_WIDTH).toBe(1440);
   });
 });
+
+const rulesFor = (el: Element | null) => {
+  const cls = Array.from(el?.classList ?? []).find((c) => c.startsWith("css-"));
+  return Array.from(document.styleSheets)
+    .flatMap((sheet) => Array.from(sheet.cssRules))
+    .filter((rule) => cls && rule.cssText.includes(`.${cls}`))
+    .map((rule) => rule.cssText);
+};
+
+describe("ProductDetailContent information order", () => {
+  const productWithEverything: Product = {
+    ...fullProduct,
+    price: 2,
+    variants: [{ id: 1, name: "Grande", price: 3 } as any],
+    addons: [{ id: 1, name: "Extra queso", price: 1 } as any],
+  };
+
+  it("lists sections in the plan order in the DOM", () => {
+    renderContent(productWithEverything, { readOnly: true });
+
+    const anchors = [
+      screen.getByText("Galleta de chocolate"),
+      screen.getByText("en categoría:"),
+      screen.getByText("Una galleta rica"),
+      screen.getByText("Peso:"),
+      screen.getByText("Ingredientes principales:"),
+      screen.getByText(/^\$|Gs|USD|2/, { selector: "h2" }),
+      screen.getByRole("heading", { name: "Información alimentaria" }),
+    ];
+    for (let i = 0; i < anchors.length - 1; i++) {
+      expect(
+        anchors[i].compareDocumentPosition(anchors[i + 1]) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    }
+  });
+
+  it("moves the details table up under the header only below md", () => {
+    renderContent(productWithEverything, { readOnly: true });
+    const specs = screen.getByTestId("product-detail-specs");
+    const rules = rulesFor(specs);
+
+    // xs/sm: reordered right after the header (order -1, original 8px gap).
+    expect(
+      rules.some((r) => /min-width:\s*0px[^}]*order:\s*-1/.test(r)),
+    ).toBe(true);
+    // md+: back to DOM order (after the description), no negative margin.
+    expect(
+      rules.some((r) => /min-width:\s*900px[^}]*order:\s*0/.test(r)),
+    ).toBe(true);
+    expect(
+      rules.some((r) => /min-width:\s*900px[^}]*margin-top:\s*0/.test(r)),
+    ).toBe(true);
+  });
+});

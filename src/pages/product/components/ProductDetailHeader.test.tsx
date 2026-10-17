@@ -3,7 +3,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../../../themes/light";
-import ProductDetailInfo from "./ProductDetailInfo";
+import ProductDetailHeader from "./ProductDetailHeader";
 import { Product } from "../../../types/product";
 
 // productService transitively imports axiosConfig -> axios, whose installed
@@ -43,34 +43,34 @@ const product: Product = {
   stopper: "",
 };
 
-const renderProductDetailInfo = (
-  props: Partial<React.ComponentProps<typeof ProductDetailInfo>> = {},
+const renderProductDetailHeader = (
+  props: Partial<React.ComponentProps<typeof ProductDetailHeader>> = {},
 ) => {
   const queryClient = new QueryClient();
   return render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <ProductDetailInfo product={product} {...props} />
+          <ProductDetailHeader product={product} {...props} />
         </MemoryRouter>
       </ThemeProvider>
     </QueryClientProvider>,
   );
 };
 
-describe("ProductDetailInfo readOnly rendering (public page)", () => {
+describe("ProductDetailHeader readOnly rendering (public page)", () => {
   it("renders the actions menu by default (admin)", () => {
-    renderProductDetailInfo();
+    renderProductDetailHeader();
     expect(screen.getAllByRole("button")).toHaveLength(1);
   });
 
   it("renders no actions menu when readOnly", () => {
-    renderProductDetailInfo({ readOnly: true });
+    renderProductDetailHeader({ readOnly: true });
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("still renders the product name and category when readOnly", () => {
-    renderProductDetailInfo({ readOnly: true });
+    renderProductDetailHeader({ readOnly: true });
     expect(screen.getByText("Galleta de chocolate")).toBeInTheDocument();
     expect(screen.getByText("Postres")).toBeInTheDocument();
   });
