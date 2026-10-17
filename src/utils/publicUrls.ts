@@ -8,8 +8,8 @@ interface PublicProductPathParams {
 }
 
 // Ruta pública canónica de un producto: `/<businessId>/<categorySlug>/<productSlug>`
-// (`sin-categoria` si no tiene categoría). Si el producto aún no tiene slug
-// (filas creadas durante un deploy) cae a la ruta legada
+// (`sin-categoria` si no tiene categoría; lo resuelve el mapper). Si falta
+// algún slug (filas creadas durante un deploy) cae a la ruta legada
 // `/<businessId>/product/<id>`, que sigue siendo válida.
 export const getPublicProductPath = ({
   businessId,
@@ -18,12 +18,12 @@ export const getPublicProductPath = ({
   productId,
 }: PublicProductPathParams): string => {
   const business = encodeURIComponent(businessId);
-  if (!productSlug) {
+  if (!productSlug || !categorySlug) {
     return `/${business}/product/${encodeURIComponent(String(productId ?? ""))}`;
   }
-  return `/${business}/${encodeURIComponent(
-    categorySlug || UNCATEGORIZED_SLUG,
-  )}/${encodeURIComponent(productSlug)}`;
+  return `/${business}/${encodeURIComponent(categorySlug)}/${encodeURIComponent(
+    productSlug,
+  )}`;
 };
 
 // Enlace público (sin sesión) de un producto. Usa el origen actual para que

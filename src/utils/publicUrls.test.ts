@@ -16,7 +16,18 @@ describe("getPublicProductPath", () => {
     ).toBe("/dulce-momento/postres/torta-de-limon");
   });
 
-  it("uses sin-categoria when the product has no category slug", () => {
+  it("builds the uncategorized path from the mapper's sin-categoria slug", () => {
+    expect(
+      getPublicProductPath({
+        businessId: "dulce-momento",
+        categorySlug: "sin-categoria",
+        productSlug: "galleta",
+        productId: 1,
+      }),
+    ).toBe("/dulce-momento/sin-categoria/galleta");
+  });
+
+  it("falls back to the legacy path when the category slug is missing", () => {
     expect(
       getPublicProductPath({
         businessId: "dulce-momento",
@@ -24,7 +35,7 @@ describe("getPublicProductPath", () => {
         productSlug: "galleta",
         productId: 1,
       }),
-    ).toBe("/dulce-momento/sin-categoria/galleta");
+    ).toBe("/dulce-momento/product/1");
   });
 
   it("encodes every segment", () => {
