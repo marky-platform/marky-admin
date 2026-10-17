@@ -77,6 +77,12 @@ const CustomModalContent: React.FC<CustomModalProps> = ({
                 bgcolor: "background.paper",
                 boxShadow: 24,
                 borderRadius: 1, // Opcional, para redondear esquinas
+                // Límites seguros para pantallas chicas: el contenido scrollea
+                // dentro del cuerpo y el header/footer quedan visibles.
+                maxWidth: "calc(100vw - 32px)",
+                maxHeight: "calc(100dvh - 32px)",
+                display: "flex",
+                flexDirection: "column",
                 ...sx, // Permite extender o sobreescribir los estilos predeterminados
               }
         }
@@ -124,7 +130,9 @@ const CustomModalContent: React.FC<CustomModalProps> = ({
           id="modal-description"
           sx={{
             p: 4,
-            ...(isFullScreen ? { flex: 1, overflowY: "auto" } : {}),
+            ...(isFullScreen
+              ? { flex: 1, overflowY: "auto" }
+              : { flex: "1 1 auto", minHeight: 0, overflowY: "auto" }),
           }}
         >
           {children}
