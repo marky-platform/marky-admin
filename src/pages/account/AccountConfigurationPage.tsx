@@ -644,7 +644,7 @@ const AccountConfigurationPage: React.FC = () => {
         open={openModal === "access"}
         onClose={() => setOpenModal(null)}
         title="Editar datos de acceso"
-        sx={{ width: 520 }}
+        sx={{ width: { xs: "calc(100vw - 32px)", sm: 520 } }}
         hideFooter
       >
         <Formik
@@ -699,7 +699,7 @@ const AccountConfigurationPage: React.FC = () => {
         open={openModal === "categories"}
         onClose={() => setOpenModal(null)}
         title="Editar categorías"
-        sx={{ width: 720 }}
+        sx={{ width: { xs: "calc(100vw - 32px)", sm: 720 } }}
         hideFooter
       >
         <Formik
@@ -771,7 +771,7 @@ const AccountConfigurationPage: React.FC = () => {
         open={openModal === "location"}
         onClose={() => setOpenModal(null)}
         title="Editar ubicación"
-        sx={{ width: 520 }}
+        sx={{ width: { xs: "calc(100vw - 32px)", sm: 520 } }}
         hideFooter
       >
         {!data ? (
@@ -818,7 +818,7 @@ const AccountConfigurationPage: React.FC = () => {
         open={openModal === "business_type"}
         onClose={() => setOpenModal(null)}
         title="Tipo de negocio"
-        sx={{ width: 520 }}
+        sx={{ width: { xs: "calc(100vw - 32px)", sm: 520 } }}
         hideFooter
       >
         <Formik
@@ -881,7 +881,7 @@ const AccountConfigurationPage: React.FC = () => {
         open={openModal === "money"}
         onClose={() => setOpenModal(null)}
         title="Expresión monetaria"
-        sx={{ width: 720 }}
+        sx={{ width: { xs: "calc(100vw - 32px)", sm: 720 } }}
         hideFooter
       >
         <Formik
