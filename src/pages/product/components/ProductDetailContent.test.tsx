@@ -94,14 +94,14 @@ describe("ProductDetailContent: new product information", () => {
   it("shows every new section when the product has all the data", () => {
     renderContent(fullProduct, { readOnly: true });
 
-    expect(screen.getByText("Peso:")).toBeInTheDocument();
+    expect(screen.getByText("Peso")).toBeInTheDocument();
     expect(screen.getByText("1,5 kg")).toBeInTheDocument();
-    expect(screen.getByText("Tamaño:")).toBeInTheDocument();
+    expect(screen.getByText("Tamaño")).toBeInTheDocument();
     expect(screen.getByText("22 cm de diámetro")).toBeInTheDocument();
-    expect(screen.getByText("Rendimiento:")).toBeInTheDocument();
+    expect(screen.getByText("Rendimiento")).toBeInTheDocument();
     expect(screen.getByText("12–15 personas")).toBeInTheDocument();
 
-    expect(screen.getByText("Ingredientes principales:")).toBeInTheDocument();
+    expect(screen.getByText("Ingredientes principales")).toBeInTheDocument();
     const ingredients = within(
       screen.getByRole("list", { name: "Ingredientes principales" }),
     );
@@ -151,11 +151,11 @@ describe("ProductDetailContent: new product information", () => {
     );
 
     expect(screen.getByText("1 persona")).toBeInTheDocument();
-    expect(screen.queryByText("Peso:")).not.toBeInTheDocument();
-    expect(screen.queryByText("Volumen:")).not.toBeInTheDocument();
-    expect(screen.queryByText("Tamaño:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Peso")).not.toBeInTheDocument();
+    expect(screen.queryByText("Volumen")).not.toBeInTheDocument();
+    expect(screen.queryByText("Tamaño")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Ingredientes principales:"),
+      screen.queryByText("Ingredientes principales"),
     ).not.toBeInTheDocument();
     expect(screen.getByText("Huevo")).toBeInTheDocument();
     expect(
@@ -195,7 +195,7 @@ describe("ProductDetailContent: new product information", () => {
       screen.queryByRole("heading", { name: "Información alimentaria" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Ingredientes principales:"),
+      screen.queryByText("Ingredientes principales"),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Rendimiento|Tamaño|Peso|Volumen|Cantidad/),
@@ -264,8 +264,8 @@ describe("ProductDetailContent information order", () => {
       screen.getByText("Galleta de chocolate"),
       screen.getByText("en categoría:"),
       screen.getByText("Una galleta rica"),
-      screen.getByText("Peso:"),
-      screen.getByText("Ingredientes principales:"),
+      screen.getByText("Peso"),
+      screen.getByText("Ingredientes principales"),
       screen.getByText(/^\$|Gs|USD|2/, { selector: "h2" }),
       screen.getByRole("heading", { name: "Información alimentaria" }),
     ];
@@ -283,15 +283,54 @@ describe("ProductDetailContent information order", () => {
     const rules = rulesFor(specs);
 
     // xs/sm: reordered right after the header (order -1, original 8px gap).
-    expect(
-      rules.some((r) => /min-width:\s*0px[^}]*order:\s*-1/.test(r)),
-    ).toBe(true);
+    expect(rules.some((r) => /min-width:\s*0px[^}]*order:\s*-1/.test(r))).toBe(
+      true,
+    );
     // md+: back to DOM order (after the description), no negative margin.
-    expect(
-      rules.some((r) => /min-width:\s*900px[^}]*order:\s*0/.test(r)),
-    ).toBe(true);
+    expect(rules.some((r) => /min-width:\s*900px[^}]*order:\s*0/.test(r))).toBe(
+      true,
+    );
     expect(
       rules.some((r) => /min-width:\s*900px[^}]*margin-top:\s*0/.test(r)),
     ).toBe(true);
+  });
+  it("renders each detail as its own boxed cell, columns at md+ and rows below", () => {
+    renderContent(productWithEverything, { readOnly: true });
+    const specs = screen.getByTestId("product-detail-specs");
+    expect(
+      within(specs).getByRole("heading", { name: "Detalles" }),
+    ).toBeInTheDocument();
+    const cells = within(specs).getAllByTestId("product-detail-spec");
+    expect(cells.length).toBeGreaterThan(0);
+
+    const rules = rulesFor(
+      within(specs).getByTestId("product-detail-spec-list"),
+    );
+    expect(
+      rules.some((r) =>
+        new RegExp(
+          `min-width:\\s*900px[^}]*grid-template-columns:\\s*repeat\\(${cells.length}`,
+        ).test(r),
+      ),
+    ).toBe(true);
+    // xs/sm: una sola columna, filas termino/valor.
+    expect(
+      rules.some((r) => /grid-template-columns:\s*minmax\(0,\s*1fr\)/.test(r)),
+    ).toBe(true);
+    const cellRules = rulesFor(cells[0]);
+    expect(
+      cellRules.some((r) =>
+        /min-width:\s*900px[^}]*flex-direction:\s*column/.test(r),
+      ),
+    ).toBe(true);
+  });
+
+  it("renders main ingredient pills with the larger 12x4 padding", () => {
+    renderContent(productWithEverything, { readOnly: true });
+    const list = screen.getByRole("list", { name: "Ingredientes principales" });
+    const pill = within(list).getAllByRole("listitem")[0];
+    const css = rulesFor(pill).join(" ");
+    expect(css).toMatch(/padding-left:\s*12px/);
+    expect(css).toMatch(/padding-top:\s*4px/);
   });
 });

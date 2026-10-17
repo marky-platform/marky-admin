@@ -53,14 +53,20 @@ const ProductDetailContent: React.FC<{
             maxWidth: PRODUCT_INFO_MAX_WIDTH,
           }}
         >
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: { xs: 4, md: 6 },
+            }}
+          >
             {/* Orden de DOM = escritorio (descripción antes que detalles).
                 En xs/sm los detalles suben justo bajo el encabezado, como
                 antes, con `order` y el gap original de 8px. */}
             <ProductDetailHeader
               product={product}
               readOnly={readOnly}
-              sx={{ order: -1 }}
+              sx={{ order: -1, mb: { md: -2 } }}
             />
             <ProductDetailDescription product={product} />
             <ProductDetailSpecs
