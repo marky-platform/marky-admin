@@ -108,28 +108,18 @@ const PublicBusinessProfilePage: React.FC = () => {
                 boxSizing: "border-box",
               }}
             >
-              <BusinessProfilePanel
-                name={profile.business_name}
-                categoriesText={categoriesText}
-                photo={profile.profile_image}
-                description={profile.description || ""}
-                attributes={profile.headquarter_attributes || []}
-                socialMedia={socialMedia}
-                locations={profile.locations || []}
-                readOnly
-              />
               {/* Sin header público, el switch de tema y el menú de acciones
                   (compartir / copiar / QR / reportar) viven juntos arriba a la
-                  derecha del hero, en mobile y desktop. Dentro del contenedor
-                  sticky (md+) para no salirse de vista al hacer scroll. */}
+                  derecha, en su propia fila sobre el hero (mobile y desktop)
+                  para no encimarse con la foto. Dentro del contenedor sticky
+                  (md+) para no salirse de vista al hacer scroll. */}
               <Box
                 data-testid="profile-top-actions"
                 sx={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "flex-end",
+                  mb: 2,
                 }}
               >
                 <ThemeModeToggle variant="icon" />
@@ -146,6 +136,16 @@ const PublicBusinessProfilePage: React.FC = () => {
                   ]}
                 />
               </Box>
+              <BusinessProfilePanel
+                name={profile.business_name}
+                categoriesText={categoriesText}
+                photo={profile.profile_image}
+                description={profile.description || ""}
+                attributes={profile.headquarter_attributes || []}
+                socialMedia={socialMedia}
+                locations={profile.locations || []}
+                readOnly
+              />
             </Box>
           </Box>
           <Box
