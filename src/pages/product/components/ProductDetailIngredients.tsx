@@ -11,12 +11,12 @@ const ProductDetailIngredients: React.FC<{ product: Product }> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <Typography variant="body2" sx={{ lineHeight: "18px" }}>
-        Ingredientes principales:
+      <Typography variant="body2" fontWeight={700} sx={{ lineHeight: "22px" }}>
+        Ingredientes principales
       </Typography>
       <InfoPillList label="Ingredientes principales">
         {ingredients.map((ingredient, index) => (
-          <InfoPill key={`${index}-${ingredient}`} label={ingredient} />
+          <InfoPill key={`${index}-${ingredient}`} label={ingredient} large />
         ))}
       </InfoPillList>
     </Box>

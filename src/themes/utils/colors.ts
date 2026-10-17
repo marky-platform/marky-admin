@@ -2,9 +2,9 @@
 //
 // Single source of truth for every color scheme. `light` values are exactly
 // the literals the app used before dark mode existed (1:1, no merging of
-// near-identical greys). `dark` values come from the Figma "Home con datos"
-// dark frame; values marked (proposal) are not covered by the design and
-// need the checkpoint-1 / pilot approval. See DARK-MODE-PLAN-2026-10-11.md.
+// near-identical greys). `dark` values come from the Figma "Crear modo oscuro"
+// navy palette; values marked (proposal) are not covered by the design and
+// need approval. See DARK-MODE-REFRESH-PLAN-2026-10-17.md.
 //
 // Both schemes are typed as `SchemeColors`, so a token missing in any scheme
 // is a TypeScript error. To add a palette theme, add another `SchemeColors`
@@ -245,90 +245,90 @@ const light: SchemeColors = {
 
 const dark: SchemeColors = {
   primary: {
-    main: "#3C74ED", // Figma: prices, links, counters
-    dark: "#3C74ED", // (proposal) hover for the #4A88EC button
-    contrastText: "#FFFFFF", // other primary fills (chips, badges…) keep white text
+    main: "#2E6FF2", // Figma (modo oscuro): prices, links, counters
+    dark: "#3D7CF4", // Figma (modo oscuro): primary button hover
+    contrastText: "#FFFFFF",
   },
   secondary: {
-    main: "#1E3A5F", // (proposal) tinted chip/background
+    main: "#1B2F4B", // Figma (modo oscuro): tinted chip/background
   },
   error: {
-    main: "#F76060", // Figma: status text
-    light: "#3B1219", // (proposal) error background
+    main: "#F64848", // Figma (modo oscuro): status text
+    light: "#40202A", // Figma (modo oscuro): inactive stopper fill
   },
   success: {
     main: "#219F5E",
     light: "#0F2E1F", // (proposal) success background
   },
   text: {
-    primary: "#CBD5E1", // Figma: body text
-    secondary: "#FFFFFF", // Figma: headings / business name
-    disabled: "#64748B", // (proposal) slate-500
-    strong: "#FFFFFF",
-    heading: "#FFFFFF",
-    title: "#FFFFFF",
-    body: "#CBD5E1",
-    muted: "#9E9EA6", // Figma
-    faint: "#9E9EA6",
-    soft: "#CBD5E1", // (proposal)
-    placeholder: "#64748B", // (proposal)
-    black: "#FFFFFF", // (proposal)
-    grey: "#9E9EA6", // (proposal)
+    primary: "#C5CEDA", // Figma (modo oscuro): body text
+    secondary: "#F8FAFC", // Figma (modo oscuro): headings / business name
+    disabled: "#8290A3", // Figma (modo oscuro): faint text
+    strong: "#F8FAFC",
+    heading: "#F8FAFC",
+    title: "#F8FAFC",
+    body: "#C5CEDA",
+    muted: "#8FA0B5", // Figma (modo oscuro): secondary text, neutral icons
+    faint: "#8290A3",
+    soft: "#C5CEDA",
+    placeholder: "#8290A3",
+    black: "#F8FAFC",
+    grey: "#8FA0B5",
   },
   grey: {
-    50: "#1E293B", // Figma surface.main
-    100: "#1E293B", // Figma surface.main (inputs)
-    200: "#2A2F36", // (proposal) raised fill
-    300: "#334155", // (proposal) border-ish
-    400: "#2A2F36", // Figma surface.button
-    500: "#64748B", // (proposal)
-    600: "#2A2F36", // Figma surface.button
-    700: "#94A3B8", // (proposal)
-    800: "#334155", // Figma border.field
-    900: "#9E9EA6", // Figma text.muted
+    50: "#14233A",
+    100: "#14233A", // Figma (modo oscuro): inputs
+    200: "#20324B",
+    300: "#263C57",
+    400: "#20324B",
+    500: "#8290A3",
+    600: "#20324B", // Figma (modo oscuro): secondary button
+    700: "#8FA0B5",
+    800: "#263C57", // Figma (modo oscuro): border
+    900: "#8FA0B5",
   },
   background: {
-    default: "#0F172A", // Figma: page, nav, sidebar
-    paper: "#1E293B", // (proposal) modals, menus
+    default: "#0B1422", // Figma (modo oscuro): page canvas
+    paper: "#14233A", // Figma (modo oscuro): cards, modals, menus
   },
   surface: {
-    base: "#0F172A", // Figma
-    main: "#1E293B", // Figma
-    inset: "#0F172A", // (proposal) layer rule
-    header: "#0F172A", // Figma: top nav
-    field: "#0F172A", // (proposal) inset on a #1E293B card
-    subtle: "#1E293B", // (proposal)
-    muted: "#2A2F36", // (proposal)
-    avatar: "#1E293B", // Figma: avatar
-    tint: "#1E3A5F", // (proposal)
-    tintFaint: "#0F172A", // (proposal)
+    base: "#0B1422", // Figma (modo oscuro)
+    main: "#14233A", // Figma (modo oscuro)
+    inset: "#0F1C2F", // Figma (modo oscuro): filter-bar inset
+    header: "#0B1422",
+    field: "#0F1C2F",
+    subtle: "#14233A",
+    muted: "#20324B",
+    avatar: "#0E192B", // Figma (modo oscuro)
+    tint: "#1B2F4B",
+    tintFaint: "#0B1422",
     warning: "#3B2A12", // (proposal)
-    iconButton: "#121212", // Figma
-    hover: "rgba(74, 136, 236, 0.12)", // (proposal)
-    selected: "rgba(74, 136, 236, 0.2)", // (proposal)
-    veil: "rgba(15, 23, 42, 0.8)", // (proposal)
-    pressed: "#334155", // (proposal)
-    disabled: "#1E293B", // (proposal)
+    iconButton: "#20324B",
+    hover: "#1B2D47", // Figma (modo oscuro): input/dropdown hover
+    selected: "#1B2F4B",
+    veil: "rgba(11, 20, 34, 0.8)",
+    pressed: "#203A5D", // Figma (modo oscuro)
+    disabled: "#14233A",
   },
   border: {
-    field: "#334155", // Figma
-    layout: "#1F2228", // Figma
-    header: "#1F2228", // Figma
-    divider: "#1F2228", // Figma
-    light: "#334155", // (proposal)
-    soft: "#334155", // (proposal)
-    input: "#334155", // (proposal)
-    avatar: "#334155", // (proposal)
-    modal: "#334155", // (proposal)
-    dashed: "#2F4F8F", // (proposal)
+    field: "#263C57", // Figma (modo oscuro)
+    layout: "#263C57",
+    header: "#263C57",
+    divider: "#263C57",
+    light: "#263C57",
+    soft: "#263C57",
+    input: "#263C57",
+    avatar: "#263C57",
+    modal: "#263C57",
+    dashed: "#36577C", // Figma (modo oscuro): hover border
   },
   accent: {
-    link: "#3C74ED", // Figma
-    button: "#4A88EC", // Figma: primary button background
-    onButton: "#0D0D0D", // Figma: "Agregar producto" label
-    danger: "#F76060", // (proposal)
+    link: "#2E6FF2", // Figma (modo oscuro)
+    button: "#3077F0", // Figma (modo oscuro): primary button background
+    onButton: "#FFFFFF", // Figma (modo oscuro): "Agregar producto" label
+    danger: "#FF3E3E", // Figma (modo oscuro): danger badge
   },
-  scrollbar: { track: "#1E293B", thumb: "#334155" }, // (proposal)
+  scrollbar: { track: "#14233A", thumb: "#263C57" },
   shadow: {
     menu: "rgba(0, 0, 0, 0.5)", // (proposal)
     soft: "rgba(0, 0, 0, 0.5)", // (proposal)

@@ -24,7 +24,12 @@ export const InfoPillList: React.FC<{
   </Box>
 );
 
-const InfoPill: React.FC<{ label: string }> = ({ label }) => (
+// `large` = ingredientes principales (12px / padding 12×4); por defecto el
+// pill compacto de alérgenos y declaraciones.
+const InfoPill: React.FC<{ label: string; large?: boolean }> = ({
+  label,
+  large = false,
+}) => (
   <Box
     component="li"
     sx={{
@@ -32,7 +37,8 @@ const InfoPill: React.FC<{ label: string }> = ({ label }) => (
       alignItems: "center",
       bgcolor: "secondary.main",
       borderRadius: 1.5,
-      px: 2,
+      px: large ? 3 : 2,
+      py: large ? 1 : 0,
       maxWidth: "100%",
     }}
   >

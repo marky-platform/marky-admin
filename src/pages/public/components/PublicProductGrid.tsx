@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import CategoryGroup from "../../../components/CategoryGroup";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import usePublicCatalog from "../../../hooks/usePublicCatalog";
+import useRetainedFilterCounts from "../../../hooks/useRetainedFilterCounts";
 import { CategoryWithProducts } from "../../../types/categoryWithProducts";
 import CategoryFilterModal, {
   Category,
@@ -104,10 +105,10 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  const filterCounts = {
-    promotion: catalogRaw?.filter_counts?.promotion,
-    featured: catalogRaw?.filter_counts?.featured,
-  };
+  const filterCounts = useRetainedFilterCounts(
+    catalogRaw?.filter_counts,
+    businessId,
+  );
   const results = catalog?.results ?? [];
   const hasActiveFilters =
     filters.search.trim() !== "" ||
