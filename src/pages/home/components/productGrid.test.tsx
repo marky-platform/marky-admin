@@ -322,3 +322,63 @@ describe("ProductGrid no-products empty state", () => {
     expect(screen.getByText("Administrar Categorías")).toBeInTheDocument();
   });
 });
+
+// JSDOM has no matchMedia: simulate a viewport below sm (down("sm") is a
+// max-width query) or at md+ (up("md") is a min-width query).
+const mockViewport = (mobile: boolean) => {
+  window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+    matches: mobile ? query.includes("max-width") : query.includes("min-width"),
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  }));
+};
+
+describe("ProductGrid mobile catalog controls (shared with the public view)", () => {
+  beforeEach(() => {
+    mockedGetHomePageData.mockResolvedValue({ business_name: "Test Biz" });
+    mockedGetCategories.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      products_count: 1,
+      results: [category],
+    });
+  });
+
+  afterEach(() => {
+    delete (window as any).matchMedia;
+    jest.clearAllMocks();
+  });
+
+  it("shows Promociones / Destacados and the view toggle on mobile, without the public share menu", async () => {
+    mockViewport(true);
+    renderProductGrid();
+
+    const row1 = await screen.findByTestId("catalog-controls-row-1");
+    expect(
+      within(row1).getByRole("button", { name: /^Promociones/ }),
+    ).toBeInTheDocument();
+    expect(
+      within(row1).getByRole("button", { name: /^Destacados/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Más acciones" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("catalog-controls-row-2")).toBeInTheDocument();
+  });
+
+  it("keeps the desktop FilterSection (no mobile controls) at md+", async () => {
+    mockViewport(false);
+    renderProductGrid();
+
+    await screen.findByPlaceholderText("Buscar por nombre del producto");
+    expect(
+      screen.queryByTestId("catalog-controls-row-1"),
+    ).not.toBeInTheDocument();
+  });
+});

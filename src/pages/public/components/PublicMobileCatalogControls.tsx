@@ -12,11 +12,13 @@ import { Category } from "../../home/components/CategoryFilterModal";
 interface PublicMobileCatalogControlsProps {
   values: { categories: Category[]; offer: boolean; featured: boolean };
   onFilterChange: (next: any) => void;
-  categories: Category[];
+  /** Sin lista inyectada (admin) los chips cargan las categorías propias. */
+  categories?: Category[];
   viewMode: CatalogViewMode;
   onViewModeChange: (mode: CatalogViewMode) => void;
   filterCounts?: { promotion?: number; featured?: number };
-  businessId: string;
+  /** Sin businessId (admin) no se muestra el menú Compartir/QR/Reportar. */
+  businessId?: string;
   businessName?: string;
 }
 
@@ -36,7 +38,10 @@ const PublicMobileCatalogControls: React.FC<
   businessId,
   businessName,
 }) => {
-  const shareItems = useProfileShareActions({ businessId, businessName });
+  const shareItems = useProfileShareActions({
+    businessId: businessId ?? "",
+    businessName,
+  });
 
   return (
     <Box>
@@ -66,19 +71,21 @@ const PublicMobileCatalogControls: React.FC<
             <CatalogViewToggle value={viewMode} onChange={onViewModeChange} />
           </Box>
         </Box>
-        <ProfileActionsMenu
-          placement="below-end"
-          sx={{ flexShrink: 0 }}
-          items={[
-            ...shareItems,
-            {
-              icon: FlagOutlinedIcon,
-              text: "Reportar",
-              onClick: () => {},
-              destructive: true,
-            },
-          ]}
-        />
+        {businessId && (
+          <ProfileActionsMenu
+            placement="below-end"
+            sx={{ flexShrink: 0 }}
+            items={[
+              ...shareItems,
+              {
+                icon: FlagOutlinedIcon,
+                text: "Reportar",
+                onClick: () => {},
+                destructive: true,
+              },
+            ]}
+          />
+        )}
       </Box>
       <Box
         data-testid="catalog-controls-row-2"

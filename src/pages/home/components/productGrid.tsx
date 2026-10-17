@@ -1,6 +1,6 @@
 import AppsIcon from "@mui/icons-material/Apps";
 import LocalCafeIcon from "@mui/icons-material/LocalCafe";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, useMediaQuery, useTheme } from "@mui/material";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import DeleteCategoryWarningImage from "../../../assets/images/delete-category-warning.png";
@@ -24,7 +24,7 @@ import MoveToCategoryModal, {
 } from "../../product/components/MoveToCategoryModal";
 import CategoryFilterModal, { Category } from "./CategoryFilterModal";
 import FilterSection from "./FilterSection";
-import CatalogViewToggle from "../../../components/CatalogViewToggle";
+import PublicMobileCatalogControls from "../../public/components/PublicMobileCatalogControls";
 import useCatalogViewMode from "../../../hooks/useCatalogViewMode";
 import EmptyProducts from "./EmptyProducts";
 import { useHomePageData } from "../../../hooks/useHomePageData";
@@ -45,6 +45,10 @@ export const ProductGrid: React.FC = () => {
     offer: false,
     featured: false,
   };
+  const theme = useTheme();
+  // Mobile (<sm) comparte los controles de dos filas del catálogo público
+  // (sin menú Compartir/QR: el admin ya los tiene en su perfil).
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { viewMode, setViewMode } = useCatalogViewMode();
 
   const [filters, setFilters] = useState<FilterValues>(initialFilters);
@@ -122,6 +126,10 @@ export const ProductGrid: React.FC = () => {
   // zero products in total (`products_count` includes categorized and
   // uncategorized ones), even if empty categories already exist. Filtered
   // zero-results keep their own "No se han encontrado productos" message.
+  const filterCounts = {
+    promotion: categoriesWithProductsRaw?.filter_counts?.promotion,
+    featured: categoriesWithProductsRaw?.filter_counts?.featured,
+  };
   const showEmptyState = !hasFiltered && !isLoading && productCount === 0;
   const [openCreateCategoryModal, setOpenCreateCategoryModal] = useState(false);
   // Una categoría recién creada no tiene productos, así que no cambia el
@@ -263,27 +271,31 @@ export const ProductGrid: React.FC = () => {
               Producto
             </Box>
           </Button>
-          <Box sx={{ display: { xs: "flex", sm: "none" } }}>
-            <CatalogViewToggle value={viewMode} onChange={setViewMode} />
-          </Box>
         </Box>
         )}
       </Box>
       {/* Filtros: Search y selects */}
       {!showEmptyState && (
         <Box mb={2}>
-          <FilterSection
-            values={filters}
-            onFilterChange={handleFilterChange}
-            setOpenCategoryModal={() => setOpenCategoryModal(true)}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            showCatalogFilterPillsOnMobile={false}
-            filterCounts={{
-              promotion: categoriesWithProductsRaw?.filter_counts?.promotion,
-              featured: categoriesWithProductsRaw?.filter_counts?.featured,
-            }}
-          />
+          {isMobile ? (
+            <PublicMobileCatalogControls
+              values={filters}
+              onFilterChange={handleFilterChange}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              filterCounts={filterCounts}
+            />
+          ) : (
+            <FilterSection
+              values={filters}
+              onFilterChange={handleFilterChange}
+              setOpenCategoryModal={() => setOpenCategoryModal(true)}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              showCatalogFilterPillsOnMobile={false}
+              filterCounts={filterCounts}
+            />
+          )}
           {hasFiltered && (
             <Typography
               variant="body2"
