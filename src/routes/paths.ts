@@ -15,5 +15,7 @@ export const ROUTES = {
   PRODUCT_CREATE: "/product/create",
   // public (unauthenticated) routes — catch-alls, must be registered last (see App.tsx)
   PUBLIC_BUSINESS: "/:businessId",
+  // Ruta legada con id numérico: redirige a la canónica.
   PUBLIC_PRODUCT_DETAIL: "/:businessId/product/:id",
+  PUBLIC_PRODUCT_CANONICAL: "/:businessId/:categorySlug/:productSlug",
 };

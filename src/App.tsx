@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import NotFound from "./pages/NotFound";
 import PublicBusinessProfilePage from "./pages/public/PublicBusinessProfilePage";
 import PublicProductDetailPage from "./pages/public/PublicProductDetailPage";
+import LegacyPublicProductRedirect from "./pages/public/LegacyPublicProductRedirect";
 import { publicRoutes } from "./routes/publicRoutes";
 import { CustomThemeProvider } from "./themes/ThemeContext";
 import { useThemeAssets } from "./themes/useThemeAssets";
@@ -91,6 +92,10 @@ const App = () => {
                     future routes. */}
                 <Route
                   path={ROUTES.PUBLIC_PRODUCT_DETAIL}
+                  element={<LegacyPublicProductRedirect />}
+                />
+                <Route
+                  path={ROUTES.PUBLIC_PRODUCT_CANONICAL}
                   element={<PublicProductDetailPage />}
                 />
                 <Route

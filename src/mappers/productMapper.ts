@@ -1,10 +1,16 @@
 import { Product, ProductGridItem } from "../types/product";
 import { parseAllergenIds, parseCsvList } from "../utils/productExtras";
+import { UNCATEGORIZED_SLUG } from "../utils/publicUrls";
 
-export const mapProductGridItem = (productData: any): ProductGridItem => {
+export const mapProductGridItem = (
+  productData: any,
+  categorySlug?: string | null,
+): ProductGridItem => {
   return {
     id: productData.id,
     name: productData.name,
+    slug: productData.slug ?? null,
+    categorySlug: categorySlug ?? productData.categorySlug ?? null,
     description: productData.description,
     image: productData.image ?? undefined,
     views: productData.views ?? undefined,
@@ -51,6 +57,11 @@ export const mapProductGridItem = (productData: any): ProductGridItem => {
 export const mapProduct = (productData: any): Product => {
   return {
     ...productData,
+    slug: productData.slug ?? null,
+    // Sin categoría -> `sin-categoria`; con categoría sin slug (deploy) -> null.
+    categorySlug: productData.category
+      ? (productData.category.slug ?? null)
+      : UNCATEGORIZED_SLUG,
     is_active: productData.is_active,
     featuredIngredients: parseCsvList(productData.featured_ingredients),
     allergens: parseAllergenIds(productData.allergens),
@@ -83,6 +94,7 @@ export const mapProduct = (productData: any): Product => {
 export const mapCategoryWithProducts = (cat: any) => {
   return {
     ...cat,
+    slug: cat.slug ?? null,
     // forward is_available, fall back to is_active if backend uses legacy field
     is_available:
       cat.is_available !== undefined
@@ -91,7 +103,7 @@ export const mapCategoryWithProducts = (cat: any) => {
           ? cat.is_active
           : true,
     products: Array.isArray(cat.products)
-      ? cat.products.map(mapProductGridItem)
+      ? cat.products.map((p: any) => mapProductGridItem(p, cat.slug))
       : [],
   };
 };
