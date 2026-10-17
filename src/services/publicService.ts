@@ -63,3 +63,16 @@ export async function getPublicProduct(
   );
   return mapProduct(response.data);
 }
+
+export async function getPublicProductBySlug(
+  businessId: string,
+  categorySlug: string,
+  productSlug: string,
+): Promise<Product> {
+  const response = await publicApi.get(
+    `${baseURL}/${encodeURIComponent(businessId)}/categories/${encodeURIComponent(
+      categorySlug,
+    )}/products/${encodeURIComponent(productSlug)}/`,
+  );
+  return mapProduct(response.data);
+}

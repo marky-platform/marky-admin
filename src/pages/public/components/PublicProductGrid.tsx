@@ -11,6 +11,7 @@ import CategoryFilterModal, {
 import FilterSection from "../../home/components/FilterSection";
 import useCatalogViewMode from "../../../hooks/useCatalogViewMode";
 import PublicMobileCatalogControls from "./PublicMobileCatalogControls";
+import { getPublicProductPath } from "../../../utils/publicUrls";
 
 interface FilterValues {
   search: string;
@@ -170,7 +171,14 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
             readOnly
             stickyTopOffset={0}
             onProductClick={(product) =>
-              navigate(`/${businessId}/product/${product.id}`)
+              navigate(
+                getPublicProductPath({
+                  businessId,
+                  categorySlug: product.categorySlug,
+                  productSlug: product.slug,
+                  productId: product.id,
+                }),
+              )
             }
           />
         ))}

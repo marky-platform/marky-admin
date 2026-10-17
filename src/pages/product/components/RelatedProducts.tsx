@@ -6,7 +6,8 @@ import { ReactComponent as CrownIcon } from "../../../assets/icons/crown.svg";
 import ProductCard from "../../../components/ProductCard";
 import useRelatedProducts from "../../../hooks/useRelatedProducts";
 import { ROUTES } from "../../../routes/paths";
-import { Product } from "../../../types/product";
+import { Product, ProductGridItem } from "../../../types/product";
+import { getPublicProductPath } from "../../../utils/publicUrls";
 
 interface RelatedProductsProps {
   product: Product;
@@ -26,11 +27,16 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
 
   if (!category || products.length === 0) return null;
 
-  const goToProduct = (productId: string | number) =>
+  const goToProduct = (related: ProductGridItem) =>
     navigate(
       businessId
-        ? `/${businessId}/product/${productId}`
-        : ROUTES.PRODUCT_DETAIL.replace(":id", String(productId)),
+        ? getPublicProductPath({
+            businessId,
+            categorySlug: category.slug ?? related.categorySlug,
+            productSlug: related.slug,
+            productId: related.id,
+          })
+        : ROUTES.PRODUCT_DETAIL.replace(":id", String(related.id)),
     );
 
   const CategoryIcon =
@@ -82,7 +88,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
                 event.target === event.currentTarget
               ) {
                 event.preventDefault();
-                goToProduct(related.id);
+                goToProduct(related);
               }
             }}
             sx={{
@@ -96,7 +102,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
             <ProductCard
               product={related}
               readOnly
-              onClick={() => goToProduct(related.id)}
+              onClick={() => goToProduct(related)}
             />
           </Box>
         ))}

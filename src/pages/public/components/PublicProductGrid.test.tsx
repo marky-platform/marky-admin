@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act, within } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../../../themes/light";
 import PublicProductGrid from "./PublicProductGrid";
@@ -57,6 +57,10 @@ const category: CategoryWithProducts = {
   ],
 };
 
+const LocationProbe = () => (
+  <div data-testid="location">{useLocation().pathname}</div>
+);
+
 const renderPublicProductGrid = () => {
   const queryClient = new QueryClient();
   return render(
@@ -64,6 +68,7 @@ const renderPublicProductGrid = () => {
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
           <PublicProductGrid businessId="dulce-momento" categories={[]} />
+          <LocationProbe />
         </MemoryRouter>
       </ThemeProvider>
     </QueryClientProvider>,
@@ -202,5 +207,50 @@ describe("PublicProductGrid breakpoint scope", () => {
       screen.getByPlaceholderText("Buscar por nombre del producto"),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument();
+  });
+});
+
+describe("PublicProductGrid navigation", () => {
+  const withSlugs: CategoryWithProducts = {
+    ...category,
+    slug: "postres",
+    products: [
+      {
+        id: 42,
+        name: "Galleta de chocolate",
+        description: "Rica y crocante",
+        price: "2.00",
+        slug: "galleta-de-chocolate",
+        categorySlug: "postres",
+      },
+      // No slug yet (created during the deploy window): legacy fallback.
+      { id: 43, name: "Torta de limón", description: "Con merengue", price: "5.00" },
+    ],
+  };
+
+  beforeEach(() => {
+    mockedGetPublicCatalog.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      products_count: 2,
+      results: [withSlugs],
+    });
+  });
+
+  it("opens the canonical URL when the product has a slug", async () => {
+    renderPublicProductGrid();
+    fireEvent.click(await screen.findByText("Galleta de chocolate"));
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/dulce-momento/postres/galleta-de-chocolate",
+    );
+  });
+
+  it("falls back to the legacy URL when the product has no slug", async () => {
+    renderPublicProductGrid();
+    fireEvent.click(await screen.findByText("Torta de limón"));
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/dulce-momento/product/43",
+    );
   });
 });

@@ -12,6 +12,7 @@ const PRODUCT_SAVE_TIMEOUT_MS = 240_000;
 export interface ProductCategory {
   id: number;
   name: string;
+  slug?: string | null;
   icon: string;
   discount_percentage: string;
   multibuy_option?: string;
