@@ -3,30 +3,37 @@ import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "../../components/BackButton";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import usePublicProduct from "../../hooks/usePublicProduct";
+import usePublicProductBySlug from "../../hooks/usePublicProductBySlug";
+import { Product } from "../../types/product";
 import usePublicBusinessProfile from "../../hooks/usePublicBusinessProfile";
 import ProductDetailContent, {
   PRODUCT_PAGE_MAX_WIDTH,
 } from "../product/components/ProductDetailContent";
 import PublicNotFound from "./components/PublicNotFound";
 
-// Public, unauthenticated product detail — marky.one/<businessId>/product/<id>.
-// The back row always returns to the business's public page (not
-// navigate(-1)), so a deep link still lands somewhere sensible.
-const PublicProductDetailPage: React.FC = () => {
+interface PublicProductDetailViewProps {
+  businessId?: string;
+  product?: Product;
+  isLoading: boolean;
+  error: unknown;
+}
+
+// Public, unauthenticated product detail view. The back row always returns to
+// the business's public page (not navigate(-1)), so a deep link still lands
+// somewhere sensible.
+export const PublicProductDetailView: React.FC<PublicProductDetailViewProps> = ({
+  businessId,
+  product,
+  isLoading,
+  error,
+}) => {
   const navigate = useNavigate();
-  const { businessId, id } = useParams<{ businessId: string; id: string }>();
-  const numericId = id ? Number(id) : undefined;
-  const { data: product, isLoading, error } = usePublicProduct(
-    businessId,
-    numericId,
-  );
   const { data: profile } = usePublicBusinessProfile(businessId);
 
   // Navegar entre productos relacionados reutiliza esta página: volver arriba.
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [numericId]);
+  }, [product?.id]);
 
   useEffect(() => {
     if (product?.name) {
@@ -79,9 +86,32 @@ const PublicProductDetailPage: React.FC = () => {
           product={product}
           readOnly
           businessId={businessId}
+          galleryStickyTop={24}
         />
       </Box>
     </Box>
+  );
+};
+
+// Canonical public detail — marky.one/<businessId>/<categorySlug>/<productSlug>.
+const PublicProductDetailPage: React.FC = () => {
+  const { businessId, categorySlug, productSlug } = useParams<{
+    businessId: string;
+    categorySlug: string;
+    productSlug: string;
+  }>();
+  const { data: product, isLoading, error } = usePublicProductBySlug(
+    businessId,
+    categorySlug,
+    productSlug,
+  );
+  return (
+    <PublicProductDetailView
+      businessId={businessId}
+      product={product}
+      isLoading={isLoading}
+      error={error}
+    />
   );
 };
 

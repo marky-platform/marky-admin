@@ -1,7 +1,4 @@
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ShareIcon from "@mui/icons-material/Share";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, SxProps, Theme } from "@mui/material";
 import React, { useId, useState } from "react";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
@@ -13,17 +10,6 @@ export interface ProfileActionItem {
   onClick: () => void;
   destructive?: boolean;
 }
-
-const noop = () => {};
-
-// Acciones de perfil comunes a admin y público. Siguen siendo placeholders:
-// todavía no existe un flujo de compartir / copiar URL / QR (solo se cierra el
-// menú), así que el cableado real queda para un ticket de producto aparte.
-export const profileShareItems = (): ProfileActionItem[] => [
-  { icon: ShareIcon, text: "Compartir perfil", onClick: noop },
-  { icon: ContentCopyIcon, text: "Copiar URL del perfil", onClick: noop },
-  { icon: QrCodeIcon, text: "Código QR", onClick: noop },
-];
 
 interface ProfileActionsMenuProps {
   items: ProfileActionItem[];

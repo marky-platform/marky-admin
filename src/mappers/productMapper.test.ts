@@ -248,3 +248,62 @@ describe("mapCategoryWithProducts", () => {
     expect(result.products).toEqual([]);
   });
 });
+
+describe("slug mapping", () => {
+  it("mapProductGridItem keeps the product slug and the given category slug", () => {
+    const result = mapProductGridItem({ id: 1, name: "Pizza", slug: "pizza" }, "salados");
+    expect(result.slug).toBe("pizza");
+    expect(result.categorySlug).toBe("salados");
+  });
+
+  it("mapProductGridItem tolerates a null slug", () => {
+    expect(mapProductGridItem({ id: 1, name: "Pizza", slug: null }).slug).toBeNull();
+    expect(mapProductGridItem({ id: 1, name: "Pizza" }).slug).toBeNull();
+  });
+
+  it("mapProduct derives categorySlug from category.slug", () => {
+    const result = mapProduct({
+      id: 1,
+      slug: "pizza",
+      category: { id: 2, name: "Salados", slug: "salados" },
+    });
+    expect(result.slug).toBe("pizza");
+    expect(result.categorySlug).toBe("salados");
+  });
+
+  it("mapProduct uses sin-categoria when the product has no category", () => {
+    const result = mapProduct({ id: 1, slug: "pizza", category: null });
+    expect(result.categorySlug).toBe("sin-categoria");
+  });
+
+  it("mapProduct keeps null slugs as null", () => {
+    const result = mapProduct({
+      id: 1,
+      slug: null,
+      category: { id: 2, name: "Salados", slug: null },
+    });
+    expect(result.slug).toBeNull();
+    expect(result.categorySlug).toBeNull();
+  });
+
+  it("mapCategoryWithProducts propagates the category slug to its products", () => {
+    const result = mapCategoryWithProducts({
+      id: 2,
+      name: "Salados",
+      slug: "salados",
+      products: [{ id: 1, name: "Pizza", slug: "pizza" }],
+    });
+    expect(result.slug).toBe("salados");
+    expect(result.products[0].categorySlug).toBe("salados");
+  });
+
+  it("mapCategoryWithProducts handles the uncategorized group", () => {
+    const result = mapCategoryWithProducts({
+      id: null,
+      name: "Sin categoría",
+      slug: "sin-categoria",
+      products: [{ id: 1, name: "Pizza", slug: "pizza" }],
+    });
+    expect(result.products[0].categorySlug).toBe("sin-categoria");
+  });
+});

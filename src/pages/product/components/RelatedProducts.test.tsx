@@ -154,6 +154,28 @@ describe("RelatedProducts", () => {
     );
   });
 
+  it("navigates to the canonical URL when the products have slugs", async () => {
+    mockedPublicCatalog.mockResolvedValue({
+      ...catalogOf([]),
+      results: [
+        {
+          ...catalogOf([]).results[0],
+          slug: "bebidas",
+          products: [{ ...gridItem(2, "Latte"), slug: "latte" }],
+        },
+      ],
+    });
+
+    renderRelated({ businessId: "dulce-momento" });
+    fireEvent.click(await screen.findByText("Latte"));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "/dulce-momento/bebidas/latte",
+      ),
+    );
+  });
+
   it("lets keyboard users reach each card and open it with Enter", async () => {
     mockedPublicCatalog.mockResolvedValue(
       catalogOf([gridItem(2, "Latte"), gridItem(3, "Mocha")]),

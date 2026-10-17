@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act, within } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../../../themes/light";
 import PublicProductGrid from "./PublicProductGrid";
@@ -57,13 +57,20 @@ const category: CategoryWithProducts = {
   ],
 };
 
+const LocationProbe = () => (
+  <div data-testid="location">{useLocation().pathname}</div>
+);
+
 const renderPublicProductGrid = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
           <PublicProductGrid businessId="dulce-momento" categories={[]} />
+          <LocationProbe />
         </MemoryRouter>
       </ThemeProvider>
     </QueryClientProvider>,
@@ -140,5 +147,214 @@ describe("PublicProductGrid client-side search", () => {
     for (const card of screen.getAllByTestId("product-card")) {
       expect(within(card).queryAllByRole("button")).toHaveLength(0);
     }
+  });
+});
+
+// JSDOM has no matchMedia: simulate a viewport below md (down("md") is a
+// max-width query) or at md+ (up("md") is a min-width query).
+const mockViewport = (belowMd: boolean) => {
+  window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+    matches: belowMd
+      ? query.includes("max-width")
+      : query.includes("min-width"),
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  }));
+};
+
+describe("PublicProductGrid breakpoint scope", () => {
+  beforeEach(() => {
+    mockedGetPublicCatalog.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      products_count: 2,
+      results: [category],
+    });
+  });
+
+  afterEach(() => {
+    delete (window as any).matchMedia;
+  });
+
+  it("renders the two-row mobile controls below md and not FilterSection", async () => {
+    mockViewport(true);
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-controls-row-2")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Todos" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/Buscar por/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps FilterSection at md+ and not the mobile controls", async () => {
+    mockViewport(false);
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    expect(
+      screen.queryByTestId("catalog-controls-row-1"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Buscar por nombre del producto"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument();
+  });
+});
+
+describe("PublicProductGrid navigation", () => {
+  const withSlugs: CategoryWithProducts = {
+    ...category,
+    slug: "postres",
+    products: [
+      {
+        id: 42,
+        name: "Galleta de chocolate",
+        description: "Rica y crocante",
+        price: "2.00",
+        slug: "galleta-de-chocolate",
+        categorySlug: "postres",
+      },
+      // No slug yet (created during the deploy window): legacy fallback.
+      { id: 43, name: "Torta de limón", description: "Con merengue", price: "5.00" },
+    ],
+  };
+
+  beforeEach(() => {
+    mockedGetPublicCatalog.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      products_count: 2,
+      results: [withSlugs],
+    });
+  });
+
+  it("opens the canonical URL when the product has a slug", async () => {
+    renderPublicProductGrid();
+    fireEvent.click(await screen.findByText("Galleta de chocolate"));
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/dulce-momento/postres/galleta-de-chocolate",
+    );
+  });
+
+  it("falls back to the legacy URL when the product has no slug", async () => {
+    renderPublicProductGrid();
+    fireEvent.click(await screen.findByText("Torta de limón"));
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/dulce-momento/product/43",
+    );
+  });
+});
+
+describe("PublicProductGrid empty and error states keep the controls", () => {
+  const emptyCatalog = {
+    count: 0,
+    next: null,
+    previous: null,
+    products_count: 0,
+    results: [],
+  };
+
+  afterEach(() => {
+    delete (window as any).matchMedia;
+  });
+
+  it("keeps the mobile controls when the catalog is empty", async () => {
+    mockViewport(true);
+    mockedGetPublicCatalog.mockResolvedValue(emptyCatalog);
+    renderPublicProductGrid();
+
+    expect(
+      await screen.findByText("Este negocio aún no tiene productos."),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /^Promociones/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the desktop filters when the catalog is empty", async () => {
+    mockViewport(false);
+    mockedGetPublicCatalog.mockResolvedValue(emptyCatalog);
+    renderPublicProductGrid();
+
+    await screen.findByText("Este negocio aún no tiene productos.");
+    expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument();
+  });
+
+  it("lets the user clear an active filter whose results are empty (desktop)", async () => {
+    mockViewport(false);
+    mockedGetPublicCatalog.mockImplementation(async (_id: string, params: any) =>
+      params?.has_promotion
+        ? emptyCatalog
+        : {
+            count: 1,
+            next: null,
+            previous: null,
+            products_count: 2,
+            results: [category],
+          },
+    );
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    expect(
+      await screen.findByText("No encontramos productos con estos filtros."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Este negocio aún no tiene productos."),
+    ).not.toBeInTheDocument();
+
+    // Segundo clic en la misma píldora: quita el filtro.
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    expect(await screen.findByText("Galleta de chocolate")).toBeInTheDocument();
+  });
+
+  it("lets the user clear an active filter whose results are empty (mobile)", async () => {
+    mockViewport(true);
+    mockedGetPublicCatalog.mockImplementation(async (_id: string, params: any) =>
+      params?.has_promotion
+        ? emptyCatalog
+        : {
+            count: 1,
+            next: null,
+            previous: null,
+            products_count: 2,
+            results: [category],
+          },
+    );
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    await screen.findByText("No encontramos productos con estos filtros.");
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    expect(await screen.findByText("Galleta de chocolate")).toBeInTheDocument();
+  });
+
+  it("keeps the controls when loading products fails", async () => {
+    mockViewport(true);
+    mockedGetPublicCatalog.mockRejectedValue(new Error("boom"));
+    renderPublicProductGrid();
+
+    expect(
+      await screen.findByText("Error al cargar los productos."),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /^Promociones/ }),
+    ).toBeInTheDocument();
   });
 });

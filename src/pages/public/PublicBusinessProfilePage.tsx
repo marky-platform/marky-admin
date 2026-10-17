@@ -1,15 +1,19 @@
 import { Box } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import BusinessProfilePanel from "../../components/BusinessProfilePanel";
 import usePublicBusinessProfile from "../../hooks/usePublicBusinessProfile";
 import usePublicCategories from "../../hooks/usePublicCategories";
 import { mapSocialLinksToChannels } from "../../mappers/channelMapper";
+import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import ProfileActionsMenu from "../../components/ProfileActionsMenu";
 import ThemeModeToggle from "../../components/ThemeModeToggle";
+import useProfileShareActions from "../../hooks/useProfileShareActions";
 import PublicProductGrid from "./components/PublicProductGrid";
-import PublicMobileTopBar from "./components/PublicMobileTopBar";
 import PublicNotFound from "./components/PublicNotFound";
+
+const ICON_BUTTON_PADDING = 4; // padding compacto de los botones en md+
 
 // Public, unauthenticated business profile — marky.one/<businessId>. Mirrors
 // pages/home/index.tsx's two-column shell (296px rail + flex-grow right
@@ -22,6 +26,35 @@ const PublicBusinessProfilePage: React.FC = () => {
     () => categoriesData?.results ?? [],
     [categoriesData],
   );
+
+  const shareItems = useProfileShareActions({
+    businessId,
+    businessName: profile?.business_name,
+  });
+
+  // La fila de iconos de contacto está centrada, así que su borde derecho
+  // depende de cuántos canales hay. Medimos el botón de ubicaciones (el último
+  // de la fila) y alineamos a él el borde derecho del menú de acciones.
+  const stickyBoxRef = useRef<HTMLDivElement>(null);
+  const [actionsInset, setActionsInset] = useState(0);
+  const hasProfile = Boolean(profile);
+  useLayoutEffect(() => {
+    const box = stickyBoxRef.current;
+    if (!box) return;
+    const measure = () => {
+      const target = box.querySelector<HTMLElement>('[aria-label="Ubicaciones"]');
+      if (!target) return setActionsInset(0);
+      const inset = box.getBoundingClientRect().right - target.getBoundingClientRect().right;
+      // Puede ser negativo: con muchos canales la fila desborda la columna.
+      // El IconButton aporta padding entre su borde y el glifo.
+      setActionsInset(Math.round(inset - ICON_BUTTON_PADDING));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, [hasProfile, profile?.locations, profile?.social_links]);
 
   useEffect(() => {
     if (profile?.business_name) {
@@ -54,22 +87,24 @@ const PublicBusinessProfilePage: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <PublicMobileTopBar businessPhoto={profile.profile_image} />
       <Box
         sx={{
           flex: 1,
           px: { xs: 4, sm: 6, md: 0 },
-          pt: { xs: 3, md: 8 },
+          pt: 8,
           pb: 3,
-          height: "100%",
         }}
       >
         <Box
+          data-testid="public-profile-layout"
           sx={{
             display: "flex",
             flexWrap: "wrap",
             gap: { xs: 3, md: 0 },
-            height: { xs: "auto", md: "100vh" },
+            // Crece con el catálogo (no alto fijo) para que el rail sticky
+            // acompañe todo el scroll, no solo el primer viewport.
+            height: "auto",
+            minHeight: { md: "100vh" },
           }}
         >
           <Box
@@ -89,8 +124,10 @@ const PublicBusinessProfilePage: React.FC = () => {
             }}
           >
             <Box
+              ref={stickyBoxRef}
+              data-testid="profile-sticky-box"
               sx={{
-                position: { xs: "static", md: "sticky" },
+                position: { xs: "relative", md: "sticky" },
                 top: { md: "1rem" },
                 width: "100%",
                 maxWidth: { md: "232px" },
@@ -98,6 +135,43 @@ const PublicBusinessProfilePage: React.FC = () => {
                 boxSizing: "border-box",
               }}
             >
+              {/* Sin header público, el switch de tema y el menú de acciones
+                  (compartir / copiar / QR / reportar) viven juntos arriba a la
+                  derecha. Dentro del contenedor sticky
+                  (md+) para no salirse de vista al hacer scroll. */}
+              <Box
+                data-testid="profile-top-actions"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  // Esquina superior derecha en mobile y desktop, sin mover el
+                  // resto del perfil. En desktop la columna es angosta, así que
+                  // los botones se compactan para no tocar la foto, y el borde
+                  // derecho se alinea al botón de ubicaciones. En mobile, -8px
+                  // compensa el padding del IconButton para que el glifo quede
+                  // al ras del contenido.
+                  position: "absolute",
+                  top: 0,
+                  right: { xs: "-8px", md: `${actionsInset}px` },
+                  "& .MuiIconButton-root": { p: { md: `${ICON_BUTTON_PADDING}px` } },
+                  "& .MuiIconButton-root svg": { fontSize: { md: 20 } },
+                }}
+              >
+                <ThemeModeToggle variant="icon" />
+                <ProfileActionsMenu
+                  placement="below-end"
+                  items={[
+                    ...shareItems,
+                    {
+                      icon: FlagOutlinedIcon,
+                      text: "Reportar",
+                      onClick: () => {},
+                      destructive: true,
+                    },
+                  ]}
+                />
+              </Box>
               <BusinessProfilePanel
                 name={profile.business_name}
                 categoriesText={categoriesText}
@@ -109,17 +183,6 @@ const PublicBusinessProfilePage: React.FC = () => {
                 readOnly
               />
             </Box>
-            {/* Desktop: sin header público, el switch de tema va en la
-                esquina superior derecha del rail (fuera del flujo). */}
-            <ThemeModeToggle
-              variant="icon"
-              sx={{
-                display: { xs: "none", md: "inline-flex" },
-                position: "absolute",
-                top: 0,
-                right: 8,
-              }}
-            />
           </Box>
           <Box
             sx={{
@@ -131,7 +194,10 @@ const PublicBusinessProfilePage: React.FC = () => {
             }}
           >
             {businessId && (
-              <PublicProductGrid businessId={businessId} categories={categories} />
+              <PublicProductGrid
+                businessId={businessId}
+                categories={categories}
+              />
             )}
           </Box>
         </Box>

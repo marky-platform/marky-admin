@@ -20,6 +20,10 @@ export interface MediaItemLocal {
 export interface ProductGridItem {
   id: string | number;
   name: string;
+  /** Slug público del producto; puede ser null en filas creadas durante un deploy. */
+  slug?: string | null;
+  /** Slug de su categoría (`sin-categoria` si no tiene), para armar el enlace público. */
+  categorySlug?: string | null;
   /** Optional short description used in product cards */
   description?: string;
   image?: string;
@@ -122,9 +126,12 @@ export interface CeliacFormState {
 export interface Product {
   id?: number;
   name: string;
+  slug?: string | null;
+  /** Slug de su categoría (`sin-categoria` si no tiene), derivado en el mapper. */
+  categorySlug?: string | null;
   description: string;
   price: number;
-  category: { id: number; name: string } | null;
+  category: { id: number; name: string; slug?: string | null } | null;
   // New field to represent availability separate from legacy `is_active`.
   // This field may be provided by the API as `is_available` in some cases.
   is_available?: boolean;

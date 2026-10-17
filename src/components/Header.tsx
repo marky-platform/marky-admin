@@ -2,7 +2,6 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {
   AppBar,
-  Avatar,
   Box,
   ButtonBase,
   IconButton,
@@ -18,8 +17,8 @@ import {
 import { useTheme } from "@mui/material/styles";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import defaultUserAvatar from "../assets/images/user_default.png";
 import { ROUTES } from "../routes/paths";
+import { useHomePageData } from "../hooks/useHomePageData";
 import { useSessionStore } from "../stores/sessionStore";
 import { HEADER_HEIGHT } from "../constants/layout";
 import BusinessAvatar from "../pages/home/components/BusinessAvatar";
@@ -28,8 +27,8 @@ import ThemeModeToggle from "./ThemeModeToggle";
 import { useThemeAssets } from "../themes/useThemeAssets";
 
 interface HeaderProps {
-  /** Opt-in (solo Home admin, mobile): foto del negocio en el avatar de la
-   * cuenta en lugar del avatar genérico. */
+  /** Override opcional de la foto del avatar; por defecto el Header usa la
+   * foto del negocio (useHomePageData). También activa la variante mobile. */
   businessPhoto?: unknown;
   /** Opt-in (solo Home admin, mobile): acciones del perfil a la derecha del
    * avatar (p. ej. el menú "Más acciones"). */
@@ -45,8 +44,13 @@ export const Header: React.FC<HeaderProps> = ({
   const { logo: logoMarky } = useThemeAssets();
   const navigate = useNavigate();
   const { user } = useSessionStore();
+  const { data: homePageData } = useHomePageData();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const hasProfileVariant = businessPhoto !== undefined || !!mobileActionsSlot;
+  // La foto del negocio se muestra en todos los breakpoints; `businessPhoto`
+  // solo la pisa (p. ej. un File recién elegido en Home).
+  const avatarPhoto =
+    businessPhoto !== undefined ? businessPhoto : homePageData?.profile_image;
   const showProfileVariant = hasProfileVariant && isMobile;
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -105,11 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
           aria-label="user-menu"
           sx={{ width: 34, height: 34, p: 0, flexShrink: 0 }}
         >
-          {showProfileVariant ? (
-            <BusinessAvatar photo={businessPhoto} size={34} />
-          ) : (
-            <Avatar src={defaultUserAvatar} sx={{ width: 34, height: 34 }} />
-          )}
+          <BusinessAvatar photo={avatarPhoto} size={34} />
         </IconButton>
         {showProfileVariant && mobileActionsSlot}
         <Menu

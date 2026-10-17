@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
 import { MemoryRouter } from "react-router-dom";
 import lightTheme from "../themes/light";
@@ -9,6 +9,11 @@ import { cssForClosest } from "./cssTestUtils";
 jest.mock("./NotificationsMenu", () => ({
   __esModule: true,
   default: () => <div data-testid="notifications" />,
+}));
+
+let mockProfileImage: string | undefined;
+jest.mock("../hooks/useHomePageData", () => ({
+  useHomePageData: () => ({ data: { profile_image: mockProfileImage } }),
 }));
 
 jest.mock("../stores/sessionStore", () => ({
@@ -41,6 +46,7 @@ const actions = <button aria-label="Más acciones">⋮</button>;
 
 afterEach(() => {
   delete (window as any).matchMedia;
+  mockProfileImage = undefined;
 });
 
 describe("Header", () => {
@@ -92,4 +98,36 @@ describe("Header", () => {
       ).toMatch(/gap: 16px/);
     },
   );
+
+  it.each([true, false])(
+    "shows the business photo in the account avatar without props (mobile=%s)",
+    (isMobile) => {
+      mockMobile(isMobile);
+      mockProfileImage = "https://cdn.test/negocio.png";
+      renderHeader();
+
+      expect(
+        within(screen.getByLabelText("user-menu")).getByRole("img"),
+      ).toHaveAttribute("src", "https://cdn.test/negocio.png");
+    },
+  );
+
+  it("lets the businessPhoto prop override the business photo", () => {
+    mockMobile(false);
+    mockProfileImage = "https://cdn.test/negocio.png";
+    renderHeader({ businessPhoto: "https://cdn.test/override.png" });
+
+    expect(
+      within(screen.getByLabelText("user-menu")).getByRole("img"),
+    ).toHaveAttribute("src", "https://cdn.test/override.png");
+  });
+
+  it("falls back to the Marky watermark when the business has no photo", () => {
+    mockMobile(false);
+    renderHeader();
+
+    expect(
+      within(screen.getByLabelText("user-menu")).getByAltText("Marky"),
+    ).toBeInTheDocument();
+  });
 });

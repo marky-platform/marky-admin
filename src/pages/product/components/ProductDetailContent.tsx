@@ -3,8 +3,11 @@ import React from "react";
 import { Product } from "../../../types/product";
 import ProductAddonsList from "./ProductAddonsList";
 import ProductDetailGallery from "./ProductDetailGallery";
-import ProductDetailInfo from "./ProductDetailInfo";
+import ProductDetailDescription from "./ProductDetailDescription";
+import ProductDetailHeader from "./ProductDetailHeader";
+import ProductDetailIngredients from "./ProductDetailIngredients";
 import ProductDetailPricing from "./ProductDetailPricing";
+import ProductDetailSpecs from "./ProductDetailSpecs";
 import ProductFoodInfo from "./ProductFoodInfo";
 import RelatedProducts from "./RelatedProducts";
 import ProductVariantsList from "./ProductVariantsList";
@@ -23,7 +26,10 @@ const ProductDetailContent: React.FC<{
   /** Public page only: selects the anonymous catalog and public routes for
    * the related-products grid. */
   businessId?: string;
-}> = ({ product, readOnly = false, businessId }) => {
+  /** Desktop (md+) sticky offset of the gallery, in px: header height plus a
+   * gap on the admin page, just the gap on the public page (no header). */
+  galleryStickyTop?: number;
+}> = ({ product, readOnly = false, businessId, galleryStickyTop }) => {
   return (
     <Box
       sx={{
@@ -35,7 +41,7 @@ const ProductDetailContent: React.FC<{
     >
       {/* COLUMN 1 */}
       <Box sx={{ display: "flex", alignItems: "flex-start", minWidth: 0 }}>
-        <ProductDetailGallery product={product} />
+        <ProductDetailGallery product={product} stickyTop={galleryStickyTop} />
       </Box>
       {/* COLUMN 2 */}
       <Box sx={{ minWidth: 0 }}>
@@ -48,8 +54,20 @@ const ProductDetailContent: React.FC<{
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <ProductDetailInfo product={product} readOnly={readOnly} />
-
+            {/* Orden de DOM = escritorio (descripción antes que detalles).
+                En xs/sm los detalles suben justo bajo el encabezado, como
+                antes, con `order` y el gap original de 8px. */}
+            <ProductDetailHeader
+              product={product}
+              readOnly={readOnly}
+              sx={{ order: -1 }}
+            />
+            <ProductDetailDescription product={product} />
+            <ProductDetailSpecs
+              product={product}
+              sx={{ order: { xs: -1, md: 0 }, mt: { xs: -2, md: 0 } }}
+            />
+            <ProductDetailIngredients product={product} />
             <ProductDetailPricing product={product} />
           </Box>
 

@@ -29,10 +29,13 @@ import { ShowNotification } from "../utils/utils";
 export interface ProductCategoryRef {
   id: number | null;
   name: string;
+  slug?: string | null;
 }
 
 export interface ProductActionsMenuProduct {
   id?: string | number;
+  slug?: string | null;
+  categorySlug?: string | null;
   is_available?: boolean;
   is_active?: boolean;
 }
@@ -86,7 +89,12 @@ function ProductActionsMenu<P extends ProductActionsMenuProduct>({
     }
     try {
       await navigator.clipboard.writeText(
-        getPublicProductUrl(businessId, product.id),
+        getPublicProductUrl({
+          businessId,
+          categorySlug: product.categorySlug ?? currentCategory?.slug,
+          productSlug: product.slug,
+          productId: product.id,
+        }),
       );
       ShowNotification({ message: "Enlace copiado", type: "success" });
       handleClose();

@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryGroup from "../../../components/CategoryGroup";
@@ -10,6 +10,8 @@ import CategoryFilterModal, {
 } from "../../home/components/CategoryFilterModal";
 import FilterSection from "../../home/components/FilterSection";
 import useCatalogViewMode from "../../../hooks/useCatalogViewMode";
+import PublicMobileCatalogControls from "./PublicMobileCatalogControls";
+import { getPublicProductPath } from "../../../utils/publicUrls";
 
 interface FilterValues {
   search: string;
@@ -34,6 +36,9 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
   categories,
 }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  // Por debajo de md (xs+sm) el catálogo usa controles propios en dos filas.
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const initialFilters: FilterValues = {
     search: "",
     categories: [],
@@ -99,17 +104,35 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  if (error) {
-    return <Typography>Error al cargar los productos.</Typography>;
-  }
-
+  const filterCounts = {
+    promotion: catalogRaw?.filter_counts?.promotion,
+    featured: catalogRaw?.filter_counts?.featured,
+  };
   const results = catalog?.results ?? [];
-  const showEmptyState = !isLoading && results.length === 0;
+  const hasActiveFilters =
+    filters.search.trim() !== "" ||
+    filters.categories.length > 0 ||
+    filters.offer ||
+    filters.featured;
+  const showError = !isLoading && !!error;
+  const showEmptyState = !isLoading && !error && results.length === 0;
 
   return (
     <Box sx={{ px: { xs: 0, md: 8 }, pt: 0, pb: 2 }}>
-      {!showEmptyState && (
-        <Box mb={4}>
+      {/* Los controles (filtros y Compartir/QR) siempre se muestran: los
+          estados vacío/error reemplazan solo el área de resultados, así el
+          usuario puede quitar un filtro activo o volver a "Todo". */}
+      <Box mb={4}>
+        {isBelowMd ? (
+          <PublicMobileCatalogControls
+            values={filters}
+            onFilterChange={handleFilterChange}
+            categories={categories}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            filterCounts={filterCounts}
+          />
+        ) : (
           <FilterSection
             values={filters}
             onFilterChange={handleFilterChange}
@@ -118,13 +141,10 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             showViewToggleOnMobile
-            filterCounts={{
-              promotion: catalogRaw?.filter_counts?.promotion,
-              featured: catalogRaw?.filter_counts?.featured,
-            }}
+            filterCounts={filterCounts}
           />
-        </Box>
-      )}
+        )}
+      </Box>
       <CategoryFilterModal
         open={openCategoryModal}
         onClose={() => setOpenCategoryModal(false)}
@@ -133,14 +153,24 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
         categories={categories}
       />
       {isLoading && <LoadingSpinner />}
-      {!isLoading && showEmptyState && (
+      {showError && (
         <Box textAlign="center" py={10}>
           <Typography color="text.secondary">
-            Este negocio aún no tiene productos.
+            Error al cargar los productos.
+          </Typography>
+        </Box>
+      )}
+      {showEmptyState && (
+        <Box textAlign="center" py={10}>
+          <Typography color="text.secondary">
+            {hasActiveFilters
+              ? "No encontramos productos con estos filtros."
+              : "Este negocio aún no tiene productos."}
           </Typography>
         </Box>
       )}
       {!isLoading &&
+        !error &&
         !showEmptyState &&
         results.map((cat) => (
           <CategoryGroup
@@ -150,7 +180,14 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
             readOnly
             stickyTopOffset={0}
             onProductClick={(product) =>
-              navigate(`/${businessId}/product/${product.id}`)
+              navigate(
+                getPublicProductPath({
+                  businessId,
+                  categorySlug: product.categorySlug,
+                  productSlug: product.slug,
+                  productId: product.id,
+                }),
+              )
             }
           />
         ))}

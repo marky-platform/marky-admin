@@ -34,7 +34,7 @@ const CustomRadioLabel: React.FC<CustomRadioLabelProps> = ({
     >
       <Typography
         component="span"
-        sx={{ fontSize: "0.875rem", fontWeight: "500", color: fontColor }}
+        sx={{ fontSize: "0.875rem", fontWeight: "500", color: fontColor ?? color }}
       >
         {label}
       </Typography>

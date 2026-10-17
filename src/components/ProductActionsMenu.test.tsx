@@ -35,7 +35,10 @@ const mockedAccountInfo = getBusinessAccountInfo as jest.Mock;
 const mockedNotify = ShowNotification as jest.Mock;
 const writeText = jest.fn();
 
-const renderMenu = (productId: number | string = 42) =>
+const renderMenu = (
+  productId: number | string = 42,
+  extra: Record<string, unknown> = {},
+) =>
   render(
     <QueryClientProvider
       client={
@@ -44,7 +47,7 @@ const renderMenu = (productId: number | string = 42) =>
     >
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <ProductActionsMenu product={{ id: productId }} />
+          <ProductActionsMenu product={{ id: productId, ...extra }} />
         </MemoryRouter>
       </ThemeProvider>
     </QueryClientProvider>,
@@ -80,6 +83,22 @@ describe("ProductActionsMenu: Copiar URL", () => {
       message: "Enlace copiado",
       type: "success",
     });
+  });
+
+  it("copies the canonical link when the product has slugs", async () => {
+    mockedAccountInfo.mockResolvedValue({ business_id: "dulce-momento" });
+    renderMenu(42, { slug: "torta", categorySlug: "postres" });
+    await waitFor(() => expect(mockedAccountInfo).toHaveBeenCalled());
+    await screen.findByRole("button");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    await openMenuAndClickCopy();
+
+    await waitFor(() =>
+      expect(writeText).toHaveBeenCalledWith(
+        `${window.location.origin}/dulce-momento/postres/torta`,
+      ),
+    );
   });
 
   it("shows an error and copies nothing when the business id is unavailable", async () => {
