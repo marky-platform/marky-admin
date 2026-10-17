@@ -22,7 +22,6 @@ interface FilterValues {
 
 interface PublicProductGridProps {
   businessId: string;
-  businessName?: string;
   categories: Category[];
 }
 
@@ -34,7 +33,6 @@ interface PublicProductGridProps {
 // assumes an "add your first product" admin flow).
 export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
   businessId,
-  businessName,
   categories,
 }) => {
   const navigate = useNavigate();
@@ -133,8 +131,6 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             filterCounts={filterCounts}
-            businessId={businessId}
-            businessName={businessName}
           />
         ) : (
           <FilterSection

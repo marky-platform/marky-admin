@@ -32,8 +32,6 @@ const Harness: React.FC = () => {
       viewMode="grid"
       onViewModeChange={jest.fn()}
       filterCounts={{ promotion: 3, featured: 2 }}
-      businessId="dulce-momento"
-      businessName="Dulce Momento"
     />
   );
 };
@@ -48,7 +46,7 @@ const renderControls = () =>
   );
 
 describe("PublicMobileCatalogControls", () => {
-  it("row 1 holds the pills, view switch and overflow menu without Todo", () => {
+  it("row 1 holds the pills and view switch, without Todo or the profile menu", () => {
     renderControls();
     const row1 = screen.getByTestId("catalog-controls-row-1");
 
@@ -60,9 +58,10 @@ describe("PublicMobileCatalogControls", () => {
     ).toBeInTheDocument();
     expect(within(row1).getByRole("group", { name: "Cambiar visualización" }))
       .toBeInTheDocument();
+    // El menú de acciones del perfil vive junto al switch de tema.
     expect(
-      within(row1).getByRole("button", { name: "Más acciones" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: "Más acciones" }),
+    ).not.toBeInTheDocument();
     expect(
       within(row1).queryByRole("button", { name: /^Todos?$/ }),
     ).not.toBeInTheDocument();
@@ -79,17 +78,6 @@ describe("PublicMobileCatalogControls", () => {
     expect(
       within(row2).getAllByRole("button").map((b) => b.textContent),
     ).toEqual(["Todo", "Postres", "Bebidas"]);
-  });
-
-  it("offers the share actions and Reportar in the overflow menu", () => {
-    renderControls();
-    fireEvent.click(screen.getByRole("button", { name: "Más acciones" }));
-    expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual([
-      "Compartir perfil",
-      "Copiar URL del perfil",
-      "Descargar código QR",
-      "Reportar",
-    ]);
   });
 
   it("deselects Promociones on a second tap and keeps them exclusive", () => {

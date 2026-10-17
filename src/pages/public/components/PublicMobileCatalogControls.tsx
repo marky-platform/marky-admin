@@ -1,11 +1,8 @@
-import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import { Box } from "@mui/material";
 import React from "react";
 import CatalogFilterPills from "../../../components/CatalogFilterPills";
 import CatalogViewToggle from "../../../components/CatalogViewToggle";
-import ProfileActionsMenu from "../../../components/ProfileActionsMenu";
 import { CatalogViewMode } from "../../../hooks/useCatalogViewMode";
-import useProfileShareActions from "../../../hooks/useProfileShareActions";
 import CategoryFilterChips from "../../home/components/CategoryFilterChips";
 import { Category } from "../../home/components/CategoryFilterModal";
 
@@ -17,13 +14,10 @@ interface PublicMobileCatalogControlsProps {
   viewMode: CatalogViewMode;
   onViewModeChange: (mode: CatalogViewMode) => void;
   filterCounts?: { promotion?: number; featured?: number };
-  /** Sin businessId (admin) no se muestra el menú Compartir/QR/Reportar. */
-  businessId?: string;
-  businessName?: string;
 }
 
 // Controles del catálogo público por debajo de md (xs+sm), en dos filas:
-// 1) Promociones / Destacados + selector de vista + "Más acciones";
+// 1) Promociones / Destacados + selector de vista;
 // 2) "Todo" + chips de categoría. El estado de promo/destacado y el de
 // categoría son independientes: "Todo" solo limpia categorías.
 const PublicMobileCatalogControls: React.FC<
@@ -35,14 +29,7 @@ const PublicMobileCatalogControls: React.FC<
   viewMode,
   onViewModeChange,
   filterCounts,
-  businessId,
-  businessName,
 }) => {
-  const shareItems = useProfileShareActions({
-    businessId: businessId ?? "",
-    businessName,
-  });
-
   return (
     <Box>
       <Box
@@ -71,21 +58,6 @@ const PublicMobileCatalogControls: React.FC<
             <CatalogViewToggle value={viewMode} onChange={onViewModeChange} />
           </Box>
         </Box>
-        {businessId && (
-          <ProfileActionsMenu
-            placement="below-end"
-            sx={{ flexShrink: 0 }}
-            items={[
-              ...shareItems,
-              {
-                icon: FlagOutlinedIcon,
-                text: "Reportar",
-                onClick: () => {},
-                destructive: true,
-              },
-            ]}
-          />
-        )}
       </Box>
       <Box
         data-testid="catalog-controls-row-2"

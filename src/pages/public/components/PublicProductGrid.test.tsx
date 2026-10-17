@@ -270,7 +270,7 @@ describe("PublicProductGrid empty and error states keep the controls", () => {
     delete (window as any).matchMedia;
   });
 
-  it("keeps the mobile controls and share menu when the catalog is empty", async () => {
+  it("keeps the mobile controls when the catalog is empty", async () => {
     mockViewport(true);
     mockedGetPublicCatalog.mockResolvedValue(emptyCatalog);
     renderPublicProductGrid();
@@ -280,7 +280,7 @@ describe("PublicProductGrid empty and error states keep the controls", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Más acciones" }),
+      screen.getByRole("button", { name: /^Promociones/ }),
     ).toBeInTheDocument();
   });
 
@@ -354,7 +354,7 @@ describe("PublicProductGrid empty and error states keep the controls", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Más acciones" }),
+      screen.getByRole("button", { name: /^Promociones/ }),
     ).toBeInTheDocument();
   });
 });

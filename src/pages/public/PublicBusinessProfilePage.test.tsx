@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import lightTheme from "../../themes/light";
@@ -55,14 +55,13 @@ describe("PublicBusinessProfilePage", () => {
     expect(useNotifications).not.toHaveBeenCalled();
   });
 
-  it("has no mobile top bar (no Marky header, no page-level overflow menu)", () => {
+  it("has no mobile top bar, and the only overflow menu is beside the theme toggle", () => {
     renderPage();
 
     expect(screen.queryByRole("banner")).not.toBeInTheDocument();
-    // El menú "Más acciones" ahora vive en los controles del catálogo.
-    expect(
-      screen.queryByRole("button", { name: "Más acciones" }),
-    ).not.toBeInTheDocument();
+    const menus = screen.getAllByRole("button", { name: "Más acciones" });
+    expect(menus).toHaveLength(1);
+    expect(screen.getByTestId("profile-top-actions")).toContainElement(menus[0]);
   });
 
   it("renders the theme toggle inside the sticky profile box", () => {
@@ -73,6 +72,22 @@ describe("PublicBusinessProfilePage", () => {
       screen.getByRole("button", { name: /^Modo (oscuro|claro)$/ }),
     );
     expect(stickyBox).toContainElement(screen.getByText("Mi Negocio"));
+  });
+
+  it("places the three-dot menu beside the theme toggle, with all share actions", () => {
+    renderPage();
+
+    const actions = screen.getByTestId("profile-top-actions");
+    expect(
+      within(actions).getByRole("button", { name: /^Modo (oscuro|claro)$/ }),
+    ).toBeInTheDocument();
+    fireEvent.click(within(actions).getByRole("button", { name: "Más acciones" }));
+    expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual([
+      "Compartir perfil",
+      "Copiar URL del perfil",
+      "Descargar código QR",
+      "Reportar",
+    ]);
   });
 
   it("does not pin the desktop layout to a fixed 100vh height", () => {

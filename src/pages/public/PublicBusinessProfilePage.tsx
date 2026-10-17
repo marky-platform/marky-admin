@@ -6,7 +6,10 @@ import BusinessProfilePanel from "../../components/BusinessProfilePanel";
 import usePublicBusinessProfile from "../../hooks/usePublicBusinessProfile";
 import usePublicCategories from "../../hooks/usePublicCategories";
 import { mapSocialLinksToChannels } from "../../mappers/channelMapper";
+import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import ProfileActionsMenu from "../../components/ProfileActionsMenu";
 import ThemeModeToggle from "../../components/ThemeModeToggle";
+import useProfileShareActions from "../../hooks/useProfileShareActions";
 import PublicProductGrid from "./components/PublicProductGrid";
 import PublicNotFound from "./components/PublicNotFound";
 
@@ -21,6 +24,11 @@ const PublicBusinessProfilePage: React.FC = () => {
     () => categoriesData?.results ?? [],
     [categoriesData],
   );
+
+  const shareItems = useProfileShareActions({
+    businessId,
+    businessName: profile?.business_name,
+  });
 
   useEffect(() => {
     if (profile?.business_name) {
@@ -110,17 +118,34 @@ const PublicBusinessProfilePage: React.FC = () => {
                 locations={profile.locations || []}
                 readOnly
               />
-              {/* Sin header público, el switch de tema vive a la derecha del
-                  hero. Dentro del contenedor sticky (md+) para no salirse de
-                  vista al hacer scroll en desktop. */}
-              <ThemeModeToggle
-                variant="icon"
+              {/* Sin header público, el switch de tema y el menú de acciones
+                  (compartir / copiar / QR / reportar) viven juntos arriba a la
+                  derecha del hero, en mobile y desktop. Dentro del contenedor
+                  sticky (md+) para no salirse de vista al hacer scroll. */}
+              <Box
+                data-testid="profile-top-actions"
                 sx={{
                   position: "absolute",
                   top: 0,
                   right: 0,
+                  display: "flex",
+                  alignItems: "center",
                 }}
-              />
+              >
+                <ThemeModeToggle variant="icon" />
+                <ProfileActionsMenu
+                  placement="below-end"
+                  items={[
+                    ...shareItems,
+                    {
+                      icon: FlagOutlinedIcon,
+                      text: "Reportar",
+                      onClick: () => {},
+                      destructive: true,
+                    },
+                  ]}
+                />
+              </Box>
             </Box>
           </Box>
           <Box
@@ -135,7 +160,6 @@ const PublicBusinessProfilePage: React.FC = () => {
             {businessId && (
               <PublicProductGrid
                 businessId={businessId}
-                businessName={profile.business_name}
                 categories={categories}
               />
             )}
