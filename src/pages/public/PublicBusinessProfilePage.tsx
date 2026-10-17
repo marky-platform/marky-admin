@@ -13,7 +13,7 @@ import useProfileShareActions from "../../hooks/useProfileShareActions";
 import PublicProductGrid from "./components/PublicProductGrid";
 import PublicNotFound from "./components/PublicNotFound";
 
-const ICON_BUTTON_PADDING = 8;
+const ICON_BUTTON_PADDING = 4; // padding compacto de los botones en md+
 
 // Public, unauthenticated business profile — marky.one/<businessId>. Mirrors
 // pages/home/index.tsx's two-column shell (296px rail + flex-grow right
@@ -45,8 +45,9 @@ const PublicBusinessProfilePage: React.FC = () => {
       const target = box.querySelector<HTMLElement>('[aria-label="Ubicaciones"]');
       if (!target) return setActionsInset(0);
       const inset = box.getBoundingClientRect().right - target.getBoundingClientRect().right;
-      // El IconButton aporta ~8px de padding entre su borde y el glifo.
-      setActionsInset(Math.max(0, Math.round(inset - ICON_BUTTON_PADDING)));
+      // Puede ser negativo: con muchos canales la fila desborda la columna.
+      // El IconButton aporta padding entre su borde y el glifo.
+      setActionsInset(Math.round(inset - ICON_BUTTON_PADDING));
     };
     measure();
     if (typeof ResizeObserver === "undefined") return;
@@ -144,17 +145,17 @@ const PublicBusinessProfilePage: React.FC = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "flex-end",
-                  // Mobile: esquina superior derecha, a la altura de la foto
-                  // (sin fila extra). Desktop: fila propia sobre la foto,
-                  // alineada al botón de ubicaciones, porque la columna es
-                  // angosta y la foto quedaría debajo de los iconos.
-                  position: { xs: "absolute", md: "static" },
+                  // Esquina superior derecha en mobile y desktop, sin mover el
+                  // resto del perfil. En desktop la columna es angosta, así que
+                  // los botones se compactan para no tocar la foto, y el borde
+                  // derecho se alinea al botón de ubicaciones. En mobile, -8px
+                  // compensa el padding del IconButton para que el glifo quede
+                  // al ras del contenido.
+                  position: "absolute",
                   top: 0,
-                  // -8px: compensa el padding del IconButton para que el glifo
-                  // quede al ras del borde derecho del contenido.
-                  right: { xs: "-8px", md: 0 },
-                  mb: { xs: 0, md: 2 },
-                  pr: { xs: 0, md: `${actionsInset}px` },
+                  right: { xs: "-8px", md: `${actionsInset}px` },
+                  "& .MuiIconButton-root": { p: { md: `${ICON_BUTTON_PADDING}px` } },
+                  "& .MuiIconButton-root svg": { fontSize: { md: 20 } },
                 }}
               >
                 <ThemeModeToggle variant="icon" />
