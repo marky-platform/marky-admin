@@ -15,6 +15,7 @@ import { styled } from "@mui/material/styles";
 import { ProductGridItem } from "../types/product";
 import { formatPrice, truncateText } from "../utils/format";
 import { usePromotionCountdown } from "../hooks/usePromotionCountdown";
+import ProductPromotionBadge from "./ProductPromotionBadge";
 import ProductStopperTag from "./ProductStopperTag";
 import ProductActionsMenu, { ProductCategoryRef } from "./ProductActionsMenu";
 
@@ -63,36 +64,6 @@ const styles = {
     },
   },
 };
-
-// Shared geometry for the discount/multibuy pills anchored to the image's
-// top-left corner. Extracted because both badges are identical except for
-// color and label — a generic reusable badge abstraction is not warranted
-// beyond this real duplication.
-const ProductBadge: React.FC<{
-  backgroundColor: string;
-  children: React.ReactNode;
-}> = ({ backgroundColor, children }) => (
-  <Box
-    component="span"
-    data-testid="product-badge"
-    sx={{
-      bgcolor: backgroundColor,
-      color: "fixed.white",
-      px: 2,
-      py: 1,
-      borderRadius: "24px",
-      display: "inline-block",
-    }}
-  >
-    <Typography
-      component="span"
-      variant="caption"
-      sx={{ fontWeight: 500, fontSize: 14, color: "fixed.white" }}
-    >
-      {children}
-    </Typography>
-  </Box>
-);
 
 // "No disponible" is its own variant (not a conditional style mixed into the
 // promotion badges), rendered as two reciprocal-display presentation
@@ -168,7 +139,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const discountNumber = Number(product.discountPercent ?? 0);
   const showDiscount = !isNaN(discountNumber) && discountNumber > 0;
-  const discountLabel = showDiscount ? String(discountNumber) : null;
   // Matches ProductDetailPricing's hasDiscount: also treat presence of
   // backend "with discount" labels as a discount signal, so the grid and
   // detail views stay consistent even if discountPercent reads as 0.
@@ -265,15 +235,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
           }}
         >
           {showDiscount && (
-            <ProductBadge backgroundColor="error.main">
-              -{discountLabel}%
-            </ProductBadge>
+            <ProductPromotionBadge kind="discount" value={discountNumber} />
           )}
 
           {hasMultibuy && (
-            <ProductBadge backgroundColor="primary.main">
-              {product.multibuyOption}
-            </ProductBadge>
+            <ProductPromotionBadge
+              kind="multibuy"
+              value={product.multibuyOption as string}
+            />
           )}
 
           {!isAvailable && <AvailabilityCornerBadge />}

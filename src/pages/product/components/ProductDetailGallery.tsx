@@ -1,12 +1,17 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 import defaultImage from "../../../assets/images/default-product.png";
+import ProductPromotionBadge from "../../../components/ProductPromotionBadge";
 import { Product } from "../../../types/product";
 import { VideoThumbnail } from "./VideoThumbnail";
 
-const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
+const ProductDetailGallery: React.FC<{
+  product: Product;
+  /** Offset (px) from the viewport top where the gallery sticks at md+. */
+  stickyTop?: number;
+}> = ({ product, stickyTop = 0 }) => {
   const media = product.media?.filter((m) => !m._delete) ?? [];
   const [mainIndex, setMainIndex] = React.useState(0);
   const mainMedia = media.length > 0 ? media[mainIndex] : null;
@@ -31,19 +36,22 @@ const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
   // single video keep their current layout.
   const hideThumbnailRail =
     isMobile && media.length === 1 && media[0].media_type !== "video";
-  // Prepare formatted discount string: hide ".00" when discount is an integer
   const _rawDiscount = Number(product.discountPercentage ?? 0);
   const numericDiscount = Number.isFinite(_rawDiscount) ? _rawDiscount : 0;
-  const formattedDiscount = Number.isInteger(numericDiscount)
-    ? numericDiscount.toString()
-    : parseFloat(numericDiscount.toFixed(2)).toString();
+  const multibuyOption = product.multibuyOption || "";
 
   return (
     <Box
+      data-testid="product-detail-gallery"
       sx={{
         width: "100%",
         display: "flex",
         justifyContent: "center",
+        // Miniaturas + media principal se mantienen juntas al hacer scroll
+        // solo en escritorio; en xs/sm fluye estático.
+        position: { xs: "static", md: "sticky" },
+        top: { md: stickyTop },
+        alignSelf: "start",
       }}
     >
       <Grid container spacing={3}>
@@ -93,39 +101,45 @@ const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
           sm={hideThumbnailRail ? 12 : 10}
         >
           <Box
+            data-testid="product-detail-media"
             sx={{
               border: "1px solid",
               borderColor: "grey.400",
               borderRadius: 1.5,
-              pt: 6,
-              pl: 6,
-              pr: "10px",
-              pb: 3,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              overflow: "hidden",
               aspectRatio: "1 / 1",
               width: "100%",
               position: "relative",
             }}
           >
-            {/* Discount badge overlay if product has discount */}
-            {numericDiscount > 0 && (
+            {/* Promociones (descuento / multicompra) sobre la esquina superior
+                izquierda del media */}
+            {(numericDiscount > 0 || multibuyOption) && (
               <Box
+                data-testid="gallery-badge-container"
                 sx={{
                   position: "absolute",
                   left: 24,
                   top: 24,
-                  bgcolor: theme.palette.error.main,
-                  color: theme.palette.fixed.white,
-                  px: 1.5,
-                  py: 1,
-                  borderRadius: "3px",
+                  zIndex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: 1,
                 }}
               >
-                <Typography variant="body2" color="fixed.white" fontWeight={500}>
-                  -{formattedDiscount}%
-                </Typography>
+                {numericDiscount > 0 && (
+                  <ProductPromotionBadge
+                    kind="discount"
+                    value={numericDiscount}
+                  />
+                )}
+                {multibuyOption && (
+                  <ProductPromotionBadge
+                    kind="multibuy"
+                    value={multibuyOption}
+                  />
+                )}
               </Box>
             )}
 
@@ -134,9 +148,10 @@ const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
                 src={resolveUrl(mainMedia.file)}
                 controls
                 style={{
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                  borderRadius: 6,
+                  display: "block",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
                 }}
               />
             ) : (
@@ -144,10 +159,10 @@ const ProductDetailGallery: React.FC<{ product: Product }> = ({ product }) => {
                 src={resolveUrl(mainMedia ? mainMedia.file : defaultImage)}
                 alt={product.name}
                 style={{
+                  display: "block",
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  borderRadius: 6,
                 }}
               />
             )}
