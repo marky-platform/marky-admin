@@ -59,15 +59,18 @@ const PublicBusinessProfilePage: React.FC = () => {
           px: { xs: 4, sm: 6, md: 0 },
           pt: 8,
           pb: 3,
-          height: "100%",
         }}
       >
         <Box
+          data-testid="public-profile-layout"
           sx={{
             display: "flex",
             flexWrap: "wrap",
             gap: { xs: 3, md: 0 },
-            height: { xs: "auto", md: "100vh" },
+            // Crece con el catálogo (no alto fijo) para que el rail sticky
+            // acompañe todo el scroll, no solo el primer viewport.
+            height: "auto",
+            minHeight: { md: "100vh" },
           }}
         >
           <Box

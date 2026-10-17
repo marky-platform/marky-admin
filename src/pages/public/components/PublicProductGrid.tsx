@@ -106,46 +106,49 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  if (error) {
-    return <Typography>Error al cargar los productos.</Typography>;
-  }
-
   const filterCounts = {
     promotion: catalogRaw?.filter_counts?.promotion,
     featured: catalogRaw?.filter_counts?.featured,
   };
   const results = catalog?.results ?? [];
-  const showEmptyState = !isLoading && results.length === 0;
+  const hasActiveFilters =
+    filters.search.trim() !== "" ||
+    filters.categories.length > 0 ||
+    filters.offer ||
+    filters.featured;
+  const showError = !isLoading && !!error;
+  const showEmptyState = !isLoading && !error && results.length === 0;
 
   return (
     <Box sx={{ px: { xs: 0, md: 8 }, pt: 0, pb: 2 }}>
-      {!showEmptyState && (
-        <Box mb={4}>
-          {isBelowMd ? (
-            <PublicMobileCatalogControls
-              values={filters}
-              onFilterChange={handleFilterChange}
-              categories={categories}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              filterCounts={filterCounts}
-              businessId={businessId}
-              businessName={businessName}
-            />
-          ) : (
-            <FilterSection
-              values={filters}
-              onFilterChange={handleFilterChange}
-              setOpenCategoryModal={() => setOpenCategoryModal(true)}
-              categories={categories}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              showViewToggleOnMobile
-              filterCounts={filterCounts}
-            />
-          )}
-        </Box>
-      )}
+      {/* Los controles (filtros y Compartir/QR) siempre se muestran: los
+          estados vacío/error reemplazan solo el área de resultados, así el
+          usuario puede quitar un filtro activo o volver a "Todo". */}
+      <Box mb={4}>
+        {isBelowMd ? (
+          <PublicMobileCatalogControls
+            values={filters}
+            onFilterChange={handleFilterChange}
+            categories={categories}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            filterCounts={filterCounts}
+            businessId={businessId}
+            businessName={businessName}
+          />
+        ) : (
+          <FilterSection
+            values={filters}
+            onFilterChange={handleFilterChange}
+            setOpenCategoryModal={() => setOpenCategoryModal(true)}
+            categories={categories}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            showViewToggleOnMobile
+            filterCounts={filterCounts}
+          />
+        )}
+      </Box>
       <CategoryFilterModal
         open={openCategoryModal}
         onClose={() => setOpenCategoryModal(false)}
@@ -154,14 +157,24 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
         categories={categories}
       />
       {isLoading && <LoadingSpinner />}
-      {!isLoading && showEmptyState && (
+      {showError && (
         <Box textAlign="center" py={10}>
           <Typography color="text.secondary">
-            Este negocio aún no tiene productos.
+            Error al cargar los productos.
+          </Typography>
+        </Box>
+      )}
+      {showEmptyState && (
+        <Box textAlign="center" py={10}>
+          <Typography color="text.secondary">
+            {hasActiveFilters
+              ? "No encontramos productos con estos filtros."
+              : "Este negocio aún no tiene productos."}
           </Typography>
         </Box>
       )}
       {!isLoading &&
+        !error &&
         !showEmptyState &&
         results.map((cat) => (
           <CategoryGroup

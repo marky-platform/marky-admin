@@ -62,7 +62,9 @@ const LocationProbe = () => (
 );
 
 const renderPublicProductGrid = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={lightTheme}>
@@ -252,5 +254,107 @@ describe("PublicProductGrid navigation", () => {
     expect(screen.getByTestId("location")).toHaveTextContent(
       "/dulce-momento/product/43",
     );
+  });
+});
+
+describe("PublicProductGrid empty and error states keep the controls", () => {
+  const emptyCatalog = {
+    count: 0,
+    next: null,
+    previous: null,
+    products_count: 0,
+    results: [],
+  };
+
+  afterEach(() => {
+    delete (window as any).matchMedia;
+  });
+
+  it("keeps the mobile controls and share menu when the catalog is empty", async () => {
+    mockViewport(true);
+    mockedGetPublicCatalog.mockResolvedValue(emptyCatalog);
+    renderPublicProductGrid();
+
+    expect(
+      await screen.findByText("Este negocio aún no tiene productos."),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Más acciones" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the desktop filters when the catalog is empty", async () => {
+    mockViewport(false);
+    mockedGetPublicCatalog.mockResolvedValue(emptyCatalog);
+    renderPublicProductGrid();
+
+    await screen.findByText("Este negocio aún no tiene productos.");
+    expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument();
+  });
+
+  it("lets the user clear an active filter whose results are empty (desktop)", async () => {
+    mockViewport(false);
+    mockedGetPublicCatalog.mockImplementation(async (_id: string, params: any) =>
+      params?.has_promotion
+        ? emptyCatalog
+        : {
+            count: 1,
+            next: null,
+            previous: null,
+            products_count: 2,
+            results: [category],
+          },
+    );
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    expect(
+      await screen.findByText("No encontramos productos con estos filtros."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Este negocio aún no tiene productos."),
+    ).not.toBeInTheDocument();
+
+    // Segundo clic en la misma píldora: quita el filtro.
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    expect(await screen.findByText("Galleta de chocolate")).toBeInTheDocument();
+  });
+
+  it("lets the user clear an active filter whose results are empty (mobile)", async () => {
+    mockViewport(true);
+    mockedGetPublicCatalog.mockImplementation(async (_id: string, params: any) =>
+      params?.has_promotion
+        ? emptyCatalog
+        : {
+            count: 1,
+            next: null,
+            previous: null,
+            products_count: 2,
+            results: [category],
+          },
+    );
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    await screen.findByText("No encontramos productos con estos filtros.");
+    fireEvent.click(screen.getByRole("button", { name: /^Promociones/ }));
+    expect(await screen.findByText("Galleta de chocolate")).toBeInTheDocument();
+  });
+
+  it("keeps the controls when loading products fails", async () => {
+    mockViewport(true);
+    mockedGetPublicCatalog.mockRejectedValue(new Error("boom"));
+    renderPublicProductGrid();
+
+    expect(
+      await screen.findByText("Error al cargar los productos."),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Más acciones" }),
+    ).toBeInTheDocument();
   });
 });

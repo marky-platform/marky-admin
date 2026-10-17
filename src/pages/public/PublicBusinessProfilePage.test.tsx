@@ -74,4 +74,24 @@ describe("PublicBusinessProfilePage", () => {
     );
     expect(stickyBox).toContainElement(screen.getByText("Mi Negocio"));
   });
+
+  it("does not pin the desktop layout to a fixed 100vh height", () => {
+    renderPage();
+
+    const layout = screen.getByTestId("public-profile-layout");
+    const rules = Array.from(document.styleSheets)
+      .flatMap((sheet) => Array.from(sheet.cssRules))
+      .map((rule) => rule.cssText)
+      .filter((text) =>
+        layout.className
+          .split(" ")
+          .some((cls) => cls && text.includes(`.${cls}`)),
+      )
+      .join("\n");
+
+    // `height: 100vh` clipped the sticky rail to the first viewport; the
+    // layout must grow (min-height) with the catalog instead.
+    expect(rules).not.toMatch(/(^|[^-])height:\s*100vh/);
+    expect(rules).toMatch(/min-height:\s*100vh/);
+  });
 });
