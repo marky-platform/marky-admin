@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryGroup from "../../../components/CategoryGroup";
@@ -10,6 +10,7 @@ import CategoryFilterModal, {
 } from "../../home/components/CategoryFilterModal";
 import FilterSection from "../../home/components/FilterSection";
 import useCatalogViewMode from "../../../hooks/useCatalogViewMode";
+import PublicMobileCatalogControls from "./PublicMobileCatalogControls";
 
 interface FilterValues {
   search: string;
@@ -20,6 +21,7 @@ interface FilterValues {
 
 interface PublicProductGridProps {
   businessId: string;
+  businessName?: string;
   categories: Category[];
 }
 
@@ -31,9 +33,13 @@ interface PublicProductGridProps {
 // assumes an "add your first product" admin flow).
 export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
   businessId,
+  businessName,
   categories,
 }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  // Por debajo de md (xs+sm) el catálogo usa controles propios en dos filas.
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const initialFilters: FilterValues = {
     search: "",
     categories: [],
@@ -103,6 +109,10 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
     return <Typography>Error al cargar los productos.</Typography>;
   }
 
+  const filterCounts = {
+    promotion: catalogRaw?.filter_counts?.promotion,
+    featured: catalogRaw?.filter_counts?.featured,
+  };
   const results = catalog?.results ?? [];
   const showEmptyState = !isLoading && results.length === 0;
 
@@ -110,19 +120,29 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
     <Box sx={{ px: { xs: 0, md: 8 }, pt: 0, pb: 2 }}>
       {!showEmptyState && (
         <Box mb={4}>
-          <FilterSection
-            values={filters}
-            onFilterChange={handleFilterChange}
-            setOpenCategoryModal={() => setOpenCategoryModal(true)}
-            categories={categories}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            showViewToggleOnMobile
-            filterCounts={{
-              promotion: catalogRaw?.filter_counts?.promotion,
-              featured: catalogRaw?.filter_counts?.featured,
-            }}
-          />
+          {isBelowMd ? (
+            <PublicMobileCatalogControls
+              values={filters}
+              onFilterChange={handleFilterChange}
+              categories={categories}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              filterCounts={filterCounts}
+              businessId={businessId}
+              businessName={businessName}
+            />
+          ) : (
+            <FilterSection
+              values={filters}
+              onFilterChange={handleFilterChange}
+              setOpenCategoryModal={() => setOpenCategoryModal(true)}
+              categories={categories}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              showViewToggleOnMobile
+              filterCounts={filterCounts}
+            />
+          )}
         </Box>
       )}
       <CategoryFilterModal

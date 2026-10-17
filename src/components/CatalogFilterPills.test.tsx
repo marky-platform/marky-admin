@@ -58,4 +58,17 @@ describe("CatalogFilterPills", () => {
       ),
     ).not.toBeInTheDocument();
   });
+
+  it("hides the Todos pill when showAll is false", () => {
+    renderPills({ showAll: false });
+    expect(
+      screen.queryByRole("button", { name: "Todos" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Promociones" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Destacados" }),
+    ).toBeInTheDocument();
+  });
 });

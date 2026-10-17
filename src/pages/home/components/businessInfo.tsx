@@ -16,6 +16,7 @@ import { EditOutlined, PhotoCamera } from "@mui/icons-material";
 export const BusinessInfo: React.FC<{
   values: any;
   homePageData?: HomePageData;
+  businessId?: string;
   setFieldValue: (field: string, value: any) => void;
   locations: LocationEntryValue[];
   onOpenEditProfile: () => void;
@@ -25,6 +26,7 @@ export const BusinessInfo: React.FC<{
 }> = ({
   values,
   homePageData,
+  businessId,
   locations,
   onOpenEditProfile,
   openDescriptionModal,
@@ -140,7 +142,11 @@ export const BusinessInfo: React.FC<{
         )
       }
       actionsSlot={
-        <ProfileActionsRow onEditProfile={onOpenEditProfile} />
+        <ProfileActionsRow
+          onEditProfile={onOpenEditProfile}
+          businessId={businessId}
+          businessName={businessName}
+        />
       }
     />
   );

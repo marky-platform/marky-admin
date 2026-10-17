@@ -142,3 +142,65 @@ describe("PublicProductGrid client-side search", () => {
     }
   });
 });
+
+// JSDOM has no matchMedia: simulate a viewport below md (down("md") is a
+// max-width query) or at md+ (up("md") is a min-width query).
+const mockViewport = (belowMd: boolean) => {
+  window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+    matches: belowMd
+      ? query.includes("max-width")
+      : query.includes("min-width"),
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  }));
+};
+
+describe("PublicProductGrid breakpoint scope", () => {
+  beforeEach(() => {
+    mockedGetPublicCatalog.mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      products_count: 2,
+      results: [category],
+    });
+  });
+
+  afterEach(() => {
+    delete (window as any).matchMedia;
+  });
+
+  it("renders the two-row mobile controls below md and not FilterSection", async () => {
+    mockViewport(true);
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-controls-row-2")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Todos" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/Buscar por/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps FilterSection at md+ and not the mobile controls", async () => {
+    mockViewport(false);
+    renderPublicProductGrid();
+    await screen.findByText("Galleta de chocolate");
+
+    expect(
+      screen.queryByTestId("catalog-controls-row-1"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Buscar por nombre del producto"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument();
+  });
+});
