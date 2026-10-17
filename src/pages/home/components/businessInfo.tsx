@@ -22,7 +22,6 @@ export const BusinessInfo: React.FC<{
   openDescriptionModal: () => void;
   openAttributesModal: () => void;
   onOpenPhotoPicker: () => void;
-  onSettings?: () => void;
 }> = ({
   values,
   homePageData,
@@ -31,7 +30,6 @@ export const BusinessInfo: React.FC<{
   openDescriptionModal,
   openAttributesModal,
   onOpenPhotoPicker,
-  onSettings = () => {},
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -142,7 +140,7 @@ export const BusinessInfo: React.FC<{
         )
       }
       actionsSlot={
-        <ProfileActionsRow onEditProfile={onOpenEditProfile} onSettings={onSettings} />
+        <ProfileActionsRow onEditProfile={onOpenEditProfile} />
       }
     />
   );

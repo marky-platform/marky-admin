@@ -20,7 +20,7 @@ const mockMobile = (isMobile: boolean) => {
 const renderRow = () =>
   render(
     <ThemeProvider theme={lightTheme}>
-      <ProfileActionsRow onEditProfile={jest.fn()} onSettings={jest.fn()} />
+      <ProfileActionsRow onEditProfile={jest.fn()} />
     </ThemeProvider>,
   );
 
@@ -29,15 +29,19 @@ afterEach(() => {
 });
 
 describe("ProfileActionsRow", () => {
-  it("keeps Edit, Settings and More actions on desktop", () => {
+  it("keeps Edit and More actions on desktop (no settings gear)", () => {
     mockMobile(false);
     renderRow();
 
     expect(screen.getByText("Editar Perfil")).toBeInTheDocument();
-    expect(screen.getAllByRole("button")).toHaveLength(3);
+    expect(screen.getAllByRole("button")).toHaveLength(2);
     expect(
       screen.getByRole("button", { name: "Más acciones" }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /configuraci|settings/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("SettingsIcon")).not.toBeInTheDocument();
   });
 
   it("renders nothing on mobile (no lower three-dots, Edit or Settings)", () => {

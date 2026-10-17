@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, IconButton, useMediaQuery, useTheme } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import CancelButton from "../../../components/CancelButton";
 import ProfileActionsMenu, {
   profileShareItems,
@@ -8,14 +7,12 @@ import ProfileActionsMenu, {
 
 interface ProfileActionsRowProps {
   onEditProfile: () => void; // Abre el PresentationModal
-  onSettings: () => void; // Función para configurar (futura)
 }
 
 // Solo desktop (md+). En mobile la edición vive junto al nombre del negocio y
 // "Más acciones" en el Header, así que la fila no se renderiza.
 const ProfileActionsRow: React.FC<ProfileActionsRowProps> = ({
   onEditProfile,
-  onSettings,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -37,16 +34,6 @@ const ProfileActionsRow: React.FC<ProfileActionsRowProps> = ({
       >
         Editar Perfil
       </CancelButton>
-      <IconButton
-        onClick={onSettings}
-        sx={{
-          backgroundColor: "grey.200",
-          borderRadius: 1,
-          p: 3,
-        }}
-      >
-        <SettingsIcon />
-      </IconButton>
       <ProfileActionsMenu
         items={profileShareItems()}
         sx={{
