@@ -136,8 +136,7 @@ const PublicBusinessProfilePage: React.FC = () => {
             >
               {/* Sin header público, el switch de tema y el menú de acciones
                   (compartir / copiar / QR / reportar) viven juntos arriba a la
-                  derecha, en su propia fila sobre el hero (mobile y desktop)
-                  para no encimarse con la foto. Dentro del contenedor sticky
+                  derecha. Dentro del contenedor sticky
                   (md+) para no salirse de vista al hacer scroll. */}
               <Box
                 data-testid="profile-top-actions"
@@ -145,8 +144,17 @@ const PublicBusinessProfilePage: React.FC = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "flex-end",
-                  mb: 2,
-                  pr: `${actionsInset}px`,
+                  // Mobile: esquina superior derecha, a la altura de la foto
+                  // (sin fila extra). Desktop: fila propia sobre la foto,
+                  // alineada al botón de ubicaciones, porque la columna es
+                  // angosta y la foto quedaría debajo de los iconos.
+                  position: { xs: "absolute", md: "static" },
+                  top: 0,
+                  // -8px: compensa el padding del IconButton para que el glifo
+                  // quede al ras del borde derecho del contenido.
+                  right: { xs: "-8px", md: 0 },
+                  mb: { xs: 0, md: 2 },
+                  pr: { xs: 0, md: `${actionsInset}px` },
                 }}
               >
                 <ThemeModeToggle variant="icon" />
