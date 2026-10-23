@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
@@ -69,16 +69,16 @@ describe("AnalyticsPulseWidget", () => {
     renderWidget();
     openWidget();
     const close = screen.getByRole("button", { name: "Cerrar analíticas" });
-    expect(document.activeElement).toBe(close);
+    expect(close).toHaveFocus();
     fireEvent.click(close);
     const rail = screen.getByRole("button", { name: "Abrir analíticas" });
-    expect(document.activeElement).toBe(rail);
+    expect(rail).toHaveFocus();
 
     openWidget();
     fireEvent.keyDown(document, { key: "Escape" });
-    expect(document.activeElement).toBe(
+    expect(
       screen.getByRole("button", { name: "Abrir analíticas" }),
-    );
+    ).toHaveFocus();
   });
 
   it("does not close on Escape handled by a dialog or already prevented", async () => {
@@ -125,9 +125,11 @@ describe("AnalyticsPulseWidget", () => {
     mockGet.mockResolvedValue(pulseFixture);
     renderWidget();
     openWidget();
-    const live = await screen.findByText("Pizza Margarita");
-    expect(live.closest("a")).toHaveAttribute("href", "/product/123");
-    expect(screen.getByText("Sushi viejo").closest("a")).toBeNull();
+    expect(
+      await screen.findByRole("link", { name: /Pizza Margarita/ }),
+    ).toHaveAttribute("href", "/product/123");
+    expect(screen.getByText("Sushi viejo")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Sushi viejo/ })).toBeNull();
     expect(screen.getByText(/12 vistas · 18s/)).toBeInTheDocument();
     expect(screen.getByText(/3 vistas · 1m 15s/)).toBeInTheDocument();
   });
@@ -170,7 +172,7 @@ describe("AnalyticsPulseWidget", () => {
     openWidget();
     expect(await screen.findByText("Visitas de hoy")).toBeInTheDocument();
     expect(screen.getByText("Todavía no hay productos vistos.")).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText("3")).toBeInTheDocument());
+    expect(await screen.findByText("3")).toBeInTheDocument();
   });
 });
 
