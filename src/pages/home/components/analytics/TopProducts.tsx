@@ -6,7 +6,7 @@ import { formatCount, formatDuration } from "./format";
 import { Section } from "./sectionStyles";
 
 const TopProducts = ({ pulse }: { pulse: AnalyticsPulse }) => (
-  <Section title="Productos más vistos">
+  <Section title="Productos más vistos" caption="Últimos 7 días">
     {pulse.topProducts.length === 0 ? (
       <Typography sx={{ fontSize: 13, color: "text.muted" }}>
         Todavía no hay productos vistos.

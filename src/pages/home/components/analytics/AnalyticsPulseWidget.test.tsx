@@ -64,6 +64,63 @@ describe("AnalyticsPulseWidget", () => {
     ).toHaveAttribute("aria-expanded", "false");
   });
 
+  it("moves focus to the close button on open and back to the rail on close", async () => {
+    mockGet.mockResolvedValue(pulseFixture);
+    renderWidget();
+    openWidget();
+    const close = screen.getByRole("button", { name: "Cerrar analíticas" });
+    expect(document.activeElement).toBe(close);
+    fireEvent.click(close);
+    const rail = screen.getByRole("button", { name: "Abrir analíticas" });
+    expect(document.activeElement).toBe(rail);
+
+    openWidget();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Abrir analíticas" }),
+    );
+  });
+
+  it("does not close on Escape handled by a dialog or already prevented", async () => {
+    mockGet.mockResolvedValue(pulseFixture);
+    renderWidget();
+    openWidget();
+    const expanded = () =>
+      screen.getByRole("button", { name: "Cerrar analíticas" }).getAttribute(
+        "aria-expanded",
+      );
+
+    const prevented = new KeyboardEvent("keydown", {
+      key: "Escape",
+      cancelable: true,
+      bubbles: true,
+    });
+    prevented.preventDefault();
+    document.dispatchEvent(prevented);
+    expect(expanded()).toBe("true");
+
+    const dialog = document.createElement("div");
+    dialog.setAttribute("role", "dialog");
+    document.body.appendChild(dialog);
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(expanded()).toBe("true");
+    dialog.remove();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(
+      screen.getByRole("button", { name: "Abrir analíticas" }),
+    ).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("captions the 7-day sections", async () => {
+    mockGet.mockResolvedValue(pulseFixture);
+    renderWidget();
+    openWidget();
+    await screen.findByText("Visitas de hoy");
+    // historial (título) + origen, acciones y productos
+    expect(screen.getAllByText("Últimos 7 días")).toHaveLength(4);
+  });
+
   it("renders deleted products without a link and live ones with a link", async () => {
     mockGet.mockResolvedValue(pulseFixture);
     renderWidget();

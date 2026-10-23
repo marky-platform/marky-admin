@@ -12,7 +12,7 @@ const ActionBreakdown = ({ pulse }: { pulse: AnalyticsPulse }) => {
   ];
   const max = Math.max(...rows.map((r) => r.value));
   return (
-    <Section title="Acciones">
+    <Section title="Acciones" caption="Últimos 7 días">
       {rows.map((r) => (
         <MeterRow
           key={r.label}

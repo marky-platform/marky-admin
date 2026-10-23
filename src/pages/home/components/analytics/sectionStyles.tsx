@@ -12,9 +12,11 @@ export const SectionTitle = ({ children }: { children: ReactNode }) => (
 
 export const Section = ({
   title,
+  caption,
   children,
 }: {
   title: string;
+  caption?: string;
   children: ReactNode;
 }) => (
   <Box
@@ -25,6 +27,11 @@ export const Section = ({
     }}
   >
     <SectionTitle>{title}</SectionTitle>
+    {caption && (
+      <Typography sx={{ fontSize: 12, color: "text.muted", mt: -1, mb: 3 }}>
+        {caption}
+      </Typography>
+    )}
     {children}
   </Box>
 );

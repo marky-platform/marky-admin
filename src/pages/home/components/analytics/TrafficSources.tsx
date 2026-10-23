@@ -12,7 +12,7 @@ const TrafficSources = ({ pulse }: { pulse: AnalyticsPulse }) => {
   ];
   const max = Math.max(...rows.map((r) => r.value));
   return (
-    <Section title="Origen de las visitas">
+    <Section title="Origen de las visitas" caption="Últimos 7 días">
       {rows.map((r) => (
         <MeterRow
           key={r.label}

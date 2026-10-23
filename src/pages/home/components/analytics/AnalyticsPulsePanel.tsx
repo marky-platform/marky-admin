@@ -1,5 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, IconButton, Skeleton, Typography } from "@mui/material";
+import { Ref } from "react";
 import { AnalyticsPulse } from "../../../../types/analytics";
 import ActionBreakdown from "./ActionBreakdown";
 import AnalyticsEmptyState from "./AnalyticsEmptyState";
@@ -16,6 +17,7 @@ interface Props {
   isError: boolean;
   onRetry: () => void;
   onClose: () => void;
+  closeButtonRef?: Ref<HTMLButtonElement>;
 }
 
 export const hasNoActivity = (p: AnalyticsPulse): boolean =>
@@ -44,6 +46,7 @@ const AnalyticsPulsePanel = ({
   isError,
   onRetry,
   onClose,
+  closeButtonRef,
 }: Props) => {
   let body;
   if (data) {
@@ -112,6 +115,7 @@ const AnalyticsPulsePanel = ({
           Actividad de tu perfil
         </Typography>
         <IconButton
+          ref={closeButtonRef}
           onClick={onClose}
           aria-expanded={open}
           aria-controls={id}
