@@ -2,6 +2,7 @@ import { Box, useTheme } from "@mui/material";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { HEADER_HEIGHT } from "../../../../constants/layout";
 import { useAnalyticsPulse } from "../../../../hooks/useAnalyticsPulse";
+import { AnalyticsProductSort, AnalyticsPulseDays } from "../../../../types/analytics";
 import AnalyticsPulsePanel from "./AnalyticsPulsePanel";
 import AnalyticsPulseRail from "./AnalyticsPulseRail";
 
@@ -17,8 +18,8 @@ const MODAL_SELECTOR = '[role="dialog"], .MuiModal-root';
 
 /**
  * Widget "Pulso" de /home. Debe renderizarse como primer hijo del contenedor
- * derecho (display block en mobile, flex en md+): en mobile queda anclado
- * arriba a la derecha sobre la grilla (sticky de alto 0); en md+ es una
+ * derecho (display block en mobile, flex en md+): en mobile queda fijo arriba
+ * a la derecha, bajo el Header y sobre el perfil (Figma 6621:22881); en md+ es una
  * columna sticky de 104px junto a la grilla. Abierto, en lg+ la columna crece
  * a 352px; entre md y lg no hay ancho para reservarla sin aplastar la grilla,
  * así que el panel se superpone a ella desde la columna del riel.
@@ -27,7 +28,17 @@ const AnalyticsPulseWidget = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const panelId = `analytics-pulse-${useId().replace(/:/g, "")}`;
-  const { data, isFetching, isError, refetch } = useAnalyticsPulse(open);
+  const [days, setDays] = useState<AnalyticsPulseDays>(7);
+  const [sort, setSort] = useState<AnalyticsProductSort>("views");
+  // El riel muestra siempre los últimos 7 días; el panel, el período elegido.
+  // Con los valores por defecto ambas consultas comparten la misma caché.
+  const { data: railData } = useAnalyticsPulse({ live: open });
+  const { data, isFetching, isError, refetch } = useAnalyticsPulse({
+    enabled: open,
+    live: open,
+    days,
+    sort,
+  });
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLButtonElement>(null);
@@ -93,19 +104,17 @@ const AnalyticsPulseWidget = () => {
       data-testid="analytics-pulse-widget"
       sx={{
         boxSizing: "border-box",
-        position: "sticky",
+        position: { xs: "fixed", md: "sticky" },
         top: HEADER_HEIGHT + GAP,
+        right: { xs: GAP, md: "auto" },
         zIndex: (t) => t.zIndex.appBar - 1,
-        // mobile: alto 0 para no empujar la grilla; el panel se superpone.
-        height: { xs: 0, md: "auto" },
-        width: { xs: "100%", md: 104, lg: open ? 352 : 104 },
+        width: { xs: "auto", md: 104, lg: open ? 352 : 104 },
         flexShrink: 0,
         order: { md: 2 },
         alignSelf: { md: "flex-start" },
         display: "flex",
         justifyContent: "flex-end",
         pr: { md: 8 },
-        pointerEvents: { xs: "none", md: "auto" },
         transition: `width ${TRANSITION}`,
         "@media (prefers-reduced-motion: reduce)": { transition: "none" },
       }}
@@ -117,24 +126,28 @@ const AnalyticsPulseWidget = () => {
           pointerEvents: "auto",
           overflow: "hidden",
           maxWidth: "100%",
-          width: open ? { xs: 402, md: 320 } : 72,
+          width: open ? { xs: `calc(100vw - ${GAP * 2}px)`, md: 320 } : 72,
           height: innerHeight("vh"),
           // dvh evita que la barra del navegador móvil tape el pie del panel.
           "@supports (height: 100dvh)": { height: innerHeight("dvh") },
           maxHeight: open && maxHeight !== null ? `${maxHeight}px` : undefined,
-          mt: { xs: 0, md: 0 },
           [theme.breakpoints.between("md", "lg")]: open
             ? { position: "absolute", top: 0, right: theme.spacing(8), maxWidth: "none" }
             : {},
-          borderRadius: 3,
-          bgcolor: "surface.main",
-          border: (t) => `1px solid ${t.palette.border.field}`,
-          boxShadow: (t) => `0 2px 12px ${t.palette.shadow.soft}`,
-          transition: `width ${TRANSITION}, height ${TRANSITION}`,
+          borderRadius: 6,
+          bgcolor: open ? "pulse.canvas" : "surface.main",
+          border: (t) => `1px solid ${t.palette.border.soft}`,
+          transition: `width ${TRANSITION}, height ${TRANSITION}, background-color ${TRANSITION}`,
           "@media (prefers-reduced-motion: reduce)": { transition: "none" },
         }}
       >
-        <AnalyticsPulseRail ref={railRef} open={open} controlsId={panelId} onToggle={toggle} />
+        <AnalyticsPulseRail
+          ref={railRef}
+          open={open}
+          controlsId={panelId}
+          onToggle={toggle}
+          data={railData}
+        />
         <AnalyticsPulsePanel
           id={panelId}
           open={open}
@@ -144,6 +157,10 @@ const AnalyticsPulseWidget = () => {
           onRetry={() => refetch()}
           onClose={() => setOpen(false)}
           closeButtonRef={closeRef}
+          days={days}
+          onDaysChange={setDays}
+          sort={sort}
+          onSortChange={setSort}
         />
       </Box>
     </Box>

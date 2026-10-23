@@ -1,31 +1,33 @@
 import { Box, Typography } from "@mui/material";
 import { AnalyticsPulse } from "../../../../types/analytics";
-import { formatCount, formatLastVisit } from "./format";
+import { formatCount, formatTimeAgo } from "./format";
+import { pulseText } from "./sectionStyles";
 
-const VisitsSummary = ({ pulse }: { pulse: AnalyticsPulse }) => {
-  const { visits, uniqueVisitors, lastVisitAt } = pulse.today;
+/** Bloque "Hoy · Actividad reciente" (fondo celeste). */
+const VisitsSummary = ({ pulse, now }: { pulse: AnalyticsPulse; now?: Date }) => {
+  const { visits, lastVisitAt } = pulse.today;
   return (
-    <Box component="section" sx={{ pb: 4 }}>
-      <Typography sx={{ fontSize: 13, color: "text.muted" }}>
-        Visitas de hoy
+    <Box
+      component="section"
+      sx={{ bgcolor: "secondary.main", borderRadius: 4, p: 4, width: "100%", boxSizing: "border-box" }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", gap: "6px", height: 15 }}>
+        <Box aria-hidden sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "primary.main" }} />
+        <Typography sx={{ ...pulseText.tinyMedium, color: "primary.main" }}>
+          Hoy · Actividad reciente
+        </Typography>
+      </Box>
+      <Typography sx={{ ...pulseText.h2, color: "pulse.ink", pt: 2 }}>
+        {formatCount(visits)} {visits === 1 ? "visita" : "visitas"} hoy
       </Typography>
-      <Typography
-        sx={{ fontSize: 40, lineHeight: 1.1, fontWeight: 700, color: "text.strong" }}
-      >
-        {formatCount(visits)}
-      </Typography>
-      <Typography sx={{ fontSize: 13, color: "text.muted", mt: 1 }}>
-        {formatCount(uniqueVisitors)}{" "}
-        {uniqueVisitors === 1 ? "visitante único" : "visitantes únicos"}
-      </Typography>
-      <Typography sx={{ fontSize: 13, color: "text.muted", mt: 2 }}>
-        Última visita:{" "}
-        <Box component="span" sx={{ color: "text.body", fontWeight: 500 }}>
-          {lastVisitAt
-            ? formatLastVisit(lastVisitAt, pulse.timezone) || "—"
-            : "Sin visitas todavía"}
-        </Box>
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, pt: "10px" }}>
+        <Typography sx={{ ...pulseText.tiny, color: "pulse.muted" }}>
+          {lastVisitAt ? `Última visita ${formatTimeAgo(lastVisitAt, now)}` : "Sin visitas todavía"}
+        </Typography>
+        <Typography sx={{ ...pulseText.tiny, color: "pulse.muted", whiteSpace: "nowrap" }}>
+          Día en curso
+        </Typography>
+      </Box>
     </Box>
   );
 };

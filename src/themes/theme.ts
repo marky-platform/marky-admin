@@ -29,6 +29,7 @@ const toPalette = (scheme: SchemeColors) => ({
   border: scheme.border,
   accent: scheme.accent,
   scrollbar: scheme.scrollbar,
+  pulse: scheme.pulse,
   shadow: scheme.shadow,
   fixed: fixedColors,
 });

@@ -1,18 +1,22 @@
 import { Box, Typography } from "@mui/material";
+import { pulseText } from "./sectionStyles";
 
 const AnalyticsEmptyState = () => (
   <Box
     role="status"
     sx={{
-      p: 3,
-      mb: 3,
-      borderRadius: 2,
-      bgcolor: "surface.tintFaint",
+      px: 4,
+      py: 3,
+      borderRadius: 3,
+      bgcolor: "surface.main",
       border: (t) => `1px dashed ${t.palette.border.dashed}`,
     }}
   >
-    <Typography sx={{ fontSize: 13, color: "text.body" }}>
+    <Typography sx={{ ...pulseText.tiny, color: "pulse.ink" }}>
       Todavía no hay actividad en tu perfil
+    </Typography>
+    <Typography sx={{ ...pulseText.tiny, color: "pulse.muted", pt: 1 }}>
+      Compartí tu link o tu código QR para empezar a ver visitas.
     </Typography>
   </Box>
 );

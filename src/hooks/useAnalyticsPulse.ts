@@ -1,18 +1,35 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAnalyticsPulse } from "../services/analyticsService";
 import { mapAnalyticsPulse } from "../mappers/analyticsMapper";
-import { AnalyticsPulse } from "../types/analytics";
+import {
+  AnalyticsProductSort,
+  AnalyticsPulse,
+  AnalyticsPulseDays,
+} from "../types/analytics";
 
-export const ANALYTICS_PULSE_DAYS = 7;
+export const ANALYTICS_PULSE_DAYS: AnalyticsPulseDays = 7;
 
-export const useAnalyticsPulse = (open: boolean) =>
+interface UseAnalyticsPulseOptions {
+  /** El riel cerrado también muestra métricas (hoy, barras, delta). */
+  enabled?: boolean;
+  /** Solo con el panel abierto se refresca cada minuto. */
+  live?: boolean;
+  days?: AnalyticsPulseDays;
+  sort?: AnalyticsProductSort;
+}
+
+export const useAnalyticsPulse = ({
+  enabled = true,
+  live = false,
+  days = ANALYTICS_PULSE_DAYS,
+  sort = "views",
+}: UseAnalyticsPulseOptions = {}) =>
   useQuery<AnalyticsPulse>({
-    queryKey: ["analyticsPulse", ANALYTICS_PULSE_DAYS],
-    queryFn: async () =>
-      mapAnalyticsPulse(await getAnalyticsPulse(ANALYTICS_PULSE_DAYS)),
-    enabled: open,
+    queryKey: ["analyticsPulse", days, sort],
+    queryFn: async () => mapAnalyticsPulse(await getAnalyticsPulse(days, sort)),
+    enabled,
     staleTime: 60_000,
-    refetchInterval: open ? 60_000 : false,
+    refetchInterval: live ? 60_000 : false,
     placeholderData: keepPreviousData,
     retry: 1,
   });

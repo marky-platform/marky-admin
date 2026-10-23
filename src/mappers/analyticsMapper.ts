@@ -12,6 +12,15 @@ export const mapAnalyticsPulse = (
 ): AnalyticsPulse => ({
   generatedAt: raw?.generated_at ?? "",
   timezone: raw?.timezone || "America/Asuncion",
+  days: num(raw?.days) || (raw?.history?.length ?? 0),
+  period: {
+    start: raw?.period?.start ?? raw?.history?.[0]?.date ?? "",
+    end: raw?.period?.end ?? raw?.history?.[raw.history.length - 1]?.date ?? "",
+  },
+  previous: {
+    visits: num(raw?.previous?.visits),
+    actions: num(raw?.previous?.actions),
+  },
   today: {
     visits: num(raw?.today?.visits),
     uniqueVisitors: num(raw?.today?.unique_visitors),
@@ -36,6 +45,7 @@ export const mapAnalyticsPulse = (
   topProducts: (raw?.top_products ?? []).map((p) => ({
     productId: p.product_id ?? null,
     name: p.name,
+    image: p.image || null,
     views: num(p.views),
     averageEngagedSeconds: num(p.average_engaged_seconds),
   })),

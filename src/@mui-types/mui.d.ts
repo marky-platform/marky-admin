@@ -29,6 +29,7 @@ declare module "@mui/material/styles" {
     border: SchemeColors["border"];
     accent: SchemeColors["accent"];
     scrollbar: SchemeColors["scrollbar"];
+    pulse: SchemeColors["pulse"];
     shadow: SchemeColors["shadow"];
     fixed: FixedColors;
   }
@@ -37,6 +38,7 @@ declare module "@mui/material/styles" {
     border?: SchemeColors["border"];
     accent?: SchemeColors["accent"];
     scrollbar?: SchemeColors["scrollbar"];
+    pulse?: SchemeColors["pulse"];
     shadow?: SchemeColors["shadow"];
     fixed?: FixedColors;
   }
