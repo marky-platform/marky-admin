@@ -9,7 +9,8 @@ jest.mock("qrcode", () => ({
 }));
 jest.mock("../utils/utils", () => ({ ShowNotification: jest.fn() }));
 
-const url = `${window.location.origin}/dulce-momento`;
+const url = `${window.location.origin}/dulce-momento?mk_source=public_link`;
+const qrUrl = `${window.location.origin}/dulce-momento?mk_source=qr`;
 const mockedToDataURL = QRCode.toDataURL as unknown as jest.Mock;
 
 const setup = () => {
@@ -133,7 +134,7 @@ describe("useProfileShareActions", () => {
     );
   });
 
-  it("generates the QR from the canonical URL and downloads a PNG", async () => {
+  it("generates the QR from the canonical URL tagged mk_source=qr and downloads a PNG", async () => {
     mockedToDataURL.mockResolvedValue("data:image/png;base64,AAA");
     const click = jest
       .spyOn(HTMLAnchorElement.prototype, "click")
@@ -149,7 +150,7 @@ describe("useProfileShareActions", () => {
     await act(async () => find("Descargar código QR").onClick());
 
     expect(mockedToDataURL).toHaveBeenCalledWith(
-      url,
+      qrUrl,
       expect.objectContaining({ width: expect.any(Number) }),
     );
     expect(click).toHaveBeenCalledTimes(1);

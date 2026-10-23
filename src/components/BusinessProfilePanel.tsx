@@ -7,6 +7,7 @@ import AttributesInfo from "../pages/home/components/AttributesInfo";
 import SocialMediaInfo from "../pages/home/components/SocialMediaInfo";
 import { LocationEntryValue } from "../pages/home/components/LocationsModal";
 import { ChannelsByKey } from "../types/channel";
+import type { AnalyticsActionType } from "../analytics/types";
 
 interface BusinessProfilePanelAttribute {
   id: number;
@@ -36,6 +37,9 @@ interface BusinessProfilePanelProps {
   onOpenDescription?: () => void;
   onOpenAttributes?: () => void;
   onEmptySocialMedia?: () => void;
+  /** Opcional (solo páginas públicas): aviso previo a abrir ubicación o un
+   * canal externo. Este componente no conoce el tracker. */
+  onExternalAction?: (action: AnalyticsActionType) => void;
 }
 
 const BusinessProfilePanel: React.FC<BusinessProfilePanelProps> = ({
@@ -54,6 +58,7 @@ const BusinessProfilePanel: React.FC<BusinessProfilePanelProps> = ({
   onOpenDescription = () => {},
   onOpenAttributes = () => {},
   onEmptySocialMedia = () => {},
+  onExternalAction,
 }) => {
   return (
     <Box display="flex" flexDirection="column" gap={{ xs: "18px", md: 6 }}>
@@ -106,6 +111,7 @@ const BusinessProfilePanel: React.FC<BusinessProfilePanelProps> = ({
         businessName={name}
         onEmptyState={onEmptySocialMedia}
         readOnly={readOnly}
+        onExternalAction={onExternalAction}
       />
       <Box display="flex" flexDirection="column" gap={2}>
         {/* Descripción */}
