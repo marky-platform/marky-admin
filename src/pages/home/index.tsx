@@ -28,6 +28,7 @@ import ProfileActionsMenu from "../../components/ProfileActionsMenu";
 import useProfileShareActions from "../../hooks/useProfileShareActions";
 import PresentationModal from "./components/PresentationModal";
 import { ProductGrid } from "./components/productGrid";
+import AnalyticsPulseWidget from "./components/analytics/AnalyticsPulseWidget";
 
 export interface Attribute {
   id: number;
@@ -489,9 +490,17 @@ const Home = () => {
               maxWidth: { xs: "100%", md: "100%" },
               // Mismo 32px superior que la columna izquierda (solo desktop).
               pt: { xs: 0, md: 8 },
+              // Contenedor del widget Pulso: columna sticky a la derecha en md+,
+              // superposición anclada arriba a la derecha en mobile.
+              position: "relative",
+              display: { xs: "block", md: "flex" },
+              alignItems: { md: "flex-start" },
             }}
           >
-            <ProductGrid />
+            <AnalyticsPulseWidget />
+            <Box sx={{ flex: { md: 1 }, minWidth: 0, order: { md: 1 } }}>
+              <ProductGrid />
+            </Box>
           </Box>
         </Box>
       </Box>
