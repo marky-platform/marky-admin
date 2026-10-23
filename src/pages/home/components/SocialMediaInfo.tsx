@@ -7,6 +7,7 @@ import { openExternalUrl, buildLocationMapsUrl } from "../../../utils/externalLi
 import { ReactComponent as LocationIcon } from "../../../assets/icons/location.svg";
 import EntryListPopup, { EntryListPopupItem } from "./EntryListPopup";
 import { LocationEntryValue } from "./LocationsModal";
+import type { AnalyticsActionType } from "../../../analytics/types";
 
 interface SocialMediaInfoProps {
   socialMedia: ChannelsByKey;
@@ -14,7 +15,13 @@ interface SocialMediaInfoProps {
   businessName: string;
   onEmptyState: () => void;
   readOnly?: boolean;
+  /** Opcional: se invoca justo antes de abrir un destino externo. Sin esta
+   * prop (p. ej. en el admin) el comportamiento no cambia. */
+  onExternalAction?: (action: AnalyticsActionType) => void;
 }
+
+const channelAction = (key: ChannelKey): AnalyticsActionType =>
+  key === "whatsapp" || key === "instagram" ? key : "other";
 
 interface ActivePopup {
   icon: React.ReactNode;
@@ -54,6 +61,7 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   businessName,
   onEmptyState,
   readOnly = false,
+  onExternalAction,
 }) => {
   const [activePopup, setActivePopup] = useState<ActivePopup | null>(null);
 
@@ -70,6 +78,16 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   const isEmpty = !hasAnyChannels && !hasLocations;
   if (isEmpty && readOnly) return null;
 
+  const openChannel = (key: ChannelKey, entry: ChannelEntry) => {
+    onExternalAction?.(channelAction(key));
+    openExternalUrl(buildChannelExternalUrl(key, entry));
+  };
+
+  const openLocation = (address: string) => {
+    onExternalAction?.("location");
+    openExternalUrl(buildLocationMapsUrl(address));
+  };
+
   const handleChannelClick = (key: ChannelKey, entries: ChannelEntry[]) => {
     const meta = CHANNEL_META[key];
     // Un solo registro configurado abre directo, sin importar si el canal
@@ -77,7 +95,7 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
     // TikTok) -- lo que decide es cuántos registros hay realmente, no el
     // tipo de canal.
     if (entries.length === 1) {
-      openExternalUrl(buildChannelExternalUrl(key, entries[0]));
+      openChannel(key, entries[0]);
       return;
     }
     const IconComponent = meta.icon;
@@ -87,14 +105,14 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
       items: entries.map((entry, i) => ({
         id: entry.id ?? i,
         label: entry.label || meta.label,
-        onSelect: () => openExternalUrl(buildChannelExternalUrl(key, entry)),
+        onSelect: () => openChannel(key, entry),
       })),
     });
   };
 
   const handleLocationsClick = () => {
     if (filledLocations.length === 1) {
-      openExternalUrl(buildLocationMapsUrl(filledLocations[0].address));
+      openLocation(filledLocations[0].address);
       return;
     }
     setActivePopup({
@@ -103,7 +121,7 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
       items: filledLocations.map((loc, i) => ({
         id: loc.id ?? i,
         label: loc.name,
-        onSelect: () => openExternalUrl(buildLocationMapsUrl(loc.address)),
+        onSelect: () => openLocation(loc.address),
       })),
     });
   };

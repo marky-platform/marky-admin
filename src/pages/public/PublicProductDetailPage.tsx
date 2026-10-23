@@ -10,6 +10,7 @@ import ProductDetailContent, {
   PRODUCT_PAGE_MAX_WIDTH,
 } from "../product/components/ProductDetailContent";
 import PublicNotFound from "./components/PublicNotFound";
+import { useProductAnalytics } from "../../analytics/hooks";
 
 interface PublicProductDetailViewProps {
   businessId?: string;
@@ -29,6 +30,10 @@ export const PublicProductDetailView: React.FC<PublicProductDetailViewProps> = (
 }) => {
   const navigate = useNavigate();
   const { data: profile } = usePublicBusinessProfile(businessId);
+
+  // Visita (deep link), apertura, vista válida y tiempo activo. Solo corre con
+  // un producto resuelto: ni la carga ni el error se miden.
+  useProductAnalytics(businessId, product?.id);
 
   // Navegar entre productos relacionados reutiliza esta página: volver arriba.
   useEffect(() => {

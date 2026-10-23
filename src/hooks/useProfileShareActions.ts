@@ -3,6 +3,7 @@ import QrCodeIcon from "@mui/icons-material/QrCode";
 import ShareIcon from "@mui/icons-material/Share";
 import QRCode from "qrcode";
 import { ProfileActionItem } from "../components/ProfileActionsMenu";
+import { withSourceParam } from "../analytics/source";
 import { getPublicBusinessUrl } from "../utils/publicUrls";
 import { ShowNotification } from "../utils/utils";
 
@@ -59,34 +60,45 @@ const share = async (url: string, businessName: string) => {
 };
 
 // Acciones de perfil compartidas (admin y público): compartir, copiar enlace y
-// descargar QR, todas sobre la misma URL pública canónica del negocio.
+// descargar QR, sobre la URL pública canónica del negocio (enlace: mk_source=public_link,
+// QR: mk_source=qr).
 const useProfileShareActions = ({
   businessId,
   businessName,
 }: UseProfileShareActionsParams): ProfileActionItem[] => {
-  const run = (action: (url: string, id: string) => Promise<void>) => () => {
-    if (!businessId) {
-      notifyError("El enlace del perfil todavía no está disponible");
-      return;
-    }
-    void action(getPublicBusinessUrl(businessId), businessId);
-  };
+  // La fuente viaja en la URL (?mk_source=) para distinguir enlace público
+  // de QR en las visitas.
+  const run =
+    (
+      source: "public_link" | "qr",
+      action: (url: string, id: string) => Promise<void>,
+    ) =>
+    () => {
+      if (!businessId) {
+        notifyError("El enlace del perfil todavía no está disponible");
+        return;
+      }
+      void action(
+        withSourceParam(getPublicBusinessUrl(businessId), source),
+        businessId,
+      );
+    };
 
   return [
     {
       icon: ShareIcon,
       text: "Compartir perfil",
-      onClick: run((url) => share(url, businessName || businessId || "")),
+      onClick: run("public_link", (url) => share(url, businessName || businessId || "")),
     },
     {
       icon: ContentCopyIcon,
       text: "Copiar URL del perfil",
-      onClick: run((url) => copyToClipboard(url)),
+      onClick: run("public_link", (url) => copyToClipboard(url)),
     },
     {
       icon: QrCodeIcon,
       text: "Descargar código QR",
-      onClick: run(downloadQr),
+      onClick: run("qr", downloadQr),
     },
   ];
 };

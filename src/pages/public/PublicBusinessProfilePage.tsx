@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import BusinessProfilePanel from "../../components/BusinessProfilePanel";
@@ -12,6 +12,9 @@ import ThemeModeToggle from "../../components/ThemeModeToggle";
 import useProfileShareActions from "../../hooks/useProfileShareActions";
 import PublicProductGrid from "./components/PublicProductGrid";
 import PublicNotFound from "./components/PublicNotFound";
+import { analytics } from "../../analytics/client";
+import { useCatalogVisit } from "../../analytics/hooks";
+import type { AnalyticsActionType } from "../../analytics/types";
 
 const ICON_BUTTON_PADDING = 4; // padding compacto de los botones en md+
 
@@ -55,6 +58,17 @@ const PublicBusinessProfilePage: React.FC = () => {
     observer.observe(box);
     return () => observer.disconnect();
   }, [hasProfile, profile?.locations, profile?.social_links]);
+
+  // Una visita por negocio/sesión, solo con un perfil válido (no durante la
+  // carga, el error ni el 404).
+  useCatalogVisit(businessId, hasProfile);
+
+  const handleExternalAction = useCallback(
+    (actionType: AnalyticsActionType) => {
+      if (businessId) analytics.track("action_click", { businessId, actionType });
+    },
+    [businessId],
+  );
 
   useEffect(() => {
     if (profile?.business_name) {
@@ -181,6 +195,7 @@ const PublicBusinessProfilePage: React.FC = () => {
                 socialMedia={socialMedia}
                 locations={profile.locations || []}
                 readOnly
+                onExternalAction={handleExternalAction}
               />
             </Box>
           </Box>
