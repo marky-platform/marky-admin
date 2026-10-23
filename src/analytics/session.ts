@@ -49,3 +49,21 @@ export const resolveSession = (
   }
   return { sessionId, isNew };
 };
+
+// Renueva la última actividad de una sesión vigente sin emitir eventos (el
+// visitante sigue navegando aunque no dispare tracking). No crea sesiones ni
+// revive una sesión ya vencida: esa rota en el siguiente track().
+export const touchSessionActivity = (
+  businessId: string,
+  now: number = Date.now(),
+): boolean => {
+  if (!isVisible()) return false;
+  const storedId = storageGet(sessionKey(businessId));
+  const last = Number(storageGet(lastActivityKey(businessId)));
+  if (!isUuid(storedId)) return false;
+  if (!Number.isFinite(last) || last <= 0 || now - last > SESSION_TIMEOUT_MS) {
+    return false;
+  }
+  storageSet(lastActivityKey(businessId), String(now));
+  return true;
+};

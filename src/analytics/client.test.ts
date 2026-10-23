@@ -6,6 +6,8 @@ import {
   trackCatalogVisit,
 } from "./client";
 import { isUuid } from "./identity";
+import { resolveSession, visitSentKey } from "./session";
+import { storageSet } from "./storage";
 import { advance, API, sentEvents, setupAnalyticsEnv, setVisibility } from "./testUtils";
 import { useSessionStore } from "../stores/sessionStore";
 
@@ -20,8 +22,15 @@ afterEach(() => {
   delete (navigator as any).sendBeacon;
 });
 
+// Sesión ya iniciada y con su catalog_visit enviado (como en una página real).
+const seedSession = () => {
+  const { sessionId } = resolveSession("biz");
+  storageSet(visitSentKey("biz"), sessionId);
+};
+
 describe("analytics client", () => {
   it("sends a batch as text/plain with keepalive and the frozen payload shape", async () => {
+    seedSession();
     analytics.track("product_open", { businessId: "biz", productId: "42" });
     analytics.track("action_click", { businessId: "biz", actionType: "whatsapp" });
     expect(fetchMock).not.toHaveBeenCalled();
@@ -94,6 +103,7 @@ describe("analytics client", () => {
   });
 
   it("retries temporary failures preserving event_id, then gives up", async () => {
+    seedSession();
     fetchMock.mockResolvedValue({ ok: false, status: 503 });
     const id = analytics.track("action_click", { businessId: "biz", actionType: "other" });
 
@@ -109,6 +119,7 @@ describe("analytics client", () => {
   });
 
   it("retries network errors", async () => {
+    seedSession();
     fetchMock.mockRejectedValueOnce(new Error("offline"));
     analytics.track("action_click", { businessId: "biz", actionType: "other" });
     await advance(FLUSH_DELAY_MS);
@@ -194,12 +205,34 @@ describe("analytics client", () => {
   });
 
   it("rotates the session after 30 minutes but keeps the visitor", () => {
+    seedSession();
     analytics.track("action_click", { businessId: "biz", actionType: "other" });
     jest.advanceTimersByTime(31 * 60 * 1000);
     analytics.track("action_click", { businessId: "biz", actionType: "other" });
     jest.advanceTimersByTime(FLUSH_DELAY_MS);
-    const [a, b] = sentEvents(fetchMock);
+    const clicks = sentEvents(fetchMock).filter((e: any) => e.type === "action_click");
+    const [a, b] = clicks;
     expect(a.session_id).not.toBe(b.session_id);
     expect(a.visitor_id).toBe(b.visitor_id);
+  });
+
+  it("opens a rotated session with its catalog_visit before product/action events", () => {
+    seedSession();
+    analytics.track("action_click", { businessId: "biz", actionType: "other" });
+    jest.advanceTimersByTime(31 * 60 * 1000);
+    analytics.track("product_open", { businessId: "biz", productId: 3 });
+    analytics.track("action_click", { businessId: "biz", actionType: "other" });
+    jest.advanceTimersByTime(FLUSH_DELAY_MS);
+    const events = sentEvents(fetchMock);
+    expect(events.map((e: any) => e.type)).toEqual([
+      "action_click",
+      "catalog_visit",
+      "product_open",
+      "action_click",
+    ]);
+    expect(events[1].session_id).toBe(events[2].session_id);
+    expect(events[1].session_id).not.toBe(events[0].session_id);
+    // Una sola visita por sesión nueva.
+    expect(events.filter((e: any) => e.type === "catalog_visit")).toHaveLength(1);
   });
 });

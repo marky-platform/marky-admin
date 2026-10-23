@@ -198,7 +198,12 @@ export const track = (
       if (!Number.isInteger(productId) || productId <= 0) return null;
     }
 
-    const { sessionId } = resolveSession(businessId);
+    const { sessionId, isNew } = resolveSession(businessId);
+
+    // Si la sesión rotó a mitad de una página pública (p. ej. pestaña oculta
+    // más de 30 min), la nueva sesión debe abrir con su catalog_visit para no
+    // quedar sin visita ni origen. La marca visit_sent evita duplicados.
+    if (isNew && type !== "catalog_visit") trackCatalogVisit(businessId);
 
     // Una vista válida por producto/sesión: evita tráfico repetido (el
     // backend es la fuente de verdad y también deduplica).

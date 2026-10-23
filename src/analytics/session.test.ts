@@ -1,4 +1,9 @@
-import { resolveSession, SESSION_TIMEOUT_MS, lastActivityKey } from "./session";
+import {
+  resolveSession,
+  SESSION_TIMEOUT_MS,
+  lastActivityKey,
+  touchSessionActivity,
+} from "./session";
 import { resetStorageMemory } from "./storage";
 
 const setVisible = (v: "visible" | "hidden") =>
@@ -63,5 +68,30 @@ describe("session", () => {
     const a = resolveSession("biz", 1000);
     expect(resolveSession("biz", 2000).sessionId).toBe(a.sessionId);
     jest.restoreAllMocks();
+  });
+
+  describe("touchSessionActivity", () => {
+    it("does not create a session", () => {
+      expect(touchSessionActivity("biz", 1000)).toBe(false);
+      expect(localStorage.getItem(lastActivityKey("biz"))).toBeNull();
+    });
+
+    it("refreshes a live session only while visible", () => {
+      const t0 = 1_000_000;
+      resolveSession("biz", t0);
+      setVisible("hidden");
+      expect(touchSessionActivity("biz", t0 + 1000)).toBe(false);
+      expect(localStorage.getItem(lastActivityKey("biz"))).toBe(String(t0));
+      setVisible("visible");
+      expect(touchSessionActivity("biz", t0 + 1000)).toBe(true);
+      expect(localStorage.getItem(lastActivityKey("biz"))).toBe(String(t0 + 1000));
+    });
+
+    it("does not revive an expired session", () => {
+      const t0 = 1_000_000;
+      resolveSession("biz", t0);
+      expect(touchSessionActivity("biz", t0 + SESSION_TIMEOUT_MS + 1)).toBe(false);
+      expect(localStorage.getItem(lastActivityKey("biz"))).toBe(String(t0));
+    });
   });
 });

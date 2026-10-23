@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { useCatalogVisit, useProductAnalytics } from "./hooks";
+import { lastActivityKey, sessionKey } from "./session";
 import { sentEvents, setupAnalyticsEnv, setVisibility } from "./testUtils";
 
 let fetchMock: jest.Mock;
@@ -163,5 +164,175 @@ describe("useProductAnalytics", () => {
     expect(t.filter((x) => x === "product_open")).toHaveLength(5);
     expect(t.filter((x) => x === "product_view")).toHaveLength(1);
     expect(t.filter((x) => x === "catalog_visit")).toHaveLength(1);
+  });
+
+  it("pauses engagement on window blur and resumes on focus", () => {
+    setup();
+    tick(10_000);
+    window.dispatchEvent(new Event("blur"));
+    tick(30_000); // sin foco: no cuenta
+    window.dispatchEvent(new Event("focus"));
+    tick(5000);
+    setVisibility("hidden");
+    tick(2000);
+    expect(engagedTotal()).toBe(15_000);
+  });
+
+  it("does not resume on focus while the document is hidden", () => {
+    setup();
+    tick(5000);
+    window.dispatchEvent(new Event("blur"));
+    setVisibility("hidden");
+    window.dispatchEvent(new Event("focus"));
+    tick(30_000);
+    setVisibility("visible");
+    tick(1000);
+    setVisibility("hidden");
+    tick(2000);
+    expect(engagedTotal()).toBe(6000);
+  });
+
+  it("pauses after 60 s without input and resumes on the next input", () => {
+    setup();
+    tick(60_000); // inactivo desde el inicio: cuenta hasta el límite
+    tick(5 * 60_000); // pausado
+    expect(engagedTotal()).toBe(60_000);
+    window.dispatchEvent(new Event("pointermove"));
+    tick(10_000);
+    setVisibility("hidden");
+    tick(2000);
+    expect(engagedTotal()).toBe(70_000);
+  });
+
+  it("input resets the idle timer (throttled)", () => {
+    setup();
+    tick(40_000);
+    window.dispatchEvent(new Event("keydown"));
+    tick(40_000);
+    window.dispatchEvent(new Event("scroll"));
+    tick(40_000);
+    setVisibility("hidden");
+    tick(2000);
+    expect(engagedTotal()).toBe(120_000);
+  });
+
+  it("caps engagement at 10 minutes per product view", () => {
+    setup();
+    for (let i = 0; i < 20; i += 1) {
+      tick(30_000);
+      window.dispatchEvent(new Event("pointerdown"));
+      tick(1000); // pasa el umbral de throttle
+    }
+    setVisibility("hidden");
+    tick(2000);
+    expect(engagedTotal()).toBe(10 * 60 * 1000);
+  });
+
+  it("removes every listener on unmount", () => {
+    const add = jest.spyOn(window, "addEventListener");
+    const remove = jest.spyOn(window, "removeEventListener");
+    const { unmount } = setup();
+    unmount();
+    const added = add.mock.calls.map((c) => c[0]).sort();
+    const removed = remove.mock.calls.map((c) => c[0]).sort();
+    ["blur", "focus", "pageshow", "pagehide", "keydown", "scroll"].forEach((n) => {
+      expect(added).toContain(n);
+      expect(removed).toContain(n);
+    });
+    add.mockRestore();
+    remove.mockRestore();
+  });
+
+  it("discards time accrued before a cancelled pending view", () => {
+    setup();
+    tick(2000);
+    setVisibility("hidden"); // cancela la vista pendiente (< 3 s)
+    tick(5000);
+    setVisibility("visible");
+    tick(3000); // la vista se confirma tras 3 s nuevos
+    setVisibility("hidden");
+    tick(2000);
+    expect(types()).toContain("product_view");
+    expect(engagedTotal()).toBe(3000);
+  });
+
+  it("restarts timing after a bfcache restore (pageshow persisted)", () => {
+    setup();
+    tick(4000);
+    window.dispatchEvent(new Event("pagehide"));
+    tick(10_000); // congelada: no cuenta
+    const ev = new Event("pageshow");
+    Object.defineProperty(ev, "persisted", { value: true });
+    window.dispatchEvent(ev);
+    tick(5000);
+    setVisibility("hidden");
+    tick(2000);
+    expect(engagedTotal()).toBe(9000);
+  });
+
+  it("ignores a non-persisted pageshow", () => {
+    setup();
+    tick(4000);
+    window.dispatchEvent(new Event("pagehide"));
+    window.dispatchEvent(new Event("pageshow"));
+    tick(10_000);
+    tick(1000);
+    expect(engagedTotal()).toBe(4000);
+  });
+});
+
+describe("session keep-alive and rotation", () => {
+  it("keeps the session alive on throttled input without emitting events", () => {
+    renderHook(() => useCatalogVisit("biz", true));
+    tick(2000);
+    const before = fetchMock.mock.calls.length;
+    const first = Number(localStorage.getItem(lastActivityKey("biz")));
+    tick(20 * 60_000);
+    window.dispatchEvent(new Event("pointerdown"));
+    const second = Number(localStorage.getItem(lastActivityKey("biz")));
+    expect(second).toBeGreaterThan(first);
+    window.dispatchEvent(new Event("scroll")); // throttled
+    expect(Number(localStorage.getItem(lastActivityKey("biz")))).toBe(second);
+    tick(20 * 60_000);
+    window.dispatchEvent(new Event("keydown"));
+    expect(Number(localStorage.getItem(lastActivityKey("biz")))).toBeGreaterThan(second);
+    expect(fetchMock.mock.calls.length).toBe(before);
+  });
+
+  it("does not touch activity while hidden, nor create a session", () => {
+    renderHook(() => useCatalogVisit("other", false));
+    window.dispatchEvent(new Event("pointerdown"));
+    expect(localStorage.getItem(sessionKey("other"))).toBeNull();
+    expect(localStorage.getItem(lastActivityKey("other"))).toBeNull();
+  });
+
+  it("is a no-op when analytics is disabled", () => {
+    renderHook(() => useCatalogVisit("biz", true));
+    tick(1000);
+    const first = localStorage.getItem(lastActivityKey("biz"));
+    process.env.REACT_APP_ANALYTICS_ENABLED = "false";
+    tick(20 * 60_000);
+    window.dispatchEvent(new Event("pointerdown"));
+    expect(localStorage.getItem(lastActivityKey("biz"))).toBe(first);
+  });
+
+  it("emits a catalog_visit when a product event lands in a rotated session", () => {
+    renderHook(() => useProductAnalytics("biz", 7));
+    tick(2000);
+    // Pestaña oculta > 30 min y vuelve: la sesión rota.
+    setVisibility("hidden");
+    tick(31 * 60_000);
+    setVisibility("visible");
+    tick(16_000); // engagement en la sesión nueva
+    tick(1000);
+    const events = sentEvents(fetchMock);
+    const sessions = new Set(events.map((e: any) => e.session_id));
+    expect(sessions.size).toBe(2);
+    const [oldS, newS] = [events[0].session_id, events[events.length - 1].session_id];
+    expect(oldS).not.toBe(newS);
+    const visits = events.filter((e: any) => e.type === "catalog_visit");
+    expect(visits.map((e: any) => e.session_id).sort()).toEqual([oldS, newS].sort());
+    const firstOfNew = events.find((e: any) => e.session_id === newS);
+    expect(firstOfNew.type).toBe("catalog_visit");
   });
 });
