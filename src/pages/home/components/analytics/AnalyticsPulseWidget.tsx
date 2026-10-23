@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { HEADER_HEIGHT } from "../../../../constants/layout";
 import { useAnalyticsPulse } from "../../../../hooks/useAnalyticsPulse";
@@ -19,9 +19,12 @@ const MODAL_SELECTOR = '[role="dialog"], .MuiModal-root';
  * Widget "Pulso" de /home. Debe renderizarse como primer hijo del contenedor
  * derecho (display block en mobile, flex en md+): en mobile queda anclado
  * arriba a la derecha sobre la grilla (sticky de alto 0); en md+ es una
- * columna sticky de 104px (cerrado) / 352px (abierto) junto a la grilla.
+ * columna sticky de 104px junto a la grilla. Abierto, en lg+ la columna crece
+ * a 352px; entre md y lg no hay ancho para reservarla sin aplastar la grilla,
+ * así que el panel se superpone a ella desde la columna del riel.
  */
 const AnalyticsPulseWidget = () => {
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
   const panelId = `analytics-pulse-${useId().replace(/:/g, "")}`;
   const { data, isFetching, isError, refetch } = useAnalyticsPulse(open);
@@ -95,7 +98,7 @@ const AnalyticsPulseWidget = () => {
         zIndex: (t) => t.zIndex.appBar - 1,
         // mobile: alto 0 para no empujar la grilla; el panel se superpone.
         height: { xs: 0, md: "auto" },
-        width: { xs: "100%", md: open ? 352 : 104 },
+        width: { xs: "100%", md: 104, lg: open ? 352 : 104 },
         flexShrink: 0,
         order: { md: 2 },
         alignSelf: { md: "flex-start" },
@@ -120,6 +123,9 @@ const AnalyticsPulseWidget = () => {
           "@supports (height: 100dvh)": { height: innerHeight("dvh") },
           maxHeight: open && maxHeight !== null ? `${maxHeight}px` : undefined,
           mt: { xs: 0, md: 0 },
+          [theme.breakpoints.between("md", "lg")]: open
+            ? { position: "absolute", top: 0, right: theme.spacing(8), maxWidth: "none" }
+            : {},
           borderRadius: 3,
           bgcolor: "surface.main",
           border: (t) => `1px solid ${t.palette.border.field}`,
