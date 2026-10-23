@@ -122,6 +122,31 @@ export interface SchemeColors {
     danger: string;
   };
   scrollbar: { track: string; thumb: string };
+  /** Widget "Pulso" de /home (Figma 6642:25207 / 6621:22856). */
+  pulse: {
+    /** #F6F8FB panel canvas. */
+    canvas: string;
+    /** #0F1B3D numbers and titles. */
+    ink: string;
+    /** rgba(15,27,61,0.8) sub-labels. */
+    inkSoft: string;
+    /** #6B7791 secondary copy and icons. */
+    muted: string;
+    /** #EEF0F5 hairlines between rows. */
+    divider: string;
+    /** #CDDAFC rail sparkline bars. */
+    sparkTrack: string;
+    /** #1F5CFF rail sparkline current day + live dot. */
+    sparkAccent: string;
+    /** #FDC21C QR source. */
+    qr: string;
+    /** #16A34A / #E5F4EA positive delta chip. */
+    upText: string;
+    upBg: string;
+    /** #E2483A / #FDEAE7 negative delta chip. */
+    downText: string;
+    downBg: string;
+  };
   shadow: {
     /** rgba(0,0,0,0.2) popup menus. */
     menu: string;
@@ -236,6 +261,20 @@ const light: SchemeColors = {
     danger: "#FF3E3E",
   },
   scrollbar: { track: "#F1F1F1", thumb: "#C1C1C1" },
+  pulse: {
+    canvas: "#F6F8FB",
+    ink: "#0F1B3D",
+    inkSoft: "rgba(15, 27, 61, 0.8)",
+    muted: "#6B7791",
+    divider: "#EEF0F5",
+    sparkTrack: "#CDDAFC",
+    sparkAccent: "#1F5CFF",
+    qr: "#FDC21C",
+    upText: "#16A34A",
+    upBg: "#E5F4EA",
+    downText: "#E2483A",
+    downBg: "#FDEAE7",
+  },
   shadow: {
     menu: "rgba(0, 0, 0, 0.2)",
     soft: "rgba(194, 194, 194, 0.6)",
@@ -329,6 +368,21 @@ const dark: SchemeColors = {
     danger: "#FF3E3E", // Figma (modo oscuro): danger badge
   },
   scrollbar: { track: "#14233A", thumb: "#263C57" },
+  // (proposal) el widget Pulso solo tiene diseño en modo claro.
+  pulse: {
+    canvas: "#0F1C2F",
+    ink: "#F8FAFC",
+    inkSoft: "rgba(248, 250, 252, 0.8)",
+    muted: "#8FA0B5",
+    divider: "#263C57",
+    sparkTrack: "#36577C",
+    sparkAccent: "#2E6FF2",
+    qr: "#FDC21C",
+    upText: "#4ADE80",
+    upBg: "#0F2E1F",
+    downText: "#F87171",
+    downBg: "#40202A",
+  },
   shadow: {
     menu: "rgba(0, 0, 0, 0.5)", // (proposal)
     soft: "rgba(0, 0, 0, 0.5)", // (proposal)
