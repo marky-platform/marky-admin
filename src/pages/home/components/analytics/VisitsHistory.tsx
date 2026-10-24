@@ -1,15 +1,14 @@
 import { Box, Typography } from "@mui/material";
 import { AnalyticsPulse } from "../../../../types/analytics";
-import { barRatio, deltaPercent, formatCount, weekdayInitial } from "./format";
-import { DeltaChip, PulseCard, pulseText } from "./sectionStyles";
+import { barRatio, formatCount, weekdayInitial } from "./format";
+import { PulseCard, pulseText } from "./sectionStyles";
 import TrafficSources from "./TrafficSources";
 
 const BAR_AREA = 70;
 
-/** Tarjeta "Visitas al catálogo": total del período, delta, barras por día y orígenes. */
+/** Tarjeta "Visitas al catálogo": total del período, barras por día y orígenes. */
 const VisitsHistory = ({ pulse }: { pulse: AnalyticsPulse }) => {
   const total = pulse.history.reduce((sum, d) => sum + d.visits, 0);
-  const delta = deltaPercent(total, pulse.previous.visits);
   const max = Math.max(0, ...pulse.history.map((d) => d.visits));
   const days = pulse.history.length;
   // Con 30 días no entran las iniciales: barras más finas y sin etiquetas.
@@ -20,16 +19,8 @@ const VisitsHistory = ({ pulse }: { pulse: AnalyticsPulse }) => {
       <Typography component="h4" sx={{ ...pulseText.h4, color: "pulse.ink" }}>
         Visitas al catálogo
       </Typography>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 3, pt: 2, minHeight: 48, flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 3, pt: 2, minHeight: 48 }}>
         <Typography sx={{ ...pulseText.big, color: "pulse.ink" }}>{formatCount(total)}</Typography>
-        {delta !== null && (
-          <>
-            <DeltaChip delta={delta} />
-            <Typography sx={{ ...pulseText.tiny, color: "pulse.muted" }}>
-              vs. {pulse.days} días anteriores
-            </Typography>
-          </>
-        )}
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pt: 5 }}>
         <Typography sx={{ ...pulseText.tinyMedium, color: "pulse.inkSoft" }}>Visitas por día</Typography>

@@ -48,7 +48,7 @@ describe("analytics client", () => {
     expect(events[0]).toMatchObject({
       type: "product_open",
       product_id: 42,
-      source: "direct",
+      source: "public_link",
     });
     expect(events[1]).toMatchObject({ type: "action_click", action_type: "whatsapp" });
     expect(events[1].product_id).toBeUndefined();

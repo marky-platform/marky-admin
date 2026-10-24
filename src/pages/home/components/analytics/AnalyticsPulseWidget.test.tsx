@@ -7,10 +7,7 @@ import AnalyticsPulseWidget from "./AnalyticsPulseWidget";
 import { emptyPulseFixture, pulseFixture } from "./analyticsFixtures";
 import { getAnalyticsPulse } from "../../../../services/analyticsService";
 import {
-  actionsInsight,
   barRatio,
-  deltaPercent,
-  formatDelta,
   formatPeriodRange,
   formatSeconds,
   formatTimeAgo,
@@ -44,7 +41,7 @@ const openWidget = () =>
 beforeEach(() => mockGet.mockReset());
 
 describe("AnalyticsPulseWidget", () => {
-  it("shows today, the 7-day sparkline and the delta on the closed rail", async () => {
+  it("shows today and the 7-day sparkline on the closed rail, without a percentage", async () => {
     mockGet.mockResolvedValue(pulseFixture);
     renderWidget();
     const btn = screen.getByRole("button", { name: "Abrir analíticas" });
@@ -54,8 +51,7 @@ describe("AnalyticsPulseWidget", () => {
     await waitFor(() => expect(screen.getByTestId("rail-today")).toHaveTextContent("14"));
     expect(screen.getByText("HOY")).toBeInTheDocument();
     expect(screen.getAllByTestId("rail-bar")).toHaveLength(7);
-    // 44 visitas vs. 49 de los 7 días anteriores
-    expect(screen.getByText("−10%")).toBeInTheDocument();
+    expect(btn).not.toHaveTextContent("%");
     expect(mockGet).toHaveBeenCalledTimes(1);
     expect(mockGet).toHaveBeenCalledWith(7, "views");
   });
@@ -70,14 +66,13 @@ describe("AnalyticsPulseWidget", () => {
     expect(screen.getByText("17–23 de octubre")).toBeInTheDocument();
     expect(screen.getByText("Visitas al catálogo")).toBeInTheDocument();
     expect(screen.getByText("44")).toBeInTheDocument();
-    expect(screen.getByText("−10 %")).toBeInTheDocument();
-    expect(screen.getAllByText("vs. 7 días anteriores")).toHaveLength(2);
+    // Sin comparación con el período anterior: ni chips ni leyenda "vs.".
+    expect(screen.queryByText(/días anteriores/)).toBeNull();
+    expect(screen.queryByText(/^[+−]\d+ ?%$/)).toBeNull();
     expect(screen.getAllByTestId("visits-bar")).toHaveLength(7);
     expect(screen.getByText("Link público")).toBeInTheDocument();
     expect(screen.getByText("Código QR")).toBeInTheDocument();
-    // 18 acciones vs. 12: sube aunque bajen las visitas
-    expect(screen.getByText("+50 %")).toBeInTheDocument();
-    expect(screen.getByText("Más clics, aunque hubo menos visitas.")).toBeInTheDocument();
+    expect(screen.queryByText(/aunque hubo menos visitas/)).toBeNull();
     expect(screen.getByText("Otros enlaces")).toBeInTheDocument();
 
     const close = screen.getByRole("button", { name: "Cerrar analíticas" });
@@ -201,6 +196,34 @@ describe("AnalyticsPulseWidget", () => {
     });
   });
 
+  it("shows only Link and QR sources and they add up to the visits total", async () => {
+    mockGet.mockResolvedValue(pulseFixture);
+    renderWidget();
+    openWidget();
+    await screen.findByText("14 visitas hoy");
+    expect(screen.getByText("Link público")).toBeInTheDocument();
+    expect(screen.getByText("Código QR")).toBeInTheDocument();
+    expect(screen.queryByText("Directo")).toBeNull();
+    expect(screen.queryByText("Otros")).toBeNull();
+    // 21 Link + 6 QR = 27 → 78 % / 22 %
+    const rowText = (pattern: RegExp) => (_: string, el: Element | null) =>
+      el?.tagName === "P" && pattern.test(el.textContent ?? "");
+    expect(screen.getByText(rowText(/^21\s*·\s*78 %$/))).toBeInTheDocument();
+    expect(screen.getByText(rowText(/^6\s*·\s*22 %$/))).toBeInTheDocument();
+  });
+
+  it("renders an all-zero week without invalid sizes on the rail", async () => {
+    mockGet.mockResolvedValue(emptyPulseFixture);
+    renderWidget();
+    await waitFor(() => expect(screen.getByTestId("rail-today")).toHaveTextContent("0"));
+    const bars = screen.getAllByTestId("rail-bar");
+    expect(bars).toHaveLength(7);
+    bars.forEach((bar) => {
+      expect(getComputedStyle(bar).height).toBe("4px");
+    });
+    expect(screen.getByRole("button", { name: "Abrir analíticas" })).not.toHaveTextContent("NaN");
+  });
+
   it("tolerates partial data", async () => {
     mockGet.mockResolvedValue({ today: { visits: 3 } });
     renderWidget();
@@ -217,13 +240,6 @@ describe("analytics helpers", () => {
     expect(formatSeconds(75)).toBe("1 min 15 s");
     expect(formatSeconds(120)).toBe("2 min");
   });
-  it("computes and formats deltas", () => {
-    expect(deltaPercent(44, 49)).toBe(-10);
-    expect(deltaPercent(5, 0)).toBeNull();
-    expect(formatDelta(-10)).toBe("−10 %");
-    expect(formatDelta(25, true)).toBe("+25%");
-    expect(formatDelta(0)).toBe("0 %");
-  });
   it("formats the period range", () => {
     expect(formatPeriodRange("2026-09-18", "2026-09-24")).toBe("18–24 de septiembre");
     expect(formatPeriodRange("2026-09-28", "2026-10-04")).toBe(
@@ -234,10 +250,6 @@ describe("analytics helpers", () => {
     const now = new Date("2026-10-23T13:20:00Z");
     expect(formatTimeAgo("2026-10-23T13:08:00Z", now)).toBe("hace 12 min");
     expect(formatTimeAgo("2026-10-23T13:19:50Z", now)).toBe("hace un momento");
-  });
-  it("picks the insight from both trends", () => {
-    expect(actionsInsight(-10, 25)).toBe("Más clics, aunque hubo menos visitas.");
-    expect(actionsInsight(null, 25)).toBeNull();
   });
   it("uses Figma weekday initials", () => {
     expect(weekdayInitial("2026-10-21")).toBe("M"); // miércoles
@@ -250,8 +262,8 @@ describe("analytics helpers", () => {
   it("maps snake_case to camelCase", () => {
     const m = mapAnalyticsPulse(pulseFixture);
     expect(m.today.uniqueVisitors).toBe(11);
-    expect(m.sources.publicLink).toBe(18);
-    expect(m.previous).toEqual({ visits: 49, actions: 12 });
+    expect(m.sources).toEqual({ publicLink: 21, qr: 6 });
+    expect(m).not.toHaveProperty("previous");
     expect(m.period).toEqual({ start: "2026-10-17", end: "2026-10-23" });
     expect(m.topProducts[0].image).toBe("https://cdn.test/pizza.jpg");
     expect(m.topProducts[1].productId).toBeNull();

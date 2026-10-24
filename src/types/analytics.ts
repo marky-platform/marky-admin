@@ -11,8 +11,6 @@ export interface AnalyticsPulseResponse {
   days: number;
   /** Primer y último día local de la ventana (YYYY-MM-DD). */
   period: { start: string; end: string };
-  /** Totales de los `days` días anteriores, para los deltas. */
-  previous: { visits: number; actions: number };
   today: {
     visits: number;
     unique_visitors: number;
@@ -22,8 +20,6 @@ export interface AnalyticsPulseResponse {
   sources: {
     public_link: number;
     qr: number;
-    direct: number;
-    other: number;
   };
   actions: {
     location: number;
@@ -45,14 +41,13 @@ export interface AnalyticsPulse {
   timezone: string;
   days: number;
   period: { start: string; end: string };
-  previous: { visits: number; actions: number };
   today: {
     visits: number;
     uniqueVisitors: number;
     lastVisitAt: string | null;
   };
   history: { date: string; visits: number }[];
-  sources: { publicLink: number; qr: number; direct: number; other: number };
+  sources: { publicLink: number; qr: number };
   actions: {
     location: number;
     whatsapp: number;

@@ -26,22 +26,28 @@ describe("source", () => {
     expect(resolveSource("biz")).toBe("qr");
   });
 
-  it("ignores values outside the allowlist", () => {
-    window.history.replaceState(null, "", "/biz?mk_source=evil");
-    expect(resolveSource("biz")).toBe("direct");
+  it("accepts an explicit public_link tag", () => {
+    window.history.replaceState(null, "", "/biz?mk_source=public_link");
+    expect(resolveSource("biz")).toBe("public_link");
   });
 
-  it("classifies by referrer category without storing the referrer", () => {
+  it("falls back to Link for values outside the allowlist", () => {
+    window.history.replaceState(null, "", "/biz?mk_source=evil");
+    expect(resolveSource("biz")).toBe("public_link");
+  });
+
+  it("falls back to Link for direct visits and never reads the referrer", () => {
     setReferrer("https://www.facebook.com/some/path?token=1");
-    expect(resolveSource("biz")).toBe("other");
+    expect(resolveSource("biz")).toBe("public_link");
     const stored = JSON.stringify({ ...localStorage });
     expect(stored).not.toContain("facebook");
   });
 
-  it("treats an empty or same-origin referrer as direct", () => {
-    expect(resolveSource("a")).toBe("direct");
-    setReferrer(`${window.location.origin}/x`);
-    expect(resolveSource("b")).toBe("direct");
+  it("keeps the first source for the session when a later URL has none", () => {
+    window.history.replaceState(null, "", "/biz?mk_source=qr");
+    expect(resolveSource("biz")).toBe("qr");
+    window.history.replaceState(null, "", "/biz/product/3");
+    expect(resolveSource("biz")).toBe("qr");
   });
 
   it("forgets the source when the session rotates", () => {
@@ -49,6 +55,6 @@ describe("source", () => {
     resolveSession("biz", 1000);
     expect(resolveSource("biz")).toBe("qr");
     resolveSession("biz", 1000 + 31 * 60 * 1000);
-    expect(resolveSource("biz")).toBe("direct");
+    expect(resolveSource("biz")).toBe("public_link");
   });
 });

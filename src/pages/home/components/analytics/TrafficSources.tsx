@@ -5,18 +5,16 @@ import { pulseText } from "./sectionStyles";
 
 type SourceKey = keyof AnalyticsPulse["sources"];
 
-// Link público y QR siempre (Figma); directo/otros solo si tienen visitas.
-const SOURCES: { key: SourceKey; label: string; color: string; always: boolean }[] = [
-  { key: "publicLink", label: "Link público", color: "primary.main", always: true },
-  { key: "qr", label: "Código QR", color: "pulse.qr", always: true },
-  { key: "direct", label: "Directo", color: "grey.800", always: false },
-  { key: "other", label: "Otros", color: "pulse.sparkTrack", always: false },
+// Solo Link y QR: todo lo que no es QR se atribuye a Link, así que suman el total.
+const SOURCES: { key: SourceKey; label: string; color: string }[] = [
+  { key: "publicLink", label: "Link público", color: "primary.main" },
+  { key: "qr", label: "Código QR", color: "pulse.qr" },
 ];
 
 /** "Origen de las visitas": barra apilada + leyenda con cantidad y porcentaje. */
 const TrafficSources = ({ pulse }: { pulse: AnalyticsPulse }) => {
   const total = Object.values(pulse.sources).reduce((a, b) => a + b, 0);
-  const rows = SOURCES.filter((s) => s.always || pulse.sources[s.key] > 0);
+  const rows = SOURCES;
   return (
     <Box>
       <Typography component="h4" sx={{ ...pulseText.h4, color: "pulse.ink", pt: 4 }}>
