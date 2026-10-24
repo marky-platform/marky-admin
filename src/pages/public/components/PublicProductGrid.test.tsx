@@ -63,6 +63,7 @@ const LocationProbe = () => (
 
 const renderPublicProductGrid = (
   categories: { id: number; name: string; icon: string }[] = [],
+  categoriesLoading = false,
 ) => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -74,6 +75,7 @@ const renderPublicProductGrid = (
           <PublicProductGrid
             businessId="dulce-momento"
             categories={categories}
+            categoriesLoading={categoriesLoading}
           />
           <LocationProbe />
         </MemoryRouter>
@@ -153,6 +155,24 @@ describe("PublicProductGrid client-side search", () => {
       expect(within(card).queryAllByRole("button")).toHaveLength(0);
     }
   });
+
+  it("does not render a category returned without visible products", async () => {
+    mockedGetPublicCatalog.mockResolvedValueOnce({
+      count: 2,
+      next: null,
+      previous: null,
+      products_count: 2,
+      results: [
+        { ...category, id: 99, name: "Categoría vacía", products: [] },
+        category,
+      ],
+    });
+
+    renderPublicProductGrid();
+
+    await screen.findByText("Galleta de chocolate");
+    expect(screen.queryByText("Categoría vacía")).not.toBeInTheDocument();
+  });
 });
 
 // JSDOM has no matchMedia: simulate a viewport below md (down("md") is a
@@ -187,9 +207,21 @@ describe("PublicProductGrid breakpoint scope", () => {
     delete (window as any).matchMedia;
   });
 
+  it("reserves the mobile chip row while the public categories are loading", async () => {
+    mockViewport(true);
+    renderPublicProductGrid([], true);
+    await screen.findByText("Galleta de chocolate");
+
+    expect(screen.getByTestId("catalog-controls-row-2-loading")).toBeInTheDocument();
+    expect(screen.queryByTestId("catalog-controls-row-2")).not.toBeInTheDocument();
+  });
+
   it("renders the two-row mobile controls below md and not FilterSection", async () => {
     mockViewport(true);
-    renderPublicProductGrid();
+    renderPublicProductGrid([
+      { id: 1, name: "Postres", icon: "cookie" },
+      { id: 2, name: "Bebidas", icon: "cup" },
+    ]);
     await screen.findByText("Galleta de chocolate");
 
     expect(screen.getByTestId("catalog-controls-row-1")).toBeInTheDocument();
