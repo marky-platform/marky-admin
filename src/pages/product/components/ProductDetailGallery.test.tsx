@@ -275,7 +275,7 @@ describe("ProductDetailGallery 3D model", () => {
         await screen.findByText("Escanea con tu celular para ver el producto en tu espacio."),
       ).toBeInTheDocument();
       expect(await screen.findByAltText("Código QR del producto")).toBeInTheDocument();
-      expect(QRCode.toDataURL).toHaveBeenCalledWith(`${publicUrl}?view=3d`, expect.anything());
+      expect(QRCode.toDataURL).toHaveBeenCalledWith(`${publicUrl}?view=3d&mk_source=qr`, expect.anything());
     });
 
     it("hides it when AR is available", () => {

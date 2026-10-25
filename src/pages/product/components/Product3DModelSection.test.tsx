@@ -76,6 +76,23 @@ describe("Product3DModelSection", () => {
     expect(state()).toMatchObject({ id: 1, usdzFile: null, removeUsdz: true });
   });
 
+  it("removing the USDZ after replacing it still sets removeUsdz", () => {
+    renderSection({ id: 1, glbFile: "http://x/a.glb", usdzFile: "http://x/a.usdz" });
+    pick("model3d-usdz-input", new File(["PK"], "n.usdz"));
+    fireEvent.click(screen.getByRole("button", { name: "Quitar USDZ" }));
+    expect(state()).toMatchObject({ id: 1, usdzFile: null, removeUsdz: true });
+  });
+
+  it("rejects a USDZ while a delete is pending", () => {
+    renderSection({ id: 1, glbFile: "http://x/a.glb", usdzFile: null, _delete: true });
+    pick("model3d-usdz-input", new File(["PK"], "n.usdz"));
+    expect(state()._delete).toBe(true);
+    expect(ShowNotification).toHaveBeenCalledWith({
+      message: "Sube primero el archivo GLB.",
+      type: "error",
+    });
+  });
+
   it("removing the GLB of an existing model marks it _delete; of a new one clears it", () => {
     const { unmount } = renderSection({ id: 1, glbFile: "http://x/a.glb" });
     fireEvent.click(screen.getByRole("button", { name: "Quitar GLB" }));

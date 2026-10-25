@@ -4,6 +4,13 @@ import { useFormikContext } from "formik";
 import React from "react";
 import { Model3dKind, validateModel3dFile } from "../../../utils/model3dValidation";
 import { Product, Product3DModel } from "../../../types/product";
+import {
+  isDeletePending,
+  removeGlb,
+  removeUsdz,
+  selectGlb,
+  selectUsdz,
+} from "../../../utils/model3dFormState";
 import { ShowNotification } from "../../../utils/utils";
 
 interface Product3DModelSectionProps {
@@ -149,47 +156,16 @@ const Product3DModelSection: React.FC<Product3DModelSectionProps> = ({
       return;
     }
     if (kind === "glb") {
-      if (model) {
-        setFieldValue("model3d", { ...model, glbFile: file, _delete: false });
-      } else if (stored?.id) {
-        // Modelo guardado que se había quitado: se reemplaza su GLB y se
-        // limpia el USDZ viejo, que pertenecía al modelo descartado.
-        setFieldValue("model3d", {
-          id: stored.id,
-          glbFile: file,
-          usdzFile: null,
-          removeUsdz: !!stored.usdzFile,
-        });
-      } else {
-        setFieldValue("model3d", { glbFile: file, usdzFile: null });
-      }
+      setFieldValue("model3d", selectGlb(stored, file));
+    } else if (isDeletePending(stored)) {
+      ShowNotification({ message: "Sube primero el archivo GLB.", type: "error" });
     } else {
-      setFieldValue("model3d", {
-        id: stored?.id,
-        glbFile: model?.glbFile ?? null,
-        usdzFile: file,
-        removeUsdz: false,
-      });
+      setFieldValue("model3d", selectUsdz(stored, file));
     }
   };
 
-  const removeGlb = () => {
-    // Quitar el GLB elimina todo el modelo.
-    setFieldValue(
-      "model3d",
-      stored?.id ? { ...stored, _delete: true } : null,
-    );
-  };
-
-  const removeUsdz = () => {
-    if (!model) return;
-    const hadStored = !!model.id && typeof model.usdzFile === "string";
-    setFieldValue("model3d", {
-      ...model,
-      usdzFile: null,
-      removeUsdz: hadStored || (!!model.id && !!model.removeUsdz),
-    });
-  };
+  const handleRemoveGlb = () => setFieldValue("model3d", removeGlb(stored));
+  const handleRemoveUsdz = () => setFieldValue("model3d", removeUsdz(stored));
 
   return (
     <Box
@@ -223,7 +199,7 @@ const Product3DModelSection: React.FC<Product3DModelSectionProps> = ({
           caption={captionFor(model?.glbFile)}
           disabled={isSaving}
           onSelect={(f) => select("glb", f)}
-          onRemove={removeGlb}
+          onRemove={handleRemoveGlb}
         />
         <FileRow
           kind="usdz"
@@ -234,7 +210,7 @@ const Product3DModelSection: React.FC<Product3DModelSectionProps> = ({
           caption={captionFor(model?.usdzFile)}
           disabled={isSaving}
           onSelect={(f) => select("usdz", f)}
-          onRemove={removeUsdz}
+          onRemove={handleRemoveUsdz}
         />
       </Box>
       {error && (

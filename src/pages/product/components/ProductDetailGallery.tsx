@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 import defaultImage from "../../../assets/images/default-product.png";
+import { withSourceParam } from "../../../analytics/source";
 import ArQrDialog from "../../../components/ArQrDialog";
 import ProductModelViewer from "../../../components/ProductModelViewer";
 import ProductPromotionBadge from "../../../components/ProductPromotionBadge";
@@ -256,7 +257,7 @@ const ProductDetailGallery: React.FC<{
               <ArQrDialog
                 open={qrOpen}
                 onClose={() => setQrOpen(false)}
-                url={withModel3dView(publicUrl)}
+                url={withSourceParam(withModel3dView(publicUrl), "qr")}
               />
             </>
           )}

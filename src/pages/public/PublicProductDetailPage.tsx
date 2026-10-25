@@ -12,7 +12,7 @@ import ProductDetailContent, {
 import PublicNotFound from "./components/PublicNotFound";
 import { useProductAnalytics } from "../../analytics/hooks";
 import {
-  getPublicProductUrl,
+  getProductPublicUrlIfActive,
   VIEW_3D_PARAM,
   VIEW_3D_VALUE,
 } from "../../utils/publicUrls";
@@ -75,15 +75,7 @@ export const PublicProductDetailView: React.FC<PublicProductDetailViewProps> = (
     return <PublicNotFound message="Ocurrió un error al cargar el producto." />;
   }
 
-  const publicUrl =
-    businessId && product.is_active !== false
-      ? getPublicProductUrl({
-          businessId,
-          categorySlug: product.categorySlug,
-          productSlug: product.slug,
-          productId: product.id,
-        })
-      : undefined;
+  const publicUrl = getProductPublicUrlIfActive(product, businessId);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>

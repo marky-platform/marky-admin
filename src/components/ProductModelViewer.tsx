@@ -88,35 +88,37 @@ const ProductModelViewer: React.FC<ProductModelViewerProps> = ({
       data-testid="product-model-viewer"
       sx={{ position: "relative", width: "100%", height: "100%" }}
     >
-      <model-viewer
-        ref={viewerRef}
-        data-testid="model-viewer-element"
-        src={glbUrl}
-        {...(usdzUrl ? { "ios-src": usdzUrl } : {})}
-        alt={alt}
-        camera-controls=""
-        touch-action="pan-y"
-        ar=""
-        ar-modes="webxr scene-viewer quick-look"
-        ar-placement="floor"
-        loading="eager"
-        style={{ display: "block", width: "100%", height: "100%" }}
-      >
-        {/* Reemplaza la barra de progreso por defecto: usamos la de MUI. */}
-        <div slot="progress-bar" />
-        {/* model-viewer solo muestra este slot cuando `canActivateAR` es
-            true; la cámara y la sesión AR arrancan recién al tocarlo. */}
-        <Button
-          slot="ar-button"
-          variant="contained"
-          startIcon={<ViewInArIcon />}
-          sx={{ position: "absolute", right: 16, bottom: 16 }}
+      {glbUrl && (
+        <model-viewer
+          ref={viewerRef}
+          data-testid="model-viewer-element"
+          src={glbUrl}
+          {...(usdzUrl ? { "ios-src": usdzUrl } : {})}
+          alt={alt}
+          camera-controls=""
+          touch-action="pan-y"
+          ar=""
+          ar-modes="webxr scene-viewer quick-look"
+          ar-placement="floor"
+          loading="eager"
+          style={{ display: "block", width: "100%", height: "100%" }}
         >
-          Ver en tu espacio
-        </Button>
-      </model-viewer>
+          {/* Reemplaza la barra de progreso por defecto: usamos la de MUI. */}
+          <div slot="progress-bar" />
+          {/* model-viewer solo muestra este slot cuando `canActivateAR` es
+            true; la cámara y la sesión AR arrancan recién al tocarlo. */}
+          <Button
+            slot="ar-button"
+            variant="contained"
+            startIcon={<ViewInArIcon />}
+            sx={{ position: "absolute", right: 16, bottom: 16 }}
+          >
+            Ver en tu espacio
+          </Button>
+        </model-viewer>
+      )}
 
-      {status === "loading" && (
+      {(status === "loading" || !glbUrl) && (
         <LinearProgress
           variant={progress > 0 ? "determinate" : "indeterminate"}
           value={progress}

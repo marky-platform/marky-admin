@@ -1,6 +1,7 @@
 import {
   getPublicBusinessUrl,
   getPublicProductPath,
+  getProductPublicUrlIfActive,
   getPublicProductUrl,
 } from "./publicUrls";
 
@@ -94,5 +95,24 @@ describe("getPublicBusinessUrl", () => {
     expect(getPublicBusinessUrl("a b/c")).toBe(
       `${window.location.origin}/a%20b%2Fc`,
     );
+  });
+});
+
+describe("getProductPublicUrlIfActive", () => {
+  const product = { id: 3, slug: "pizza", categorySlug: "platos", is_active: true };
+
+  it("returns the public URL for active products", () => {
+    expect(getProductPublicUrlIfActive(product, "biz")).toBe(
+      `${window.location.origin}/biz/platos/pizza`,
+    );
+  });
+
+  it("treats a missing is_active as active", () => {
+    expect(getProductPublicUrlIfActive({ ...product, is_active: undefined }, "biz")).toBeDefined();
+  });
+
+  it("returns undefined without businessId or for inactive products", () => {
+    expect(getProductPublicUrlIfActive(product, undefined)).toBeUndefined();
+    expect(getProductPublicUrlIfActive({ ...product, is_active: false }, "biz")).toBeUndefined();
   });
 });

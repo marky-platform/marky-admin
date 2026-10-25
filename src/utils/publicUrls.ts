@@ -32,6 +32,26 @@ export const getPublicProductPath = ({
 export const getPublicProductUrl = (params: PublicProductPathParams): string =>
   `${window.location.origin}${getPublicProductPath(params)}`;
 
+// Enlace público de un producto solo si se puede abrir: hay negocio y el
+// producto no está inactivo (la ruta pública de uno inactivo da 404).
+export const getProductPublicUrlIfActive = (
+  product: {
+    is_active?: boolean;
+    categorySlug?: string | null;
+    slug?: string | null;
+    id?: string | number | null;
+  },
+  businessId?: string | null,
+): string | undefined =>
+  !businessId || product.is_active === false
+    ? undefined
+    : getPublicProductUrl({
+        businessId,
+        categorySlug: product.categorySlug,
+        productSlug: product.slug,
+        productId: product.id,
+      });
+
 // Enlace público del perfil de un negocio: `/<businessId>`. Única fuente para
 // compartir, copiar enlace y generar el QR.
 export const getPublicBusinessUrl = (businessId: string): string =>
