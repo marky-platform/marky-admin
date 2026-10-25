@@ -3,8 +3,8 @@ import { keyframes } from "@mui/system";
 import { forwardRef } from "react";
 import { ReactComponent as ChevronIcon } from "../../../../assets/icons/analytics/chevron-down.svg";
 import { AnalyticsPulse } from "../../../../types/analytics";
-import { barRatio, deltaPercent, formatCount } from "./format";
-import { DeltaChip, pulseText, tintSvg } from "./sectionStyles";
+import { barRatio, formatCount } from "./format";
+import { pulseText, tintSvg } from "./sectionStyles";
 
 interface Props {
   open: boolean;
@@ -16,22 +16,21 @@ interface Props {
 
 const SPARK_HEIGHT = 46;
 
-// Halo del punto "en vivo" (en Figma: círculo de 16px detrás del punto de 8px).
+// Halo del punto "en vivo" (Figma Make "Animar pulso azul sutil"): círculo de 16px
+// detrás del punto de 8px que crece a 24px (x1.5) mientras se desvanece.
 const ping = keyframes`
-  0% { transform: scale(0.5); opacity: 0.45; }
-  80%, 100% { transform: scale(1); opacity: 0; }
+  0% { transform: scale(1); opacity: 0.3; }
+  60%, 100% { transform: scale(1.5); opacity: 0; }
 `;
 
 /**
- * Estado cerrado (Figma 6621:22856): "Pulso", visitas de hoy, barras de los
- * últimos 7 días (hoy resaltado) y variación de visitas vs. los 7 anteriores.
+ * Estado cerrado (Figma 6621:22856): "Pulso", visitas de hoy y barras de los
+ * últimos 7 días (hoy resaltado).
  * Es un botón real que ocupa todo el riel y abre el panel.
  */
 const AnalyticsPulseRail = forwardRef<HTMLButtonElement, Props>(
   ({ open, controlsId, onToggle, data }, ref) => {
     const history = data?.history.slice(-7) ?? [];
-    const weekVisits = history.reduce((sum, d) => sum + d.visits, 0);
-    const delta = data ? deltaPercent(weekVisits, data.previous.visits) : null;
     const max = Math.max(0, ...history.map((d) => d.visits));
 
     return (
@@ -76,7 +75,7 @@ const AnalyticsPulseRail = forwardRef<HTMLButtonElement, Props>(
                 borderRadius: "50%",
                 bgcolor: "pulse.sparkAccent",
                 opacity: 0,
-                animation: `${ping} 2s ease-out infinite`,
+                animation: `${ping} 1.6s ease-out infinite`,
                 "@media (prefers-reduced-motion: reduce)": { animation: "none" },
               }}
             />
@@ -106,7 +105,6 @@ const AnalyticsPulseRail = forwardRef<HTMLButtonElement, Props>(
             />
           ))}
         </Box>
-        {delta !== null && <DeltaChip delta={delta} compact />}
         <Box aria-hidden sx={(t) => ({ ...tintSvg(t.palette.pulse.muted), pt: 1 })}>
           <ChevronIcon width={16} height={16} />
         </Box>

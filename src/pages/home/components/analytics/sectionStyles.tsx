@@ -1,7 +1,6 @@
 import { Box, MenuItem, Select, SxProps, Theme, Typography } from "@mui/material";
 import { ReactNode } from "react";
 import { ReactComponent as ChevronIcon } from "../../../../assets/icons/analytics/chevron-down.svg";
-import { formatDelta } from "./format";
 
 // Escala tipográfica del widget Pulso (estilos de texto de Figma).
 export const pulseText = {
@@ -25,27 +24,6 @@ export const PulseCard = ({ children, sx }: { children: ReactNode; sx?: SxProps<
     ]}
   >
     {children}
-  </Box>
-);
-
-/** Chip de variación: rojo si baja, verde si sube, neutro en 0. */
-export const DeltaChip = ({ delta, compact = false }: { delta: number; compact?: boolean }) => (
-  <Box
-    component="span"
-    sx={{
-      display: "inline-flex",
-      alignItems: "center",
-      px: 2,
-      py: "2px",
-      borderRadius: 999,
-      bgcolor: delta > 0 ? "pulse.upBg" : delta < 0 ? "pulse.downBg" : "pulse.divider",
-      color: delta > 0 ? "pulse.upText" : delta < 0 ? "pulse.downText" : "pulse.muted",
-      ...pulseText.tinyMedium,
-      fontWeight: 700,
-      whiteSpace: "nowrap",
-    }}
-  >
-    {formatDelta(delta, compact)}
   </Box>
 );
 

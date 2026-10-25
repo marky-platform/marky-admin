@@ -11,19 +11,6 @@ export const formatSeconds = (totalSeconds: number): string => {
   return rest ? `${Math.floor(s / 60)} min ${rest} s` : `${Math.floor(s / 60)} min`;
 };
 
-/**
- * Variación porcentual contra el período anterior. `null` cuando no hay base
- * (período anterior en 0): un "+∞ %" no le dice nada al comercio.
- */
-export const deltaPercent = (current: number, previous: number): number | null =>
-  previous > 0 ? Math.round(((current - previous) / previous) * 100) : null;
-
-/** "−10 %" / "+25 %" / "0 %" (signo menos tipográfico, como en Figma). */
-export const formatDelta = (delta: number, compact = false): string => {
-  const sign = delta > 0 ? "+" : delta < 0 ? "−" : "";
-  return `${sign}${Math.abs(delta)}${compact ? "" : " "}%`;
-};
-
 /** Porcentaje entero de `part` sobre `total`; 0 si no hay total. */
 export const sharePercent = (part: number, total: number): number =>
   total > 0 ? Math.round((part / total) * 100) : 0;
@@ -87,29 +74,3 @@ export const formatTimeAgo = (iso: string, now: Date = new Date()): string => {
 /** Alto relativo (0..1); seguro cuando el máximo es 0. */
 export const barRatio = (value: number, max: number): number =>
   max > 0 ? Math.min(1, Math.max(0, value / max)) : 0;
-
-type Trend = "up" | "down" | "flat";
-const trend = (delta: number | null): Trend | null =>
-  delta === null ? null : delta > 0 ? "up" : delta < 0 ? "down" : "flat";
-
-/**
- * Lectura en una línea de visitas vs. clics (Figma: "Más clics, aunque hubo
- * menos visitas."). `null` si falta base de comparación en alguno de los dos.
- */
-export const actionsInsight = (
-  visitsDelta: number | null,
-  actionsDelta: number | null,
-): string | null => {
-  const v = trend(visitsDelta);
-  const a = trend(actionsDelta);
-  if (!v || !a) return null;
-  if (a === "up" && v === "down") return "Más clics, aunque hubo menos visitas.";
-  if (a === "up" && v === "up") return "Más visitas y más clics que antes.";
-  if (a === "up") return "Más clics con las mismas visitas.";
-  if (a === "down" && v === "up") return "Más visitas, pero menos clics.";
-  if (a === "down" && v === "down") return "Menos visitas y menos clics que antes.";
-  if (a === "down") return "Menos clics con las mismas visitas.";
-  if (v === "up") return "Más visitas con los mismos clics.";
-  if (v === "down") return "Menos visitas, pero los mismos clics.";
-  return "Actividad estable respecto del período anterior.";
-};

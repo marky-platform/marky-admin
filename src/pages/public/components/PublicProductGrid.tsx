@@ -24,6 +24,8 @@ interface FilterValues {
 interface PublicProductGridProps {
   businessId: string;
   categories: Category[];
+  /** La lista de categorías públicas sigue cargando (reserva la fila mobile). */
+  categoriesLoading?: boolean;
 }
 
 // Read-only counterpart of pages/home/components/productGrid.tsx: same
@@ -35,6 +37,7 @@ interface PublicProductGridProps {
 export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
   businessId,
   categories,
+  categoriesLoading = false,
 }) => {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -68,11 +71,22 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
 
   const catalog = useMemo(() => {
     const searchTerm = filters.search.trim().toLowerCase();
-    if (!catalogRaw || !searchTerm) {
+    if (!catalogRaw) {
       return catalogRaw;
     }
 
-    const filteredResults = catalogRaw.results
+    // La API pública ya omite categorías sin productos visibles. Este filtro
+    // defensivo evita que una respuesta antigua/cacheada vuelva a dibujar un
+    // encabezado de categoría vacío.
+    const visibleResults = catalogRaw.results.filter(
+      (category) => (category.products || []).length > 0,
+    );
+
+    if (!searchTerm) {
+      return { ...catalogRaw, results: visibleResults };
+    }
+
+    const filteredResults = visibleResults
       .map((category: CategoryWithProducts) => {
         const categoryMatches = category.name
           ?.toLowerCase()
@@ -129,6 +143,7 @@ export const PublicProductGrid: React.FC<PublicProductGridProps> = ({
             values={filters}
             onFilterChange={handleFilterChange}
             categories={categories}
+            categoriesLoading={categoriesLoading}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             filterCounts={filterCounts}

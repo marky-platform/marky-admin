@@ -4,12 +4,7 @@ import type { AnalyticsSource } from "./types";
 
 export const SOURCE_PARAM = "mk_source";
 
-export const ANALYTICS_SOURCES: readonly AnalyticsSource[] = [
-  "public_link",
-  "qr",
-  "direct",
-  "other",
-];
+export const ANALYTICS_SOURCES: readonly AnalyticsSource[] = ["public_link", "qr"];
 
 export const isAnalyticsSource = (value: unknown): value is AnalyticsSource =>
   typeof value === "string" &&
@@ -38,20 +33,10 @@ const stripSourceParam = () => {
   }
 };
 
-// Solo una categoría general del referrer; nunca se guarda el referrer.
-const categoryFromReferrer = (): AnalyticsSource => {
-  try {
-    const referrer = typeof document !== "undefined" ? document.referrer : "";
-    if (!referrer) return "direct";
-    return new URL(referrer).host === window.location.host ? "direct" : "other";
-  } catch {
-    return "other";
-  }
-};
-
 // Fuente de la sesión actual del negocio: mk_source válido (se persiste y se
-// quita de la URL) > fuente ya guardada para la sesión > categoría del
-// referrer (se persiste para que la navegación interna no la cambie).
+// quita de la URL) > fuente ya guardada para la sesión > Link. Solo el QR trae una
+// señal explícita; navegación directa, favoritos o un mk_source desconocido son
+// Link. El referrer no se usa ni se guarda.
 export const resolveSource = (businessId: string): AnalyticsSource => {
   try {
     const param = new URLSearchParams(window.location.search).get(SOURCE_PARAM);
@@ -67,7 +52,6 @@ export const resolveSource = (businessId: string): AnalyticsSource => {
   }
   const stored = storageGet(sourceKey(businessId));
   if (isAnalyticsSource(stored)) return stored;
-  const derived = categoryFromReferrer();
-  storageSet(sourceKey(businessId), derived);
-  return derived;
+  storageSet(sourceKey(businessId), "public_link");
+  return "public_link";
 };

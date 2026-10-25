@@ -47,6 +47,17 @@ const renderPage = () =>
     </ThemeProvider>,
   );
 
+const cssRulesFor = (element: HTMLElement) =>
+  Array.from(document.styleSheets)
+    .flatMap((sheet) => Array.from(sheet.cssRules))
+    .map((rule) => rule.cssText)
+    .filter((text) =>
+      element.className
+        .split(" ")
+        .some((cls) => cls && text.includes(`.${cls}`)),
+    )
+    .join("\n");
+
 describe("PublicBusinessProfilePage", () => {
   it("is read-only and never touches authenticated notification data", () => {
     renderPage();
@@ -94,19 +105,32 @@ describe("PublicBusinessProfilePage", () => {
     renderPage();
 
     const layout = screen.getByTestId("public-profile-layout");
-    const rules = Array.from(document.styleSheets)
-      .flatMap((sheet) => Array.from(sheet.cssRules))
-      .map((rule) => rule.cssText)
-      .filter((text) =>
-        layout.className
-          .split(" ")
-          .some((cls) => cls && text.includes(`.${cls}`)),
-      )
-      .join("\n");
+    const rules = cssRulesFor(layout);
 
     // `height: 100vh` clipped the sticky rail to the first viewport; the
     // layout must grow (min-height) with the catalog instead.
     expect(rules).not.toMatch(/(^|[^-])height:\s*100vh/);
     expect(rules).toMatch(/min-height:\s*100vh/);
+  });
+
+  it("moves the desktop top spacing from the page wrapper into both columns", () => {
+    renderPage();
+
+    const pageRules = cssRulesFor(screen.getByTestId("public-profile-page"));
+    const profileRules = cssRulesFor(screen.getByTestId("public-profile-column"));
+    const catalogRules = cssRulesFor(screen.getByTestId("public-catalog-column"));
+
+    // spacing: 4 => sx value 8 is 32 px. Mobile keeps that page spacing,
+    // while md+ removes it so the divider reaches the top edge.
+    expect(pageRules).toMatch(/padding-top:\s*32px/);
+    expect(pageRules).toMatch(
+      /@media \(min-width:\s*900px\)[\s\S]*padding-top:\s*0px/,
+    );
+    expect(profileRules).toMatch(
+      /@media \(min-width:\s*900px\)[\s\S]*padding-top:\s*32px/,
+    );
+    expect(catalogRules).toMatch(
+      /@media \(min-width:\s*900px\)[\s\S]*padding-top:\s*32px/,
+    );
   });
 });

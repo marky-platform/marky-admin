@@ -10,7 +10,7 @@ export type AnalyticsEventType =
   | "product_engagement"
   | "action_click";
 
-export type AnalyticsSource = "public_link" | "qr" | "direct" | "other";
+export type AnalyticsSource = "public_link" | "qr";
 
 export type AnalyticsActionType =
   | "location"

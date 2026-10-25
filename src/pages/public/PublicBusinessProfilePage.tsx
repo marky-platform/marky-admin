@@ -24,7 +24,8 @@ const ICON_BUTTON_PADDING = 4; // padding compacto de los botones en md+
 const PublicBusinessProfilePage: React.FC = () => {
   const { businessId } = useParams<{ businessId: string }>();
   const { data: profile, isLoading, error } = usePublicBusinessProfile(businessId);
-  const { data: categoriesData } = usePublicCategories(businessId);
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    usePublicCategories(businessId);
   const categories = useMemo(
     () => categoriesData?.results ?? [],
     [categoriesData],
@@ -102,10 +103,14 @@ const PublicBusinessProfilePage: React.FC = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Box
+        data-testid="public-profile-page"
         sx={{
           flex: 1,
           px: { xs: 4, sm: 6, md: 0 },
-          pt: 8,
+          // En mobile se conserva el aire superior. En desktop el borde
+          // divisorio debe comenzar arriba, por eso el espacio se aplica a
+          // cada columna y no al contenedor que las envuelve.
+          pt: { xs: 8, md: 0 },
           pb: 3,
         }}
       >
@@ -122,6 +127,7 @@ const PublicBusinessProfilePage: React.FC = () => {
           }}
         >
           <Box
+            data-testid="public-profile-column"
             sx={{
               boxSizing: "border-box",
               width: "100%",
@@ -131,6 +137,7 @@ const PublicBusinessProfilePage: React.FC = () => {
               flexShrink: 0,
               position: { md: "relative" },
               px: { xs: 0, md: 8 },
+              pt: { md: 8 },
               borderRight: (theme) => ({
                 xs: "none",
                 md: `1px solid ${theme.palette.border.soft}`,
@@ -200,18 +207,21 @@ const PublicBusinessProfilePage: React.FC = () => {
             </Box>
           </Box>
           <Box
+            data-testid="public-catalog-column"
             sx={{
               width: "100%",
               minWidth: 0,
               flexBasis: { xs: "100%", md: 0 },
               flexGrow: { xs: 0, md: 1 },
               maxWidth: { xs: "100%", md: "100%" },
+              pt: { md: 8 },
             }}
           >
             {businessId && (
               <PublicProductGrid
                 businessId={businessId}
                 categories={categories}
+                categoriesLoading={categoriesLoading}
               />
             )}
           </Box>

@@ -1,4 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
+import { StrictMode } from "react";
 import { useCatalogVisit, useProductAnalytics } from "./hooks";
 import { lastActivityKey, sessionKey } from "./session";
 import { sentEvents, setupAnalyticsEnv, setVisibility } from "./testUtils";
@@ -29,6 +30,12 @@ describe("useCatalogVisit", () => {
     rerender({ ready: true });
     rerender({ ready: true });
     rerender({ ready: true });
+    tick(2000);
+    expect(types()).toEqual(["catalog_visit"]);
+  });
+
+  it("emits a single catalog_visit under StrictMode double mounting", () => {
+    renderHook(() => useCatalogVisit("biz", true), { wrapper: StrictMode });
     tick(2000);
     expect(types()).toEqual(["catalog_visit"]);
   });

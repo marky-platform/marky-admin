@@ -140,12 +140,6 @@ export interface SchemeColors {
     sparkAccent: string;
     /** #FDC21C QR source. */
     qr: string;
-    /** #16A34A / #E5F4EA positive delta chip. */
-    upText: string;
-    upBg: string;
-    /** #E2483A / #FDEAE7 negative delta chip. */
-    downText: string;
-    downBg: string;
   };
   shadow: {
     /** rgba(0,0,0,0.2) popup menus. */
@@ -270,10 +264,6 @@ const light: SchemeColors = {
     sparkTrack: "#CDDAFC",
     sparkAccent: "#1F5CFF",
     qr: "#FDC21C",
-    upText: "#16A34A",
-    upBg: "#E5F4EA",
-    downText: "#E2483A",
-    downBg: "#FDEAE7",
   },
   shadow: {
     menu: "rgba(0, 0, 0, 0.2)",
@@ -378,10 +368,6 @@ const dark: SchemeColors = {
     sparkTrack: "#36577C",
     sparkAccent: "#2E6FF2",
     qr: "#FDC21C",
-    upText: "#4ADE80",
-    upBg: "#0F2E1F",
-    downText: "#F87171",
-    downBg: "#40202A",
   },
   shadow: {
     menu: "rgba(0, 0, 0, 0.5)", // (proposal)

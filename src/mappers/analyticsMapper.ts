@@ -17,10 +17,6 @@ export const mapAnalyticsPulse = (
     start: raw?.period?.start ?? raw?.history?.[0]?.date ?? "",
     end: raw?.period?.end ?? raw?.history?.[raw.history.length - 1]?.date ?? "",
   },
-  previous: {
-    visits: num(raw?.previous?.visits),
-    actions: num(raw?.previous?.actions),
-  },
   today: {
     visits: num(raw?.today?.visits),
     uniqueVisitors: num(raw?.today?.unique_visitors),
@@ -33,8 +29,6 @@ export const mapAnalyticsPulse = (
   sources: {
     publicLink: num(raw?.sources?.public_link),
     qr: num(raw?.sources?.qr),
-    direct: num(raw?.sources?.direct),
-    other: num(raw?.sources?.other),
   },
   actions: {
     location: num(raw?.actions?.location),
