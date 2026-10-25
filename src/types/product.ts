@@ -123,6 +123,14 @@ export interface CeliacFormState {
   certifiedProtocol: boolean;
 }
 
+export interface Product3DModel {
+  id?: number;
+  glbFile: File | string | null; // URL string when it already exists
+  usdzFile?: File | string | null;
+  removeUsdz?: boolean;
+  _delete?: boolean;
+}
+
 export interface Product {
   id?: number;
   name: string;
@@ -150,6 +158,7 @@ export interface Product {
   promotionEndTime?: string;
   promotionStatus?: PromotionStatus;
   media?: MediaItemLocal[];
+  model3d?: Product3DModel | null;
   // Datos informativos opcionales. `featuredIngredients`/`allergens` son
   // arrays en el frontend (CSV en la API); `presentation`/`celiacInfo` es lo
   // que llega de la API, y `presentationForm`/`celiacForm` el estado editable.

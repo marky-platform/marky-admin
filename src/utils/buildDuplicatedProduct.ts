@@ -16,6 +16,7 @@ export const buildDuplicatedProduct = (product: Product): Product => {
     id: undefined as any,
     name: `${values.name} (copia)`,
     media: [],
+    model3d: null,
     // Los datos informativos se copian como estado de formulario, venga el
     // producto del form (ya en ese formato) o de la API (presentation/celiacInfo).
     featuredIngredients: values.featuredIngredients ?? [],

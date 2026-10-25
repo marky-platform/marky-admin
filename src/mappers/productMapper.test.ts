@@ -90,6 +90,25 @@ describe("mapProductGridItem", () => {
 });
 
 describe("mapProduct", () => {
+  it("maps model_3d to model3d without leaking the snake_case key", () => {
+    const result = mapProduct({
+      id: 1,
+      name: "Pizza",
+      model_3d: { id: 7, glb_file: "http://x/a.glb", usdz_file: null },
+    }) as any;
+    expect(result.model3d).toEqual({
+      id: 7,
+      glbFile: "http://x/a.glb",
+      usdzFile: null,
+    });
+    expect(result).not.toHaveProperty("model_3d");
+  });
+
+  it("maps a missing or null model_3d to null", () => {
+    expect(mapProduct({ id: 1, name: "P", model_3d: null }).model3d).toBeNull();
+    expect(mapProduct({ id: 1, name: "P" }).model3d).toBeNull();
+  });
+
   it("maps snake_case fields and variant prices", () => {
     const result = mapProduct({
       id: 1,

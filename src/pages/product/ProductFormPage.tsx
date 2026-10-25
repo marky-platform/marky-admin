@@ -27,7 +27,12 @@ import { ROUTES } from "../../routes/paths";
 import { getProductById } from "../../services/productService";
 import { Category } from "../../types/category";
 import { Product } from "../../types/product";
+import { buildModel3dPayload } from "../../utils/buildModel3dPayload";
 import { objectToFormData } from "../../utils/formData";
+import {
+  isModel3dValid,
+  MODEL_3D_MISSING_GLB_MESSAGE,
+} from "../../utils/model3dValidation";
 import { buildDuplicatedProduct } from "../../utils/buildDuplicatedProduct";
 import {
   splitIsoDateTime,
@@ -120,6 +125,13 @@ const buildValidationSchema = (
     // assign one from the "Producto" tab.
     category: Yup.number().nullable(),
     presentationForm: buildPresentationSchema(),
+    model3d: Yup.mixed()
+      .nullable()
+      .test(
+        "model3d-needs-glb",
+        MODEL_3D_MISSING_GLB_MESSAGE,
+        (value: any) => isModel3dValid(value),
+      ),
     // Rows soft-deleted via the section's Delete button (see
     // VariationsSection/ExtrasSection) are skipped: they no longer need to
     // satisfy the item schema (e.g. a row the user blanked out before
@@ -291,6 +303,7 @@ const ProductFormPage = () => {
     promotionEndDate: "",
     promotionEndTime: "",
     media: [],
+    model3d: null,
     featuredIngredients: [],
     allergens: [],
     presentationForm: defaultPresentationForm(),
@@ -409,6 +422,7 @@ const ProductFormPage = () => {
               (product as any).is_available ?? productTemp.is_active,
             //
             media: mappedMedia,
+            model3d: product.model3d ?? null,
             variants: mappedVariants,
             addons: mappedAddons,
             //
@@ -782,6 +796,15 @@ const ProductFormPage = () => {
               return null;
             })
             .filter(Boolean);
+        }
+
+        // 5b) Modelo 3D: la clave debe ser literalmente `model_3d` (el
+        //     convertidor camel->snake no la derivaría de `model3d`). Si no
+        //     cambió, se omite por completo para conservar sus archivos.
+        delete submissionValues.model3d;
+        const model3dPayload = buildModel3dPayload(values.model3d);
+        if (model3dPayload) {
+          submissionValues.model_3d = model3dPayload;
         }
 
         // 6) build FormData using the improved helper
