@@ -42,11 +42,37 @@ describe("ProductModelViewer", () => {
     );
   });
 
-  it("slots the Spanish AR button", () => {
+  it("hides the AR button until the model loads on an AR-capable device", () => {
     render(<ProductModelViewer glbUrl="a.glb" alt="Modelo 3D de Pizza" />);
+    const viewer = getViewer() as ReturnType<typeof getViewer> & {
+      activateAR?: () => Promise<void>;
+    };
+    const activateAR = jest.fn().mockResolvedValue(undefined);
+    viewer.activateAR = activateAR;
 
-    const button = screen.getByRole("button", { name: "Ver en tu espacio" });
-    expect(button).toHaveAttribute("slot", "ar-button");
+    expect(
+      screen.queryByRole("button", { name: "Ver en tu espacio" }),
+    ).not.toBeInTheDocument();
+
+    viewer.canActivateAR = true;
+    act(() => {
+      viewer.dispatchEvent(new Event("load"));
+    });
+    screen.getByRole("button", { name: "Ver en tu espacio" }).click();
+    expect(activateAR).toHaveBeenCalled();
+  });
+
+  it("never shows the AR button on devices without AR (desktop)", () => {
+    render(<ProductModelViewer glbUrl="a.glb" alt="Modelo 3D de Pizza" />);
+    const viewer = getViewer();
+
+    viewer.canActivateAR = false;
+    act(() => {
+      viewer.dispatchEvent(new Event("load"));
+    });
+    expect(
+      screen.queryByRole("button", { name: "Ver en tu espacio" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows a progress bar while loading and hides it after load", () => {
