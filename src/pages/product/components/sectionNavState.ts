@@ -6,7 +6,13 @@ import { Product } from "../../../types/product";
 // and the mobile CompleteYourProductList compute the exact same state from
 // the exact same source of truth.
 export const SECTION_FIELDS: Record<string, string[]> = {
-  Producto: ["name", "description", "price", "presentationForm"],
+  Producto: [
+    "name",
+    "description",
+    "price",
+    "presentationForm",
+    "model3d",
+  ],
   Variaciones: ["variants"],
   "Adicionales o extras": ["addons"],
   "Destacar producto": [

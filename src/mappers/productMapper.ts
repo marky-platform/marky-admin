@@ -55,8 +55,16 @@ export const mapProductGridItem = (
 };
 
 export const mapProduct = (productData: any): Product => {
+  const { model_3d: model3dData, ...restProductData } = productData;
   return {
-    ...productData,
+    ...restProductData,
+    model3d: model3dData
+      ? {
+          id: model3dData.id,
+          glbFile: model3dData.glb_file ?? null,
+          usdzFile: model3dData.usdz_file ?? null,
+        }
+      : null,
     slug: productData.slug ?? null,
     // Sin categoría -> `sin-categoria`; con categoría sin slug (deploy) -> null.
     categorySlug: productData.category

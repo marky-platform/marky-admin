@@ -13,19 +13,23 @@ jest.mock("../../hooks/usePublicProductBySlug", () => ({
   __esModule: true,
   default: () => ({}),
 }));
+const mockContent = jest.fn();
 jest.mock("../product/components/ProductDetailContent", () => ({
   __esModule: true,
   PRODUCT_PAGE_MAX_WIDTH: 1440,
-  default: () => <div data-testid="content" />,
+  default: (props: any) => {
+    mockContent(props);
+    return <div data-testid="content" />;
+  },
 }));
 
 let fetchMock: jest.Mock;
 const product: any = { id: 9, name: "Pizza" };
 
-const renderView = (props: any) =>
+const renderView = (props: any, initialEntries: string[] = ["/"]) =>
   render(
     <ThemeProvider theme={lightTheme}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={initialEntries}>
         <PublicProductDetailView businessId="mi-negocio" isLoading={false} error={null} {...props} />
       </MemoryRouter>
     </ThemeProvider>,
@@ -74,5 +78,27 @@ describe("PublicProductDetailView analytics", () => {
     ].forEach((file) => {
       expect(read(file)).not.toMatch(/analytics\/(client|hooks)/);
     });
+  });
+});
+
+describe("PublicProductDetailView 3D view", () => {
+  const lastContentProps = () => mockContent.mock.calls[mockContent.mock.calls.length - 1][0];
+  const slugged = { ...product, slug: "pizza", categorySlug: "pizzas", is_active: true };
+
+  it("passes initialView='3d' from ?view=3d", () => {
+    renderView({ product: slugged }, ["/mi-negocio/pizzas/pizza?view=3d"]);
+    expect(lastContentProps().initialView).toBe("3d");
+  });
+
+  it("passes no initialView without the param", () => {
+    renderView({ product: slugged }, ["/mi-negocio/pizzas/pizza"]);
+    expect(lastContentProps().initialView).toBeUndefined();
+  });
+
+  it("passes the canonical public URL for the QR", () => {
+    renderView({ product: slugged });
+    expect(lastContentProps().publicUrl).toBe(
+      `${window.location.origin}/mi-negocio/pizzas/pizza`,
+    );
   });
 });

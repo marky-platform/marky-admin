@@ -12,6 +12,7 @@ import CategoryPills from "./CategoryPills";
 import CeliacSection from "./CeliacSection";
 import FeaturedIngredientsField from "./FeaturedIngredientsField";
 import PresentationSection from "./PresentationSection";
+import Product3DModelSection from "./Product3DModelSection";
 import ProductImageGallery from "./ProductImageGallery"; // Import the new component
 
 interface ProductSectionProps {
@@ -37,6 +38,8 @@ const ProductSection = ({
   return (
     <Box sx={{ width: "100%" }}>
       <ProductImageGallery uploadProgress={uploadProgress} isSaving={isSaving} />
+
+      <Product3DModelSection uploadProgress={uploadProgress} isSaving={isSaving} />
 
       <Box
         sx={{

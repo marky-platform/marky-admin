@@ -1,3 +1,4 @@
+import ViewInArIcon from "@mui/icons-material/ViewInAr";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Box, Typography } from "@mui/material";
 import React from "react";
@@ -52,6 +53,8 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
   const images = activeMedia.filter((m: any) => m.media_type === "image");
   const video = activeMedia.find((m: any) => m.media_type === "video");
   const coverMedia = images[0] ?? video ?? null;
+  // Placeholder estático: la previsualización no monta el visor 3D.
+  const hasModel3d = Boolean(values.model3d?.glbFile && !values.model3d._delete);
 
   const priceLabel = (price: number | string | undefined) => {
     const numericPrice = typeof price === "string" ? parseFloat(price) : price;
@@ -61,7 +64,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
   const renderProducto = () => (
     <>
-      {(images.length > 0 || video) && (
+      {(images.length > 0 || video || hasModel3d) && (
         <Box display="flex" gap={2} mb={3}>
           <Box display="flex" flexDirection="column" gap={1}>
             {[...images, ...(video ? [video] : [])].map((m: any) => (
@@ -79,6 +82,29 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
                 <MediaPreviewThumb file={m.file} isVideo={m.media_type === "video"} />
               </Box>
             ))}
+            {hasModel3d && (
+              <Box
+                role="img"
+                aria-label="Modelo 3D"
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 1,
+                  border: "1px solid",
+                  borderColor: "grey.600",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "text.primary",
+                }}
+              >
+                <ViewInArIcon sx={{ fontSize: 18 }} aria-hidden />
+                <Typography variant="caption" fontWeight={600} lineHeight={1}>
+                  3D
+                </Typography>
+              </Box>
+            )}
           </Box>
           <Box
             sx={{
