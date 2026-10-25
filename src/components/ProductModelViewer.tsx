@@ -7,7 +7,10 @@ import React, { useEffect, useRef, useState } from "react";
 // carga con import() dinámico: queda en un chunk aparte y solo se descarga
 // cuando se monta un visor, es decir, cuando el usuario elige el ítem 3D.
 
-type ModelViewerElement = HTMLElement & { canActivateAR?: boolean };
+type ModelViewerElement = HTMLElement & {
+  canActivateAR?: boolean;
+  activateAR?: () => Promise<void>;
+};
 
 type ViewerStatus = "loading" | "loaded" | "error";
 
@@ -29,6 +32,7 @@ const ProductModelViewer: React.FC<ProductModelViewerProps> = ({
   const viewerRef = useRef<ModelViewerElement>(null);
   const [status, setStatus] = useState<ViewerStatus>("loading");
   const [progress, setProgress] = useState(0);
+  const [canActivateAR, setCanActivateAR] = useState(false);
   // El callback puede cambiar en cada render del padre; los listeners leen
   // siempre el último sin re-suscribirse.
   const onArAvailabilityRef = useRef(onArAvailability);
@@ -50,10 +54,13 @@ const ProductModelViewer: React.FC<ProductModelViewerProps> = ({
     if (!el) return;
     setStatus("loading");
     setProgress(0);
+    setCanActivateAR(false);
 
     const handleLoad = () => {
+      const canAR = Boolean(el.canActivateAR);
       setStatus("loaded");
-      onArAvailabilityRef.current?.(Boolean(el.canActivateAR));
+      setCanActivateAR(canAR);
+      onArAvailabilityRef.current?.(canAR);
     };
     const handleError = () => setStatus("error");
     const handleProgress = (event: Event) => {
@@ -105,17 +112,23 @@ const ProductModelViewer: React.FC<ProductModelViewerProps> = ({
         >
           {/* Reemplaza la barra de progreso por defecto: usamos la de MUI. */}
           <div slot="progress-bar" />
-          {/* model-viewer solo muestra este slot cuando `canActivateAR` es
-            true; la cámara y la sesión AR arrancan recién al tocarlo. */}
-          <Button
-            slot="ar-button"
-            variant="contained"
-            startIcon={<ViewInArIcon />}
-            sx={{ position: "absolute", right: 16, bottom: 16 }}
-          >
-            Ver en tu espacio
-          </Button>
+          {/* Oculta el botón AR por defecto: el nuestro va fuera del elemento
+            para no depender de que model-viewer ya esté cargado. */}
+          <div slot="ar-button" />
         </model-viewer>
+      )}
+
+      {/* Solo en dispositivos con AR (celulares); la cámara y la sesión AR
+        arrancan recién al tocarlo. */}
+      {status === "loaded" && canActivateAR && (
+        <Button
+          variant="contained"
+          startIcon={<ViewInArIcon />}
+          onClick={() => viewerRef.current?.activateAR?.()}
+          sx={{ position: "absolute", right: 16, bottom: 16, px: 3 }}
+        >
+          Ver en tu espacio
+        </Button>
       )}
 
       {(status === "loading" || !glbUrl) && (
