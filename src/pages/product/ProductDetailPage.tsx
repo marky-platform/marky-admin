@@ -7,6 +7,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useBusinessAccountInfo } from "../../hooks/useBusinessAccountInfo";
 import { HEADER_HEIGHT } from "../../constants/layout";
 import useProductDetail from "../../hooks/useProductDetail";
+import { getPublicProductUrl } from "../../utils/publicUrls";
 import ProductDetailContent, {
   PRODUCT_INFO_MAX_WIDTH,
   PRODUCT_PAGE_MAX_WIDTH,
@@ -41,6 +42,19 @@ const ProductDetailPage: React.FC = () => {
     );
   }
 
+  // Mismo origen del business_id que "Copiar URL" (ProductActionsMenu). Solo
+  // productos activos: la ruta pública de uno inactivo da 404.
+  const businessId = accountInfo?.business_id;
+  const publicUrl =
+    businessId && product.is_active
+      ? getPublicProductUrl({
+          businessId,
+          categorySlug: product.categorySlug,
+          productSlug: product.slug,
+          productId: product.id,
+        })
+      : undefined;
+
   return (
     <Box
       sx={{
@@ -72,6 +86,7 @@ const ProductDetailPage: React.FC = () => {
         <ProductDetailContent
           product={product}
           galleryStickyTop={HEADER_HEIGHT + GALLERY_STICKY_GAP}
+          publicUrl={publicUrl}
         />
       </Box>
     </Box>

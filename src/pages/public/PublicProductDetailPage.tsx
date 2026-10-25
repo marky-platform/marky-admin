@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import BackButton from "../../components/BackButton";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import usePublicProductBySlug from "../../hooks/usePublicProductBySlug";
@@ -11,6 +11,11 @@ import ProductDetailContent, {
 } from "../product/components/ProductDetailContent";
 import PublicNotFound from "./components/PublicNotFound";
 import { useProductAnalytics } from "../../analytics/hooks";
+import {
+  getPublicProductUrl,
+  VIEW_3D_PARAM,
+  VIEW_3D_VALUE,
+} from "../../utils/publicUrls";
 
 interface PublicProductDetailViewProps {
   businessId?: string;
@@ -30,6 +35,10 @@ export const PublicProductDetailView: React.FC<PublicProductDetailViewProps> = (
 }) => {
   const navigate = useNavigate();
   const { data: profile } = usePublicBusinessProfile(businessId);
+  // `?view=3d` (QR de escritorio) abre la galería directo en el modelo 3D.
+  const [searchParams] = useSearchParams();
+  const initialView =
+    searchParams.get(VIEW_3D_PARAM) === VIEW_3D_VALUE ? "3d" : undefined;
 
   // Visita (deep link), apertura, vista válida y tiempo activo. Solo corre con
   // un producto resuelto: ni la carga ni el error se miden.
@@ -66,6 +75,16 @@ export const PublicProductDetailView: React.FC<PublicProductDetailViewProps> = (
     return <PublicNotFound message="Ocurrió un error al cargar el producto." />;
   }
 
+  const publicUrl =
+    businessId && product.is_active !== false
+      ? getPublicProductUrl({
+          businessId,
+          categorySlug: product.categorySlug,
+          productSlug: product.slug,
+          productId: product.id,
+        })
+      : undefined;
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Box
@@ -92,6 +111,8 @@ export const PublicProductDetailView: React.FC<PublicProductDetailViewProps> = (
           readOnly
           businessId={businessId}
           galleryStickyTop={24}
+          publicUrl={publicUrl}
+          initialView={initialView}
         />
       </Box>
     </Box>

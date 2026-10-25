@@ -29,7 +29,18 @@ const ProductDetailContent: React.FC<{
   /** Desktop (md+) sticky offset of the gallery, in px: header height plus a
    * gap on the admin page, just the gap on the public page (no header). */
   galleryStickyTop?: number;
-}> = ({ product, readOnly = false, businessId, galleryStickyTop }) => {
+  /** URL pública del producto (solo si está activo): QR "Ver en tu celular". */
+  publicUrl?: string;
+  /** "3d" abre la galería en el modelo 3D (`?view=3d` en la página pública). */
+  initialView?: "3d";
+}> = ({
+  product,
+  readOnly = false,
+  businessId,
+  galleryStickyTop,
+  publicUrl,
+  initialView,
+}) => {
   return (
     <Box
       sx={{
@@ -41,7 +52,15 @@ const ProductDetailContent: React.FC<{
     >
       {/* COLUMN 1 */}
       <Box sx={{ display: "flex", alignItems: "flex-start", minWidth: 0 }}>
-        <ProductDetailGallery product={product} stickyTop={galleryStickyTop} />
+        {/* key: al navegar a un relacionado la galería vuelve a su estado
+            inicial (ítem seleccionado, disponibilidad de AR). */}
+        <ProductDetailGallery
+          key={product.id}
+          product={product}
+          stickyTop={galleryStickyTop}
+          publicUrl={publicUrl}
+          initialView={initialView}
+        />
       </Box>
       {/* COLUMN 2 */}
       <Box sx={{ minWidth: 0 }}>

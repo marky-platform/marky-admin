@@ -36,3 +36,14 @@ export const getPublicProductUrl = (params: PublicProductPathParams): string =>
 // compartir, copiar enlace y generar el QR.
 export const getPublicBusinessUrl = (businessId: string): string =>
   `${window.location.origin}/${encodeURIComponent(businessId)}`;
+
+// Parámetro que abre el detalle público directamente en el ítem 3D de la
+// galería (lo usa el QR de "Ver en tu celular").
+export const VIEW_3D_PARAM = "view";
+export const VIEW_3D_VALUE = "3d";
+
+export const withModel3dView = (url: string): string => {
+  const parsed = new URL(url);
+  parsed.searchParams.set(VIEW_3D_PARAM, VIEW_3D_VALUE);
+  return parsed.toString();
+};
