@@ -112,6 +112,7 @@ const FileRow = ({
           disabled={disabled}
           aria-label={`${file ? "Reemplazar" : "Subir"} ${label}`}
           onClick={() => inputRef.current?.click()}
+          sx={{ px: 2 }}
         >
           {file ? "Reemplazar" : "Subir"}
         </Button>
@@ -122,6 +123,7 @@ const FileRow = ({
             disabled={disabled}
             aria-label={`Quitar ${label}`}
             onClick={onRemove}
+            sx={{ px: 2 }}
           >
             Quitar
           </Button>

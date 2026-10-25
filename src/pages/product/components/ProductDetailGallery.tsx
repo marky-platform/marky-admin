@@ -250,7 +250,7 @@ const ProductDetailGallery: React.FC<{
                 variant="outlined"
                 startIcon={<QrCode2Icon />}
                 onClick={() => setQrOpen(true)}
-                sx={{ mt: 2 }}
+                sx={{ mt: 2, px: 3 }}
               >
                 Ver en tu celular
               </Button>
