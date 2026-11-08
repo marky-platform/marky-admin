@@ -33,7 +33,6 @@ import BusinessTypeSelectorField from "../../components/BusinessTypeSelectorFiel
 import CategorySelectionList from "../../components/CategorySelectionList";
 import FormikPhoneInput from "../../components/FormikPhoneInput";
 import { Header } from "../../components/Header";
-import Input from "../../components/Input";
 import CustomModal from "../../components/Modal";
 import NumberInput from "../../components/NumberInput";
 import { useBusinessAccountInfo } from "../../hooks/useBusinessAccountInfo";
@@ -650,17 +649,12 @@ const AccountConfigurationPage: React.FC = () => {
         <Formik
           enableReinitialize
           initialValues={{
-            email: data?.email ?? "",
             phone_number: data?.phone_number ?? "",
           }}
-          validationSchema={Yup.object({
-            email: Yup.string().email("Email inválido").required("Requerido"),
-          })}
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
             try {
               setSubmitting(true);
               await updateAccountInfo.mutateAsync({
-                email: values.email,
                 phone_number: values.phone_number,
               });
               setOpenModal(null);
@@ -673,7 +667,9 @@ const AccountConfigurationPage: React.FC = () => {
         >
           {({ isSubmitting }) => (
             <Form>
-              <Field name="email" component={Input} label="Email" />
+              <Box mb={2}>
+                <FieldDisplay label="Email" value={data?.email} />
+              </Box>
               <Field
                 name="phone_number"
                 component={FormikPhoneInput}

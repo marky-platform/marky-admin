@@ -181,7 +181,6 @@ export async function getBusinessAccountInfo(): Promise<BusinessAccountInfo> {
 // Payload type for updating account info (PATCH)
 export interface BusinessAccountInfoUpdatePayload {
   business_name?: string;
-  email?: string;
   phone_number?: string;
   business_id?: string;
   business_type?: string;
