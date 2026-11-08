@@ -15,6 +15,15 @@ import { useNavigate } from "react-router-dom";
 import { register } from "../services/authService";
 import { displayFormikFormErrors, ShowNotification } from "../utils/utils";
 
+// Refleja las reglas de contraseña del backend que se pueden validar sin
+// servidor (mínimo 8 caracteres y no solo números). Las demás (contraseña
+// común, similar al email) las devuelve el backend en la clave `password`
+// y se muestran en el campo.
+export const passwordSchema = Yup.string()
+  .min(8, "Debe tener al menos 8 caracteres")
+  .matches(/\D/, "No puede contener solo números")
+  .required("Este campo es requerido");
+
 const AcceptTermsLabel = () => {
   return (
     <Typography component="span">
@@ -45,9 +54,7 @@ const Register: React.FC = () => {
       .required(isRequiredMessage),
     email: Yup.string().email("Email no válido").required(isRequiredMessage),
     phone: Yup.string().required(isRequiredMessage),
-    password: Yup.string()
-      .min(8, "Debe tener al menos 8 carácteres")
-      .required(isRequiredMessage),
+    password: passwordSchema,
   });
 
   const handleSubmit = async (
