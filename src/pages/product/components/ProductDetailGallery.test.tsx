@@ -79,6 +79,20 @@ describe("ProductDetailGallery thumbnail rail", () => {
   });
 });
 
+describe("ProductDetailGallery thumbnails (F-24)", () => {
+  it("uses the thumbnail in the rail but the full file as main image", () => {
+    mockMobile(false);
+    renderGallery([
+      { ...image(1), thumbnail: "https://example.com/1.webp" },
+      image(2),
+    ]);
+    expect(screen.getByAltText("thumb-1")).toHaveAttribute("src", "https://example.com/1.webp");
+    // Sin miniatura: cae a la imagen original.
+    expect(screen.getByAltText("thumb-2")).toHaveAttribute("src", "https://example.com/2.jpg");
+    expect(screen.getByAltText("Pizza")).toHaveAttribute("src", "https://example.com/1.jpg");
+  });
+});
+
 // JSDOM no evalúa media queries: se leen las reglas que emotion inyectó.
 const rulesFor = (el: Element) => {
   const cls = Array.from(el.classList).find((c) => c.startsWith("css-"));

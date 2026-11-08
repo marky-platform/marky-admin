@@ -76,3 +76,13 @@ describe("ProductListItem sizing", () => {
     expect(css).toMatch(/min-width:\s*900px[^}]*\{[^}]*line-height: 28px/s);
   });
 });
+
+describe("ProductListItem image source (F-24)", () => {
+  it("uses the thumbnail when available, else the original", () => {
+    const { unmount } = renderItem({ ...product, imageThumbnail: "thumb.webp" });
+    expect(screen.getByAltText("Pizza")).toHaveAttribute("src", "thumb.webp");
+    unmount();
+    renderItem(product);
+    expect(screen.getByAltText("Pizza")).toHaveAttribute("src", "pizza.jpg");
+  });
+});

@@ -13,6 +13,9 @@ export const mapProductGridItem = (
     categorySlug: categorySlug ?? productData.categorySlug ?? null,
     description: productData.description,
     image: productData.image ?? undefined,
+    // Miniatura (F-24): ausente/null en filas antiguas -> las vistas usan `image`.
+    imageThumbnail:
+      productData.image_thumbnail ?? productData.imageThumbnail ?? undefined,
     views: productData.views ?? undefined,
     price: productData.price ?? 0,
     priceAlt: productData.priceAlt ?? undefined,
@@ -93,8 +96,15 @@ export const mapProduct = (productData: any): Product => {
           ...v,
           primaryPrice: v.primary_price ?? v.primaryPrice,
           secondaryPrice: v.secondary_price ?? v.secondaryPrice,
+          thumbnail: v.thumbnail ?? undefined,
         }))
       : [],
+    media: Array.isArray(productData.media)
+      ? productData.media.map((m: any) => ({
+          ...m,
+          thumbnail: m.thumbnail ?? undefined,
+        }))
+      : productData.media,
     addons: Array.isArray(productData.addons) ? productData.addons : [],
   };
 };

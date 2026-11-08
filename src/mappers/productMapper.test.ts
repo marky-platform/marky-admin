@@ -89,6 +89,48 @@ describe("mapProductGridItem", () => {
   });
 });
 
+describe("thumbnails (F-24)", () => {
+  it("maps image_thumbnail to imageThumbnail on grid items", () => {
+    const r = mapProductGridItem({
+      id: 1,
+      name: "P",
+      price: 1,
+      image: "full.jpg",
+      image_thumbnail: "thumb.webp",
+    });
+    expect(r.imageThumbnail).toBe("thumb.webp");
+    expect(r.image).toBe("full.jpg");
+  });
+
+  it("leaves imageThumbnail undefined when absent or null (fallback to image)", () => {
+    expect(mapProductGridItem({ id: 1, name: "P", price: 1, image: "a" }).imageThumbnail).toBeUndefined();
+    expect(
+      mapProductGridItem({ id: 1, name: "P", price: 1, image_thumbnail: null }).imageThumbnail,
+    ).toBeUndefined();
+  });
+
+  it("keeps an already-mapped imageThumbnail when re-mapping", () => {
+    expect(
+      mapProductGridItem({ id: 1, name: "P", price: 1, imageThumbnail: "t.webp" }).imageThumbnail,
+    ).toBe("t.webp");
+  });
+
+  it("maps media and variant thumbnails in mapProduct (null -> undefined)", () => {
+    const r = mapProduct({
+      id: 1,
+      name: "P",
+      media: [
+        { id: 1, file: "a.jpg", thumbnail: "a.webp", media_type: "image" },
+        { id: 2, file: "b.jpg", thumbnail: null, media_type: "image" },
+      ],
+      variants: [{ id: 1, name: "V", price: 1, image: "v.jpg", thumbnail: "v.webp" }],
+    }) as any;
+    expect(r.media[0].thumbnail).toBe("a.webp");
+    expect(r.media[1].thumbnail).toBeUndefined();
+    expect(r.variants[0].thumbnail).toBe("v.webp");
+  });
+});
+
 describe("mapProduct", () => {
   it("maps model_3d to model3d without leaking the snake_case key", () => {
     const result = mapProduct({

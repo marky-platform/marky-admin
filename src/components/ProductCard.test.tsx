@@ -74,6 +74,20 @@ const renderProductCard = (
   );
 };
 
+describe("ProductCard image source (F-24)", () => {
+  it("uses the thumbnail when available", () => {
+    renderProductCard({
+      product: { ...product, image: "full.jpg", imageThumbnail: "thumb.webp" },
+    });
+    expect(screen.getByAltText(product.name)).toHaveAttribute("src", "thumb.webp");
+  });
+
+  it("falls back to the original image when there is no thumbnail", () => {
+    renderProductCard({ product: { ...product, image: "full.jpg" } });
+    expect(screen.getByAltText(product.name)).toHaveAttribute("src", "full.jpg");
+  });
+});
+
 describe("ProductCard discounted price rendering", () => {
   it("shows the discounted price with a struck-through original price when discountPercent > 0", () => {
     const discountedProduct: ProductGridItem = {

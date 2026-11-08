@@ -214,7 +214,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         >
           <CardMedia
             component="img"
-            image={product.image || defaultImage}
+            image={product.imageThumbnail || product.image || defaultImage}
             alt={product.name}
             loading="lazy"
             sx={{

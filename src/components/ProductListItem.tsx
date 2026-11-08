@@ -128,7 +128,7 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
       >
         <Box
           component="img"
-          src={product.image || defaultImage}
+          src={product.imageThumbnail || product.image || defaultImage}
           alt={product.name}
           loading="lazy"
           sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}

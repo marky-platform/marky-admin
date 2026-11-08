@@ -119,7 +119,13 @@ const ProductDetailGallery: React.FC<{
                     />
                   ) : (
                     <img
-                      src={resolveUrl(item.file)}
+                      src={
+                        // Miniatura solo si el archivo sigue siendo el original (URL);
+                        // un File nuevo (p. ej. recortado) no tiene miniatura vigente.
+                        typeof item.file === "string" && item.thumbnail
+                          ? item.thumbnail
+                          : resolveUrl(item.file)
+                      }
                       alt={item.name || "thumb"}
                       style={{
                         width: "100%",

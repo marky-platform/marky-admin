@@ -10,6 +10,8 @@ export interface MediaItemLocal {
   id?: number; // present for existing media
   file: File | string; // File when new, string URL when existing
   originalFile?: string; // optional backup of remote URL
+  /** Miniatura generada por el backend (solo medios existentes); ausente en filas antiguas. */
+  thumbnail?: string;
   name?: string;
   media_type: MediaType;
   product?: number;
@@ -27,6 +29,8 @@ export interface ProductGridItem {
   /** Optional short description used in product cards */
   description?: string;
   image?: string;
+  /** Miniatura de `image` (backend `image_thumbnail`); usar `imageThumbnail || image` en listas. */
+  imageThumbnail?: string;
   views?: number;
   price: string | number;
   priceAlt?: string | number;
@@ -60,6 +64,8 @@ export interface ProductVariant {
   price: number;
   //
   image?: File | string; // same pattern: File when new, URL when existing
+  /** Miniatura generada por el backend (solo variantes existentes). */
+  thumbnail?: string;
   primaryPrice?: string;
   secondaryPrice?: string;
   _delete?: boolean;
