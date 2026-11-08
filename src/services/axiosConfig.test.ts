@@ -8,12 +8,18 @@ type Handler = (error: any) => Promise<any>;
 var responseErrorHandler: Handler;
 // eslint-disable-next-line no-var
 var mockApiCall: jest.Mock;
+// eslint-disable-next-line no-var
+var requestHandler: (config: any) => any;
 
 jest.mock("axios", () => {
   mockApiCall = jest.fn();
   const api: any = (...args: any[]) => mockApiCall(...args);
   api.interceptors = {
-    request: { use: jest.fn() },
+    request: {
+      use: jest.fn((ok: (config: any) => any) => {
+        requestHandler = ok;
+      }),
+    },
     response: {
       use: jest.fn((_ok: unknown, err: Handler) => {
         responseErrorHandler = err;
@@ -120,4 +126,46 @@ describe("response interceptor: refresh", () => {
       expect(useSessionStore.getState().refreshToken).toBe("refresh-mem");
     },
   );
+});
+
+describe("request interceptor (contrato con el backend)", () => {
+  beforeEach(() => {
+    useSessionStore.getState().clearSession();
+  });
+
+  it("envía Accept-Language: es y el Bearer del store", () => {
+    useSessionStore.getState().setSession({
+      accessToken: "tok",
+      refreshToken: "ref",
+      user: null,
+    });
+    const config = requestHandler({ headers: {} });
+    expect(config.headers.Authorization).toBe("Bearer tok");
+    expect(config.headers["Accept-Language"]).toBe("es");
+  });
+
+  it("no envía Authorization sin sesión", () => {
+    const config = requestHandler({ headers: {} });
+    expect(config.headers.Authorization).toBeUndefined();
+    expect(config.headers["Accept-Language"]).toBe("es");
+  });
+});
+
+describe("response interceptor: login", () => {
+  it("un 401 de /users/login/ no dispara refresh ni cierra la sesión", async () => {
+    mockedPost.mockReset();
+    useSessionStore.getState().setSession({
+      accessToken: "a",
+      refreshToken: "r",
+      user: null,
+    });
+    await expect(
+      responseErrorHandler({
+        config: { url: "/users/login/", headers: {} },
+        response: { status: 401, data: {} },
+      }),
+    ).rejects.toBeDefined();
+    expect(mockedPost).not.toHaveBeenCalled();
+    expect(useSessionStore.getState().accessToken).toBe("a");
+  });
 });

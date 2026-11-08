@@ -368,3 +368,43 @@ describe("slug mapping", () => {
     expect(result.products[0].categorySlug).toBe("sin-categoria");
   });
 });
+
+describe("contrato con ProductLiteSerializer (F-33)", () => {
+  // Payload con las claves reales del backend: isFavorite/isRecommended vienen
+  // en camelCase (el fixture histórico usaba is_recommended/is_favorite).
+  const backendItem = {
+    id: 7,
+    name: "Pizza",
+    slug: "pizza",
+    description: "d",
+    price: "50000.00",
+    isFavorite: true,
+    isRecommended: false,
+    image: "http://x/pizza.png",
+    image_thumbnail: "http://x/pizza-thumb.webp",
+    multibuy_option: null,
+    discount_percentage: "0.00",
+    promotion_starts_at: null,
+    promotion_ends_at: null,
+    promotion_status: "inactive",
+    is_available: true,
+    primary_price: "PYG 50.000",
+    secondary_price: null,
+    primary_price_with_discount: null,
+    secondary_price_with_discount: null,
+  };
+
+  it("mapea isFavorite/isRecommended reales y la miniatura", () => {
+    const result = mapProductGridItem(backendItem, "pizzas");
+    expect(result).toMatchObject({
+      id: 7,
+      isFavorite: true,
+      isRecommended: false,
+      imageThumbnail: "http://x/pizza-thumb.webp",
+      primaryPrice: "PYG 50.000",
+      promotionStatus: "inactive",
+      is_available: true,
+      categorySlug: "pizzas",
+    });
+  });
+});

@@ -74,7 +74,9 @@
     ]
   },
   "devDependencies": {
+    "@types/jest-axe": "^3.5.9",
     "@types/react-select": "^5.0.1",
+    "jest-axe": "^10.0.0",
     "prop-types": "^15.8.1",
     "webpack": "^5.95.0"
   }
