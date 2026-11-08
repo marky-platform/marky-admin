@@ -6,6 +6,7 @@ import { Form, Formik, FormikHelpers } from "formik";
 import useCreateProductCategory from "../../../../hooks/useCreateProductCategory";
 import useUpdateProductCategory from "../../../../hooks/useUpdateProductCategory";
 import { ShowNotification } from "../../../../utils/utils";
+import { clickableProps } from "../../../../utils/a11y";
 
 interface CreateEditProps {
   /** if editing, the category you want to load; otherwise undefined for “create” */
@@ -100,7 +101,6 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
   };
 
   // useEffect(() => {
-  //   console.log("===initialCategory===", initialCategory);
   //   setInitialValues(initialCategory);
   // }, [initialCategory]);
 
@@ -177,7 +177,9 @@ export const CreateEdit: React.FC<CreateEditProps> = ({
               const IconComponent = categoryIcons[key];
               const isSelected = values.icon === key;
               return (
-                <Box
+                <Box {...clickableProps}
+                  aria-pressed={isSelected}
+                  aria-label={key}
                   key={key}
                   onClick={() => setFieldValue("icon", key)}
                   sx={{

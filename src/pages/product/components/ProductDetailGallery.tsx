@@ -13,6 +13,7 @@ import { useMediaObjectUrl } from "../../../hooks/useMediaObjectUrl";
 import { Product } from "../../../types/product";
 import { withModel3dView } from "../../../utils/publicUrls";
 import { VideoThumbnail } from "./VideoThumbnail";
+import { clickableProps } from "../../../utils/a11y";
 
 const ProductDetailGallery: React.FC<{
   product: Product;
@@ -96,7 +97,7 @@ const ProductDetailGallery: React.FC<{
           <Grid item xs={3} sm={2}>
             <Box display="flex" flexDirection="column" gap={3}>
               {media.map((item: any, idx: number) => (
-                <Box
+                <Box {...clickableProps}
                   key={item.id || idx}
                   onClick={() => setMainIndex(idx)}
                   sx={{

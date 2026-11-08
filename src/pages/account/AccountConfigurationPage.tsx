@@ -45,6 +45,7 @@ import { useHomePageData } from "../../hooks/useHomePageData";
 import BusinessAvatar from "../home/components/BusinessAvatar";
 import { BUSINESS_CATEGORY_ICON_MAP } from "../../utils/businessCategoryIcons";
 import { displayFormikFormErrors } from "../../utils/utils";
+import { clickableProps } from "../../utils/a11y";
 
 const SettingsCard: React.FC<{
   title: string;
@@ -69,7 +70,7 @@ const SettingsCard: React.FC<{
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h6">{title}</Typography>
         {onEdit && (
-          <IconButton
+          <IconButton aria-label={`Editar ${title}`}
             size="small"
             onClick={onEdit}
             sx={{ bgcolor: "surface.iconButton", borderRadius: "6px", p: 2 }}
@@ -288,7 +289,7 @@ const AccountConfigurationPage: React.FC = () => {
           ).map(({ key, label }) => {
             const active = selectedSection === key;
             return (
-              <Box
+              <Box {...clickableProps}
                 key={key}
                 onClick={() => setSelectedSection(key)}
                 sx={{
@@ -538,7 +539,7 @@ const AccountConfigurationPage: React.FC = () => {
                           borderRadius: 1,
                         }}
                       >{`${data?.exchange_rate} ${exchangeToCode ?? ""}`}</Box>
-                      <IconButton
+                      <IconButton aria-label="Tipo de cambio"
                         sx={{ bgcolor: "surface.iconButton", borderRadius: "6px", p: 2 }}
                       >
                         <ExchangeIcon />

@@ -1,12 +1,18 @@
 import {
   DndContext,
   DragEndEvent,
+  KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import { Box, Typography } from "@mui/material";
 import { useFormikContext } from "formik";
@@ -36,6 +42,8 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    // Reordenar con teclado: Espacio/Enter levanta, flechas mueven.
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   const {

@@ -3,6 +3,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Attribute } from "..";
 import { BUSINESS_ATTRIBUTE_ICON_MAP } from "../../../utils/businessAttributeIcons";
+import { clickableProps } from "../../../utils/a11y";
 
 interface AttributesInfoProps {
   attributes: Attribute[];
@@ -18,7 +19,7 @@ const AttributesInfo: React.FC<AttributesInfoProps> = ({
   const isEmpty = !attributes || Object.keys(attributes).length === 0;
   if (isEmpty && readOnly) return null;
   return (
-    <Box
+    <Box {...(readOnly ? {} : clickableProps)}
       onClick={readOnly ? undefined : onOpen}
       sx={{
         border: (theme) =>

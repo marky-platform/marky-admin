@@ -17,6 +17,7 @@ import { Category } from "../../../../types/category";
 import { useState } from "react";
 import MobileOptionsMenu from "./components/MobileOptionsMenu";
 import useDeleteProductCategory from "../../../../hooks/useDeleteProductCategory";
+import { clickableProps } from "../../../../utils/a11y";
 
 interface CategoryItemProps {
   cat: Category;
@@ -81,7 +82,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
             <CrownIcon width={20} height={20} />
           )}
         </Box>
-        <Typography
+        <Typography {...clickableProps}
           sx={{
             cursor: "pointer",
             fontSize: 12,

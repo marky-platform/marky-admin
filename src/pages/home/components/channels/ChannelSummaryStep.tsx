@@ -5,6 +5,7 @@ import React from "react";
 import { ChannelKey } from "../../../../types/channel";
 import { CHANNEL_META } from "./channels.constants";
 import { ChannelsFormValues } from "./ChannelWizardModal";
+import { clickableProps } from "../../../../utils/a11y";
 
 interface ChannelSummaryStepProps {
   selectedChannels: ChannelKey[];
@@ -67,7 +68,7 @@ const ChannelSummaryStep: React.FC<ChannelSummaryStepProps> = ({
           );
 
           return (
-            <Box
+            <Box {...clickableProps}
               key={chan}
               onClick={() => onOpenDetail(chan)}
               sx={{

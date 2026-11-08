@@ -8,13 +8,14 @@ import {
   TextField,
 } from "@mui/material";
 import React from "react";
+import { clickableProps } from "../utils/a11y";
 
 interface SelectButtonFieldProps {
   label?: string;
   placeholder?: string;
   displayText?: string;
   required?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   sx?: object;
   error?: boolean;
   helperText?: string;
@@ -39,7 +40,7 @@ const SelectButtonField: React.FC<SelectButtonFieldProps> = ({
       )}
       {/* By placing the onClick on a wrapping Box, we can capture clicks
           even though the TextField itself is disabled. */}
-      <Box onClick={onClick} sx={{ cursor: "pointer", ...sx }}>
+      <Box {...(onClick ? clickableProps : {})} onClick={onClick} sx={{ cursor: "pointer", ...sx }}>
         <TextField
           variant="outlined"
           fullWidth

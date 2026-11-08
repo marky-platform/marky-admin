@@ -23,7 +23,7 @@ const MobileOptionsMenu: React.FC<Props> = ({ onPromo, onDelete }) => {
 
   return (
     <>
-      <IconButton onClick={handleOpen} size="small">
+      <IconButton aria-label="Más opciones" onClick={handleOpen} size="small">
         <MoreVertIcon fontSize="small" />
       </IconButton>
       <Menu

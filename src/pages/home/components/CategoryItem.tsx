@@ -36,11 +36,25 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   isEditable = true,
 }) => {
   const IconComponent = cat.icon ? categoryIcons[cat.icon] : null;
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+  } = useSortable({
       id: cat.id,
       animateLayoutChanges: defaultAnimateLayoutChanges,
     });
+
+  const setRefs = React.useCallback(
+    (node: HTMLElement | null) => {
+      setNodeRef(node);
+      setActivatorNodeRef(node);
+    },
+    [setNodeRef, setActivatorNodeRef],
+  );
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -49,7 +63,9 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
 
   return (
     <Box
-      ref={setNodeRef}
+      // La fila es el nodo activador: el KeyboardSensor solo inicia un arrastre
+      // con teclas pulsadas sobre ella misma, no sobre los IconButton anidados.
+      ref={setRefs}
       {...attributes}
       {...listeners}
       display="flex"
@@ -100,10 +116,10 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
 
       {isEditable && (
         <Box display="flex" alignItems="center" gap={1}>
-          <IconButton size="small" onClick={() => setActiveScreen("promotion")}>
+          <IconButton aria-label="Configurar promoción de la categoría" size="small" onClick={() => setActiveScreen("promotion")}>
             <LocalOfferIcon fontSize="small" />
           </IconButton>
-          <IconButton
+          <IconButton aria-label="Eliminar categoría"
             size="small"
             onClick={() => {
               setSelectedCategoryDelete && setSelectedCategoryDelete(cat);

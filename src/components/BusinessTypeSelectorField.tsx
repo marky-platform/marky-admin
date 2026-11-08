@@ -11,6 +11,7 @@ import {
 import { FieldProps } from "formik";
 import { ReactComponent as LocationIcon } from "../assets/icons/location-marker.svg";
 import { ReactComponent as DinnerIcon } from "../assets/icons/cutlery.svg";
+import { clickableProps } from "../utils/a11y";
 
 interface BusinessTypeOption {
   value: string;
@@ -50,7 +51,8 @@ const BusinessTypeSelectorField: React.FC<BusinessTypeSelectorFieldProps> = ({
         {options.map((option) => {
           const isSelected = selectedValue === option.value;
           return (
-            <Card
+            <Card {...clickableProps}
+              aria-pressed={isSelected}
               key={option.value}
               variant="outlined"
               onClick={() => handleSelect(option.value)}

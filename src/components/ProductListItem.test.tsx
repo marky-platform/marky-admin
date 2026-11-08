@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import lightTheme from "../themes/light";
@@ -27,6 +27,34 @@ const renderItem = (p: any = product) =>
       </ThemeProvider>
     </QueryClientProvider>,
   );
+
+describe("ProductListItem accesibilidad de teclado", () => {
+  const renderWith = (readOnly: boolean, onClick = jest.fn()) =>
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ThemeProvider theme={lightTheme}>
+          <ProductListItem product={product as any} readOnly={readOnly} onClick={onClick} />
+        </ThemeProvider>
+      </QueryClientProvider>,
+    );
+
+  it("readOnly + onClick: enlace enfocable activable con Enter", () => {
+    const onClick = jest.fn();
+    renderWith(true, onClick);
+    const item = screen.getByTestId("product-list-item");
+    expect(item).toHaveAttribute("role", "link");
+    expect(item).toHaveAttribute("tabindex", "0");
+    fireEvent.keyDown(item, { key: "Enter" });
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("modo admin: sin role/tabIndex (contiene el menú de acciones)", () => {
+    renderWith(false);
+    const item = screen.getByTestId("product-list-item");
+    expect(item).not.toHaveAttribute("role");
+    expect(item).not.toHaveAttribute("tabindex");
+  });
+});
 
 describe("ProductListItem sizing", () => {
   it("image container is 70px on mobile and 90px on desktop", () => {

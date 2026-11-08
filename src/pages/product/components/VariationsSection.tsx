@@ -18,6 +18,7 @@ import ImageCropModal from "../../../components/ImageCropModal";
 import Input from "../../../components/Input";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { ReactComponent as AddVariationImageIcon } from "../../../assets/icons/product-form/add-variation-picture.svg";
+import { clickableProps } from "../../../utils/a11y";
 
 // Renders a variant's image preview via the shared useMediaObjectUrl hook
 // (create/revoke the object URL only when the underlying image actually
@@ -217,7 +218,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                         <VariantImagePreview image={variant.image} />
                       ) : (
                         <Box display="flex" flexDirection="column" alignItems="center" gap={0.5}>
-                          <IconButton size="small" sx={{ p: 0 }}>
+                          <IconButton aria-label="Agregar imagen de la variación" size="small" sx={{ p: 0 }}>
                             <AddVariationImageIcon />
                           </IconButton>
                           <Typography
@@ -364,7 +365,7 @@ const VariationsSection: React.FC<VariationsSectionProps> = ({
                 </Box>
                 );
               })}
-              <Box
+              <Box {...(visibleVariants.length >= maxItems ? {} : clickableProps)}
                 sx={{
                   display: "flex",
                   alignItems: "center",

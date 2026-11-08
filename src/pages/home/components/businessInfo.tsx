@@ -12,6 +12,7 @@ import BusinessProfilePanel from "../../../components/BusinessProfilePanel";
 import ProfileActionsRow from "./ProfileActionsRow";
 import { LocationEntryValue } from "./LocationsModal";
 import { EditOutlined, PhotoCamera } from "@mui/icons-material";
+import { clickableProps } from "../../../utils/a11y";
 
 export const BusinessInfo: React.FC<{
   values: any;
@@ -93,7 +94,7 @@ export const BusinessInfo: React.FC<{
         ) : undefined
       }
       avatarSlot={
-        <Box
+        <Box {...clickableProps}
           onClick={onOpenPhotoPicker}
           sx={{
             position: "relative",

@@ -1,11 +1,11 @@
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 //import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NotFound from "./pages/NotFound";
-import PublicBusinessProfilePage from "./pages/public/PublicBusinessProfilePage";
-import PublicProductDetailPage from "./pages/public/PublicProductDetailPage";
-import LegacyPublicProductRedirect from "./pages/public/LegacyPublicProductRedirect";
+import LoadingSpinner from "./components/LoadingSpinner";
+
 import { publicRoutes } from "./routes/publicRoutes";
 import { CustomThemeProvider } from "./themes/ThemeContext";
 import { useThemeAssets } from "./themes/useThemeAssets";
@@ -17,6 +17,18 @@ import { ROUTES } from "./routes/paths";
 import { CssBaseline } from "@mui/material";
 import { LoadingProvider } from "./contexts/LoadingContext";
 import AppErrorBoundary from "./components/AppErrorBoundary";
+
+// El catálogo público va en chunks propios: un visitante anónimo no descarga
+// el panel de administración.
+const PublicBusinessProfilePage = lazy(
+  () => import("./pages/public/PublicBusinessProfilePage"),
+);
+const PublicProductDetailPage = lazy(
+  () => import("./pages/public/PublicProductDetailPage"),
+);
+const LegacyPublicProductRedirect = lazy(
+  () => import("./pages/public/LegacyPublicProductRedirect"),
+);
 
 // Container theme from the asset map (light keeps the library default).
 const ThemedToastContainer = () => {
@@ -35,53 +47,54 @@ const App = () => {
           <LoadingProvider>
             <CssBaseline enableColorScheme />
             <BrowserRouter>
-              <Routes>
-                {/* Loop over public routes */}
-                {publicRoutes.map(({ path, component: Component }) => (
-                  <Route
-                    key={path}
-                    path={path}
-                    element={
-                      isAuthenticated ? (
-                        !user?.has_configuration &&
-                        path !== ROUTES.CONFIGURATION ? (
-                          <Navigate to={`${ROUTES.CONFIGURATION}`} />
-                        ) : (
-                          <Navigate to="/home" />
-                        )
-                      ) : (
-                        <Component />
-                      )
-                    }
-                  />
-                ))}
-
-                {/* Loop over private routes */}
-
-                {protectedRoutes.map(({ path, component: Component }) => (
-                  <Route
-                    key={path}
-                    path={path}
-                    element={
-                      isAuthenticated ? (
-                        !user?.has_configuration &&
-                        path !== ROUTES.CONFIGURATION &&
-                        path !== ROUTES.LOGOUT ? (
-                          <Navigate to={`${ROUTES.CONFIGURATION}`} />
-                        ) : user?.has_configuration &&
-                          path === ROUTES.CONFIGURATION ? (
-                          <Navigate to="/home" />
+              <Suspense fallback={<LoadingSpinner fullScreen size={50} />}>
+                <Routes>
+                  {/* Loop over public routes */}
+                  {publicRoutes.map(({ path, component: Component }) => (
+                    <Route
+                      key={path}
+                      path={path}
+                      element={
+                        isAuthenticated ? (
+                          !user?.has_configuration &&
+                          path !== ROUTES.CONFIGURATION ? (
+                            <Navigate to={`${ROUTES.CONFIGURATION}`} />
+                          ) : (
+                            <Navigate to="/home" />
+                          )
                         ) : (
                           <Component />
                         )
-                      ) : (
-                        <Navigate to="/login" />
-                      )
-                    }
-                  />
-                ))}
+                      }
+                    />
+                  ))}
 
-                {/* Public (unauthenticated) business/product pages. These are
+                  {/* Loop over private routes */}
+
+                  {protectedRoutes.map(({ path, component: Component }) => (
+                    <Route
+                      key={path}
+                      path={path}
+                      element={
+                        isAuthenticated ? (
+                          !user?.has_configuration &&
+                          path !== ROUTES.CONFIGURATION &&
+                          path !== ROUTES.LOGOUT ? (
+                            <Navigate to={`${ROUTES.CONFIGURATION}`} />
+                          ) : user?.has_configuration &&
+                            path === ROUTES.CONFIGURATION ? (
+                            <Navigate to="/home" />
+                          ) : (
+                            <Component />
+                          )
+                        ) : (
+                          <Navigate to="/login" />
+                        )
+                      }
+                    />
+                  ))}
+
+                  {/* Public (unauthenticated) business/product pages. These are
                     catch-all `/:businessId` routes, so they're registered
                     outside both `.map()` loops above (which apply auth
                     redirects) and must render unconditionally in every auth
@@ -90,20 +103,21 @@ const App = () => {
                     Router ranks static segments (e.g. /login) above dynamic
                     ones regardless of order, but keeping this last guards
                     future routes. */}
-                <Route
-                  path={ROUTES.PUBLIC_PRODUCT_DETAIL}
-                  element={<LegacyPublicProductRedirect />}
-                />
-                <Route
-                  path={ROUTES.PUBLIC_PRODUCT_CANONICAL}
-                  element={<PublicProductDetailPage />}
-                />
-                <Route
-                  path={ROUTES.PUBLIC_BUSINESS}
-                  element={<PublicBusinessProfilePage />}
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                  <Route
+                    path={ROUTES.PUBLIC_PRODUCT_DETAIL}
+                    element={<LegacyPublicProductRedirect />}
+                  />
+                  <Route
+                    path={ROUTES.PUBLIC_PRODUCT_CANONICAL}
+                    element={<PublicProductDetailPage />}
+                  />
+                  <Route
+                    path={ROUTES.PUBLIC_BUSINESS}
+                    element={<PublicBusinessProfilePage />}
+                  />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
               <ThemedToastContainer />
             </BrowserRouter>
           </LoadingProvider>

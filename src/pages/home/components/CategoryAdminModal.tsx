@@ -165,7 +165,7 @@ export const CategoryAdminModal: React.FC<CategoryAdminModalProps> = ({
         >
           <Box display={"flex"} alignItems={"center"}>
             {["createEdit", "sort", "promotion"].includes(activeScreen) && (
-              <IconButton onClick={goBack} sx={{ mr: 1 }}>
+              <IconButton aria-label="Volver" onClick={goBack} sx={{ mr: 1 }}>
                 <ArrowBackIcon sx={{ color: "text.strong", fontSize: 18 }} />
               </IconButton>
             )}

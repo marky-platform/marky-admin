@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { IconButton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import SortableList from "./SortableList";
 import lightTheme from "../themes/light";
@@ -8,6 +9,12 @@ const items = [
   { id: 2, name: "Dos" },
 ];
 
+
+// Dnd-kit marca la fila/tile ordenable con role=button + aria-roledescription.
+const sortableEl = () =>
+  screen
+    .getAllByRole("button")
+    .find((el) => el.getAttribute("aria-roledescription") === "sortable")!;
 const renderList = (
   props: Partial<
     React.ComponentProps<typeof SortableList<(typeof items)[0]>>
@@ -23,6 +30,11 @@ const renderList = (
       />
     </ThemeProvider>,
   );
+
+beforeAll(() => {
+  // jsdom no implementa scrollIntoView (lo usa dnd-kit al iniciar un arrastre).
+  Element.prototype.scrollIntoView = jest.fn();
+});
 
 describe("SortableList", () => {
   it("renders the rows and starts with Guardar disabled", () => {
@@ -64,5 +76,21 @@ describe("SortableList", () => {
     fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("las teclas de un control anidado no inician un arrastre; las de la fila sí", () => {
+    renderList({
+      renderItem: (item) => (
+        <span>
+          {item.name}
+          <IconButton aria-label={`Quitar ${item.name}`} />
+        </span>
+      ),
+    });
+    const inner = screen.getByRole("button", { name: "Quitar Uno" });
+    expect(fireEvent.keyDown(inner, { key: "Enter", code: "Enter" })).toBe(true);
+    const row = sortableEl();
+    expect(row).not.toBeNull();
+    expect(fireEvent.keyDown(row, { key: "Enter", code: "Enter" })).toBe(false);
   });
 });

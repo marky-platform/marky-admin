@@ -1,6 +1,7 @@
 // DescriptionInfo.tsx
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import { clickableProps } from "../../../utils/a11y";
 
 interface DescriptionInfoProps {
   description: string;
@@ -16,7 +17,7 @@ const DescriptionInfo: React.FC<DescriptionInfoProps> = ({
   const isEmpty = !description;
   if (isEmpty && readOnly) return null;
   return (
-    <Box
+    <Box {...(readOnly ? {} : clickableProps)}
       onClick={readOnly ? undefined : onOpen}
       sx={{
         border: (theme) =>

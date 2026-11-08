@@ -218,6 +218,29 @@ describe("ProductCard 'Eliminar' menu action (Home page card)", () => {
   });
 });
 
+describe("ProductCard accesibilidad de teclado", () => {
+  it("readOnly + onClick: es un enlace enfocable y Enter lo activa", () => {
+    const onClick = jest.fn();
+    renderProductCard({ readOnly: true, onClick });
+    const card = screen.getByTestId("product-card");
+    expect(card).toHaveAttribute("role", "link");
+    expect(card).toHaveAttribute("tabindex", "0");
+    fireEvent.keyDown(card, { key: "Enter" });
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("modo admin: no hay role=link/tabIndex en la tarjeta (contiene el menú de acciones)", () => {
+    renderProductCard({ onClick: jest.fn() });
+    const card = screen.getByTestId("product-card");
+    expect(card).not.toHaveAttribute("role");
+    expect(card).not.toHaveAttribute("tabindex");
+    // El control accesible por teclado es el menú de acciones (Editar...).
+    expect(
+      screen.getByRole("button", { name: "Más acciones del producto" })
+    ).toBeInTheDocument();
+  });
+});
+
 describe("ProductCard readOnly rendering (public page)", () => {
   it("renders no actions menu when readOnly", () => {
     renderProductCard({ readOnly: true });

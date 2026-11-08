@@ -20,11 +20,6 @@ export const SelectMultiple = ({
   const { setFieldValue } = form;
   //@ts-ignore
   const handleChange = (selectedOption) => {
-    console.log(
-      "SelectMultiple handleChange ===>",
-      selectedOption.length,
-      maxSelectable
-    );
     if (selectedOption.length <= maxSelectable) {
       setFieldValue(name, selectedOption);
     }

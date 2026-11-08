@@ -1,11 +1,13 @@
-import AccountConfigurationPage from "../pages/account/AccountConfigurationPage";
-import Configuration from "../pages/Configuration";
-import Home from "../pages/home";
-import ProductDetailPage from "../pages/product/ProductDetailPage";
-import ProductFormPage from "../pages/product/ProductFormPage";
-
-import Logout from "../pages/Logout";
+import { lazy } from "react";
 import { ROUTES } from "./paths";
+
+// Carga por ruta (React.lazy): cada pantalla va en su propio chunk.
+const AccountConfigurationPage = lazy(() => import("../pages/account/AccountConfigurationPage"));
+const Configuration = lazy(() => import("../pages/Configuration"));
+const Home = lazy(() => import("../pages/home"));
+const ProductDetailPage = lazy(() => import("../pages/product/ProductDetailPage"));
+const ProductFormPage = lazy(() => import("../pages/product/ProductFormPage"));
+const Logout = lazy(() => import("../pages/Logout"));
 
 export const protectedRoutes = [
   { path: ROUTES.LOGOUT, component: Logout },

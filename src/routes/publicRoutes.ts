@@ -1,9 +1,12 @@
-import EmailVerification from "../pages/EmailVerification";
-import Login from "../pages/Login";
-import NewPassword from "../pages/NewPassword";
-import RecoverPassword from "../pages/RecoverPassword";
-import Register from "../pages/Register";
+import { lazy } from "react";
 import { ROUTES } from "./paths";
+
+// Carga por ruta (React.lazy): cada pantalla va en su propio chunk.
+const EmailVerification = lazy(() => import("../pages/EmailVerification"));
+const Login = lazy(() => import("../pages/Login"));
+const NewPassword = lazy(() => import("../pages/NewPassword"));
+const RecoverPassword = lazy(() => import("../pages/RecoverPassword"));
+const Register = lazy(() => import("../pages/Register"));
 
 export const publicRoutes = [
   { path: ROUTES.LOGIN, component: Login },

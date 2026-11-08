@@ -43,12 +43,28 @@ interface SortableRowProps {
 }
 
 const SortableRow: React.FC<SortableRowProps> = ({ id, children }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id, animateLayoutChanges: defaultAnimateLayoutChanges });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id, animateLayoutChanges: defaultAnimateLayoutChanges });
+
+  const setRefs = React.useCallback(
+    (node: HTMLElement | null) => {
+      setNodeRef(node);
+      setActivatorNodeRef(node);
+    },
+    [setNodeRef, setActivatorNodeRef],
+  );
 
   return (
     <Box
-      ref={setNodeRef}
+      // La fila es el nodo activador: el KeyboardSensor solo inicia un arrastre
+      // con teclas pulsadas sobre ella misma, no sobre controles anidados.
+      ref={setRefs}
       {...attributes}
       {...listeners}
       sx={{
