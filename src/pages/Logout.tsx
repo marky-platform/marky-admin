@@ -1,7 +1,8 @@
 // src/pages/Logout.tsx
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSessionStore } from "../stores/sessionStore";
+import { getLatestRefreshToken, useSessionStore } from "../stores/sessionStore";
+import { logout } from "../services/authService";
 import { resetSessionExpiredNotice } from "../services/axiosConfig";
 
 const Logout: React.FC = () => {
@@ -9,13 +10,16 @@ const Logout: React.FC = () => {
   const clearSession = useSessionStore((state: any) => state.clearSession);
 
   useEffect(() => {
-    // Clear the session from the store
+    // Se captura el refresh token ANTES de limpiar la sesión local.
+    const refreshToken = getLatestRefreshToken();
     clearSession();
     // Permite que una futura expiración real vuelva a notificar.
     resetSessionExpiredNotice();
-    // Redirect to the login page (or wherever you prefer)
     navigate("/login");
-  }, [clearSession, navigate]);
+    // Revocación best effort en el backend, sin esperar: logout() nunca lanza.
+    if (refreshToken) void logout(refreshToken);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 };

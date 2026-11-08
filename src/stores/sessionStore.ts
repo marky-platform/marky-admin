@@ -70,3 +70,23 @@ export const useSessionStore = create<SessionState>()(
     }
   )
 );
+
+/**
+ * Lee el refresh token directamente del localStorage persistido (clave
+ * `session-storage`). Con ROTATE_REFRESH_TOKENS + BLACKLIST_AFTER_ROTATION,
+ * otra pestaña puede haber rotado el token: el valor en memoria de esta
+ * pestaña quedaría obsoleto (ya en la blacklist). Si no hay nada persistido
+ * (o falla la lectura) se cae al valor en memoria.
+ */
+export function getLatestRefreshToken(): string | null {
+  try {
+    const raw = localStorage.getItem("session-storage");
+    if (raw) {
+      const persisted = JSON.parse(raw)?.state?.refreshToken;
+      if (typeof persisted === "string" && persisted) return persisted;
+    }
+  } catch {
+    // localStorage inaccesible o JSON corrupto: usar el valor en memoria.
+  }
+  return useSessionStore.getState().refreshToken || null;
+}

@@ -1,6 +1,7 @@
 // src/services/authService.ts
 
-import { useSessionStore } from "../stores/sessionStore";
+import axios from "axios";
+import { getLatestRefreshToken, useSessionStore } from "../stores/sessionStore";
 import api from "./axiosConfig";
 
 const baseURL = `${process.env.REACT_APP_API_URL}/users`;
@@ -143,4 +144,27 @@ export async function changePassword(payload: ChangePasswordPayload) {
     payload
   );
   return response.data;
+}
+
+/**
+ * Revoca el refresh token en el backend (blacklist). Es "best effort": nunca
+ * lanza, para que el cierre de sesión local ocurra aunque falle la red.
+ * Usa axios plano (sin interceptores) para no disparar un refresh si el
+ * access token ya expiró.
+ */
+export async function logout(
+  // Por defecto, el token vivo del storage persistido (otra pestaña pudo rotarlo).
+  // Quien limpia la sesión antes de llamar debe capturarlo y pasarlo aquí.
+  refreshToken: string | null = getLatestRefreshToken()
+): Promise<void> {
+  if (!refreshToken) return;
+  try {
+    await axios.post(
+      `${baseURL}/logout/`,
+      { refresh: refreshToken },
+      { timeout: 5000 }
+    );
+  } catch {
+    // Ignorado a propósito: la sesión local se limpia igualmente.
+  }
 }
