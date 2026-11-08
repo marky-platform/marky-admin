@@ -47,10 +47,9 @@ export async function getPublicCatalog(
 export async function getPublicCategories(
   businessId: string,
 ): Promise<PaginatedResponse<ProductCategory>> {
-  const response = await publicApi.get(
-    `${baseURL}/${businessId}/categories/`,
-    { params: { page_size: 100 } },
-  );
+  // Las categorías no se paginan en el backend (tope por negocio), así que no
+  // hay `page_size` que enviar; la respuesta conserva el sobre `results`.
+  const response = await publicApi.get(`${baseURL}/${businessId}/categories/`);
   return response.data;
 }
 

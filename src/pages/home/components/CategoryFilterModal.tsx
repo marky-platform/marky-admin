@@ -50,9 +50,7 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
     isLoading,
     error,
   } = useProductCategories(
-    {
-      page_size: 100,
-    },
+    undefined,
     {
       enabled: open && !injectedCategories,
     }

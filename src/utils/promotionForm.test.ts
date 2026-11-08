@@ -114,3 +114,9 @@ describe("buildProductPromotionFields", () => {
     });
   });
 });
+
+describe("toIsoDateTime offset explícito (F-29)", () => {
+  it("emite un instante con zona (Z), nunca un datetime naive", () => {
+    expect(toIsoDateTime("2026-08-15", "21:30")).toMatch(/Z$/);
+  });
+});
