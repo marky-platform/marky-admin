@@ -89,6 +89,48 @@ describe("mapProductGridItem", () => {
   });
 });
 
+describe("thumbnails (F-24)", () => {
+  it("maps image_thumbnail to imageThumbnail on grid items", () => {
+    const r = mapProductGridItem({
+      id: 1,
+      name: "P",
+      price: 1,
+      image: "full.jpg",
+      image_thumbnail: "thumb.webp",
+    });
+    expect(r.imageThumbnail).toBe("thumb.webp");
+    expect(r.image).toBe("full.jpg");
+  });
+
+  it("leaves imageThumbnail undefined when absent or null (fallback to image)", () => {
+    expect(mapProductGridItem({ id: 1, name: "P", price: 1, image: "a" }).imageThumbnail).toBeUndefined();
+    expect(
+      mapProductGridItem({ id: 1, name: "P", price: 1, image_thumbnail: null }).imageThumbnail,
+    ).toBeUndefined();
+  });
+
+  it("keeps an already-mapped imageThumbnail when re-mapping", () => {
+    expect(
+      mapProductGridItem({ id: 1, name: "P", price: 1, imageThumbnail: "t.webp" }).imageThumbnail,
+    ).toBe("t.webp");
+  });
+
+  it("maps media and variant thumbnails in mapProduct (null -> undefined)", () => {
+    const r = mapProduct({
+      id: 1,
+      name: "P",
+      media: [
+        { id: 1, file: "a.jpg", thumbnail: "a.webp", media_type: "image" },
+        { id: 2, file: "b.jpg", thumbnail: null, media_type: "image" },
+      ],
+      variants: [{ id: 1, name: "V", price: 1, image: "v.jpg", thumbnail: "v.webp" }],
+    }) as any;
+    expect(r.media[0].thumbnail).toBe("a.webp");
+    expect(r.media[1].thumbnail).toBeUndefined();
+    expect(r.variants[0].thumbnail).toBe("v.webp");
+  });
+});
+
 describe("mapProduct", () => {
   it("maps model_3d to model3d without leaking the snake_case key", () => {
     const result = mapProduct({
@@ -324,5 +366,45 @@ describe("slug mapping", () => {
       products: [{ id: 1, name: "Pizza", slug: "pizza" }],
     });
     expect(result.products[0].categorySlug).toBe("sin-categoria");
+  });
+});
+
+describe("contrato con ProductLiteSerializer (F-33)", () => {
+  // Payload con las claves reales del backend: isFavorite/isRecommended vienen
+  // en camelCase (el fixture histórico usaba is_recommended/is_favorite).
+  const backendItem = {
+    id: 7,
+    name: "Pizza",
+    slug: "pizza",
+    description: "d",
+    price: "50000.00",
+    isFavorite: true,
+    isRecommended: false,
+    image: "http://x/pizza.png",
+    image_thumbnail: "http://x/pizza-thumb.webp",
+    multibuy_option: null,
+    discount_percentage: "0.00",
+    promotion_starts_at: null,
+    promotion_ends_at: null,
+    promotion_status: "inactive",
+    is_available: true,
+    primary_price: "PYG 50.000",
+    secondary_price: null,
+    primary_price_with_discount: null,
+    secondary_price_with_discount: null,
+  };
+
+  it("mapea isFavorite/isRecommended reales y la miniatura", () => {
+    const result = mapProductGridItem(backendItem, "pizzas");
+    expect(result).toMatchObject({
+      id: 7,
+      isFavorite: true,
+      isRecommended: false,
+      imageThumbnail: "http://x/pizza-thumb.webp",
+      primaryPrice: "PYG 50.000",
+      promotionStatus: "inactive",
+      is_available: true,
+      categorySlug: "pizzas",
+    });
   });
 });

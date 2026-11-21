@@ -25,13 +25,16 @@ export const sanitizeDiscountInput = (raw: string): string => {
   );
 };
 
-/** Local date+time inputs -> ISO instant (UTC), or null if either is empty. */
+/** Local date+time inputs -> ISO instant (UTC), or null if either is empty or the result is not a valid date. */
 export const toIsoDateTime = (
   date: string | undefined,
   time: string | undefined,
 ): string | null => {
   if (!date || !time) return null;
-  return new Date(`${date}T${time}`).toISOString();
+  const d = new Date(`${date}T${time}`);
+  // Fecha/hora inválida (p. ej. "2026-13-45"): Date#toISOString lanzaría RangeError.
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString();
 };
 
 /**

@@ -6,6 +6,7 @@ import { ChannelKey } from "../../../../types/channel";
 import { CHANNEL_META } from "./channels.constants";
 import { ChannelsFormValues } from "./ChannelWizardModal";
 import ChannelEntryRow from "./ChannelEntryRow";
+import { clickableProps } from "../../../../utils/a11y";
 
 interface ChannelDetailStepProps {
   channel: ChannelKey;
@@ -69,7 +70,7 @@ const ChannelDetailStep: React.FC<ChannelDetailStepProps> = ({ channel }) => {
 
           {meta.multiEntry && (
             <>
-              <Box
+              <Box {...(atLimit ? {} : clickableProps)}
                 sx={{
                   display: "flex",
                   alignItems: "center",

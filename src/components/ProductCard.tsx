@@ -18,6 +18,7 @@ import { usePromotionCountdown } from "../hooks/usePromotionCountdown";
 import ProductPromotionBadge from "./ProductPromotionBadge";
 import ProductStopperTag from "./ProductStopperTag";
 import ProductActionsMenu, { ProductCategoryRef } from "./ProductActionsMenu";
+import { clickableProps } from "../utils/a11y";
 
 interface ProductCardProps {
   product: ProductGridItem;
@@ -31,6 +32,8 @@ interface ProductCardProps {
   ) => void;
   /** Public/read-only rendering: hides the hover admin actions menu. */
   readOnly?: boolean;
+  /** false cuando un contenedor ya aporta foco/teclado (p. ej. RelatedProducts). */
+  keyboardActivation?: boolean;
 }
 
 const LineClamp = styled(Typography)({
@@ -130,6 +133,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onDeleteClick,
   onMoveClick,
   readOnly = false,
+  keyboardActivation = true,
 }) => {
   const theme = useTheme();
   // The description tooltip is a desktop-only affordance (mouse hover); on
@@ -185,7 +189,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <Card
+    // a11y: solo la tarjeta pública (readOnly) que navega es un enlace
+    // enfocable. En modo admin contiene controles interactivos (menú de
+    // acciones) y role/tabIndex en el contenedor sería un "interactivo
+    // anidado"; ahí la tarjeta sigue siendo clickeable con mouse y el control
+    // accesible por teclado es el menú "Más acciones del producto" (Editar...).
+    <Card {...(onClick && readOnly && keyboardActivation ? { ...clickableProps, role: "link" } : {})}
       data-testid="product-card"
       onClick={(event: React.MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
@@ -205,7 +214,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         >
           <CardMedia
             component="img"
-            image={product.image || defaultImage}
+            image={product.imageThumbnail || product.image || defaultImage}
             alt={product.name}
             loading="lazy"
             sx={{

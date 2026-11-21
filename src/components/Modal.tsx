@@ -100,7 +100,7 @@ const CustomModalContent: React.FC<CustomModalProps> = ({
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {onBack && (
-              <IconButton onClick={onBack} sx={{ marginLeft: 1 }}>
+              <IconButton aria-label="Volver" onClick={onBack} sx={{ marginLeft: 1 }}>
                 <ArrowBackIcon />
               </IconButton>
             )}
@@ -114,7 +114,7 @@ const CustomModalContent: React.FC<CustomModalProps> = ({
             </Typography>
           </Box>
           {showCloseButton && (
-            <IconButton
+            <IconButton aria-label="Cerrar"
               onClick={onClose}
               sx={{
                 backgroundColor: theme.palette.grey[400],

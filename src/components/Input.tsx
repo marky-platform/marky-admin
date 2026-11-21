@@ -1,5 +1,5 @@
 // Input.tsx
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
@@ -69,6 +69,8 @@ const Input: React.FC<InputProps> = ({
   helperTextColor,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  // Asocia el <label> con el <input> (a11y): sin esto el campo queda sin nombre accesible.
+  const inputId = useId();
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -133,7 +135,7 @@ const Input: React.FC<InputProps> = ({
             : undefined
         }
       >
-        <FormLabel>
+        <FormLabel htmlFor={inputId}>
           {label} {required && <span style={{ color: "red" }}>*</span>}
         </FormLabel>
         {maxLength !== undefined && counterPosition === "label" && (
@@ -145,6 +147,7 @@ const Input: React.FC<InputProps> = ({
         )}
       </Box>
       <TextField
+        id={inputId}
         name={inputName}
         value={currentValue}
         onChange={currentOnChange}

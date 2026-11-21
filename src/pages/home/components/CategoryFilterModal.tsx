@@ -50,9 +50,7 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
     isLoading,
     error,
   } = useProductCategories(
-    {
-      page_size: 100,
-    },
+    undefined,
     {
       enabled: open && !injectedCategories,
     }
@@ -209,7 +207,7 @@ const CategoryFilterModal: React.FC<CategoryFilterModalProps> = ({
                             <Typography variant="body2">
                               {cat.name}
                             </Typography>
-                            <IconButton
+                            <IconButton aria-label={`Quitar ${cat.name}`}
                               onClick={() =>
                                 setFieldValue(
                                   "selectedCategories",

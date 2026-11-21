@@ -73,7 +73,7 @@ const ProductFormHeader: React.FC<ProductFormHeaderProps> = ({
             flexShrink: 0,
           }}
         >
-          <IconButton onClick={() => (onBack ? onBack() : navigate(-1))}>
+          <IconButton aria-label="Volver" onClick={() => (onBack ? onBack() : navigate(-1))}>
             <ArrowBack />
           </IconButton>
         </Box>
@@ -126,7 +126,7 @@ const ProductFormHeader: React.FC<ProductFormHeaderProps> = ({
           label="Disponible"
           sx={{ mr: { xs: 0 } }}
         />
-        <IconButton
+        <IconButton aria-label="Más acciones del producto"
           onClick={handleMenuClick}
           sx={{
             borderRadius: 2,

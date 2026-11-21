@@ -108,7 +108,7 @@ function ProductActionsMenu<P extends ProductActionsMenuProduct>({
 
   return (
     <>
-      <IconButton
+      <IconButton aria-label="Más acciones del producto"
         onClick={(e) => {
           e.stopPropagation();
           handleOpen(e);

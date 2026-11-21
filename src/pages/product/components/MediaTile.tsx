@@ -8,6 +8,7 @@ import { ReactComponent as AddImageTileIcon } from "../../../assets/icons/produc
 import { ReactComponent as AddVideoTileIcon } from "../../../assets/icons/product-form/add-video-tile.svg";
 import { useMediaObjectUrl } from "../../../hooks/useMediaObjectUrl";
 import { VideoThumbnail } from "./VideoThumbnail";
+import { clickableProps } from "../../../utils/a11y";
 
 interface MediaTileProps {
   // Stable id used for drag-reordering (only meaningful when `sortable`).
@@ -38,19 +39,32 @@ const MediaTile: React.FC<MediaTileProps> = ({
   onDelete,
   onCrop,
 }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id, disabled: !sortable });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id, disabled: !sortable });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+  const setRefs = React.useCallback(
+    (node: HTMLElement | null) => {
+      setNodeRef(node);
+      setActivatorNodeRef(node);
+    },
+    [setNodeRef, setActivatorNodeRef],
+  );
   const url = useMediaObjectUrl(file);
 
   if (!filled) {
     const isVideo = kind === "video";
     return (
       <Box sx={{ flex: 1, minWidth: { xs: 0, sm: 90 }, maxWidth: "100%" }}>
-        <Box
+        <Box {...clickableProps}
           onClick={onAdd}
           sx={{
             aspectRatio: "1 / 1",
@@ -101,13 +115,18 @@ const MediaTile: React.FC<MediaTileProps> = ({
 
   return (
     <Box
-      ref={sortable ? setNodeRef : undefined}
+      // El tile es el nodo activador: el KeyboardSensor solo inicia un
+      // arrastre si la tecla se pulsa sobre él (event.target === activador),
+      // así Enter/Espacio sobre Recortar/Eliminar siguen siendo de esos botones.
+      ref={sortable ? setRefs : undefined}
       style={sortable ? style : undefined}
       {...(sortable ? attributes : {})}
+      // Los listeners (puntero y teclado) van en el mismo elemento enfocable
+      // que `attributes` (tabIndex): si no, el teclado nunca llega al sensor.
+      {...(sortable ? listeners : {})}
       sx={{ flex: 1, minWidth: { xs: 0, sm: 90 }, maxWidth: "100%", position: "relative" }}
     >
       <Box
-        {...(sortable ? listeners : {})}
         sx={{
           position: "relative",
           aspectRatio: "1 / 1",
@@ -141,7 +160,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
           }}
         >
           {kind === "image" && onCrop && (
-            <IconButton
+            <IconButton aria-label="Recortar imagen"
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
@@ -153,7 +172,7 @@ const MediaTile: React.FC<MediaTileProps> = ({
             </IconButton>
           )}
           {onDelete && (
-            <IconButton
+            <IconButton aria-label="Eliminar archivo"
               size="small"
               onClick={(e) => {
                 e.stopPropagation();

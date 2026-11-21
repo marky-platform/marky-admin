@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useSessionStore } from "../stores/sessionStore";
+import { getLatestRefreshToken, useSessionStore } from "../stores/sessionStore";
 import { mapAxiosError } from "./errorMapper";
 import { ShowNotification } from "../utils/utils";
 
@@ -54,20 +54,39 @@ function notifySessionExpired() {
   });
 }
 
-async function refreshAccessToken(): Promise<string> {
-  const { refreshToken, user, setSession } = useSessionStore.getState();
+function postRefresh(refresh: string | null) {
+  return axios.post(`${process.env.REACT_APP_API_URL}/users/token/refresh/`, {
+    refresh,
+  });
+}
 
-  const { data } = await axios.post(
-    `${process.env.REACT_APP_API_URL}/users/token/refresh/`,
-    {
-      refresh: refreshToken,
+async function refreshAccessToken(): Promise<string> {
+  const { user, setSession } = useSessionStore.getState();
+
+  // Se lee del localStorage y no del store en memoria: otra pestaña pudo
+  // haber rotado el token (el que tenemos en memoria ya estaría en la
+  // blacklist).
+  const sentToken = getLatestRefreshToken();
+
+  let data;
+  try {
+    ({ data } = await postRefresh(sentToken));
+  } catch (error: any) {
+    // Carrera entre pestañas: otra pestaña rotó el token mientras nuestra
+    // solicitud estaba en vuelo. Reintentamos UNA vez con el persistido.
+    const latest = getLatestRefreshToken();
+    if (error?.response?.status === 401 && latest && latest !== sentToken) {
+      ({ data } = await postRefresh(latest));
+    } else {
+      throw error;
     }
-  );
+  }
 
   // Actualiza los tokens en el store preservando el usuario actual.
-  // El backend tiene ROTATE_REFRESH_TOKENS activado: cada refresh
-  // devuelve un refresh token nuevo y el usado queda inválido, así
-  // que hay que guardar data.refresh (no seguir reusando el viejo).
+  // El backend tiene ROTATE_REFRESH_TOKENS y BLACKLIST_AFTER_ROTATION
+  // activados: cada refresh devuelve un refresh token nuevo y el usado
+  // queda en la blacklist (inválido), así que hay que guardar
+  // data.refresh (no seguir reusando el viejo).
   setSession({
     accessToken: data.access,
     refreshToken: data.refresh,
@@ -92,7 +111,8 @@ api.interceptors.response.use(
       !isAuthEndpoint
     ) {
       originalRequest._retry = true;
-      const { refreshToken, clearSession } = useSessionStore.getState();
+      const { clearSession } = useSessionStore.getState();
+      const refreshToken = getLatestRefreshToken();
 
       if (!refreshToken) {
         // No hay refresh token disponible: cerrar sesión. NO usamos
@@ -121,10 +141,16 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (refreshError) {
           console.error("Error al refrescar el token:", refreshError);
-          // Mismo motivo que arriba: sin window.location.href. La
-          // redirección la maneja App.tsx reactivamente.
-          clearSession(); // Limpia la sesión si el refresh falla
-          notifySessionExpired();
+          // Solo un 400/401 del refresh significa que el token es inválido
+          // o expiró. Un 429, un 5xx o un error de red son transitorios:
+          // mantenemos la sesión y devolvemos el error original.
+          const refreshStatus = (refreshError as any)?.response?.status;
+          if (refreshStatus === 400 || refreshStatus === 401) {
+            // Mismo motivo que arriba: sin window.location.href. La
+            // redirección la maneja App.tsx reactivamente.
+            clearSession();
+            notifySessionExpired();
+          }
         }
       }
     }

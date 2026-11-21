@@ -151,8 +151,6 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
       const hasPromotion =
         category.hasOffer || (category.discountPercentage ?? 0) > 0;
 
-      console.log("Promotion category hasPromotion", hasPromotion);
-
       if (hasPromotion) {
         setFieldValue("isPromotionActive", true);
 
@@ -217,8 +215,6 @@ export const Promotion: React.FC<PromotionProps> = ({ category, onSubmit }) => {
     delete dataToSubmit.promotionTimeStart;
     delete dataToSubmit.promotionDateEnd;
     delete dataToSubmit.promotionTimeEnd;
-
-    console.log("Final data:", dataToSubmit);
 
     let promotionPayload;
 

@@ -33,7 +33,6 @@ import BusinessTypeSelectorField from "../../components/BusinessTypeSelectorFiel
 import CategorySelectionList from "../../components/CategorySelectionList";
 import FormikPhoneInput from "../../components/FormikPhoneInput";
 import { Header } from "../../components/Header";
-import Input from "../../components/Input";
 import CustomModal from "../../components/Modal";
 import NumberInput from "../../components/NumberInput";
 import { useBusinessAccountInfo } from "../../hooks/useBusinessAccountInfo";
@@ -46,6 +45,7 @@ import { useHomePageData } from "../../hooks/useHomePageData";
 import BusinessAvatar from "../home/components/BusinessAvatar";
 import { BUSINESS_CATEGORY_ICON_MAP } from "../../utils/businessCategoryIcons";
 import { displayFormikFormErrors } from "../../utils/utils";
+import { clickableProps } from "../../utils/a11y";
 
 const SettingsCard: React.FC<{
   title: string;
@@ -70,7 +70,7 @@ const SettingsCard: React.FC<{
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h6">{title}</Typography>
         {onEdit && (
-          <IconButton
+          <IconButton aria-label={`Editar ${title}`}
             size="small"
             onClick={onEdit}
             sx={{ bgcolor: "surface.iconButton", borderRadius: "6px", p: 2 }}
@@ -289,7 +289,7 @@ const AccountConfigurationPage: React.FC = () => {
           ).map(({ key, label }) => {
             const active = selectedSection === key;
             return (
-              <Box
+              <Box {...clickableProps}
                 key={key}
                 onClick={() => setSelectedSection(key)}
                 sx={{
@@ -539,7 +539,7 @@ const AccountConfigurationPage: React.FC = () => {
                           borderRadius: 1,
                         }}
                       >{`${data?.exchange_rate} ${exchangeToCode ?? ""}`}</Box>
-                      <IconButton
+                      <IconButton aria-label="Tipo de cambio"
                         sx={{ bgcolor: "surface.iconButton", borderRadius: "6px", p: 2 }}
                       >
                         <ExchangeIcon />
@@ -650,17 +650,12 @@ const AccountConfigurationPage: React.FC = () => {
         <Formik
           enableReinitialize
           initialValues={{
-            email: data?.email ?? "",
             phone_number: data?.phone_number ?? "",
           }}
-          validationSchema={Yup.object({
-            email: Yup.string().email("Email inválido").required("Requerido"),
-          })}
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
             try {
               setSubmitting(true);
               await updateAccountInfo.mutateAsync({
-                email: values.email,
                 phone_number: values.phone_number,
               });
               setOpenModal(null);
@@ -673,7 +668,9 @@ const AccountConfigurationPage: React.FC = () => {
         >
           {({ isSubmitting }) => (
             <Form>
-              <Field name="email" component={Input} label="Email" />
+              <Box mb={2}>
+                <FieldDisplay label="Email" value={data?.email} />
+              </Box>
               <Field
                 name="phone_number"
                 component={FormikPhoneInput}

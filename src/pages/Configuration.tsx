@@ -302,19 +302,12 @@ const Configuration = () => {
   useEffect(() => {
     //@ts-ignore
     const primaryCurrency = formikRef.current?.values?.primary_currency[0];
-    console.log("primaryCurrency", primaryCurrency);
     if (primaryCurrency && currencies)
       setLocalSecondaryCurrencies(
         currencies.filter((curr: any) => curr.id !== primaryCurrency.id),
       );
     //@ts-ignore
   }, [formikRef.current?.values?.primary_currency, currencies]);
-
-  useEffect(() => {
-    //@ts-ignore
-    console.log("formikRef.current?.values?", formikRef.current?.values);
-    //@ts-ignore
-  }, [formikRef.current?.values]);
 
   useEffect(() => {
     //@ts-ignore
@@ -1007,7 +1000,6 @@ const Configuration = () => {
         showCloseButton
         primaryActionParams={selectedCountries}
         primaryAction={(selectedCountries) => {
-          console.log("selectedCountries ====", selectedCountries);
           //@ts-ignore
           formikRef.current?.setFieldValue("country", selectedCountries);
           //@ts-ignore
@@ -1057,7 +1049,6 @@ const Configuration = () => {
         showCloseButton
         primaryActionParams={selectedCities}
         primaryAction={(selectedCities) => {
-          console.log("selectedCities ====", selectedCities);
           //@ts-ignore
           formikRef.current?.setFieldValue("city", selectedCities);
           setOpenCitiesModal(false);
@@ -1099,10 +1090,6 @@ const Configuration = () => {
         showCloseButton
         primaryActionParams={selectedPrimaryCurrencies}
         primaryAction={(selectedPrimaryCurrencies) => {
-          console.log(
-            "selectedPrimaryCurrencies ====",
-            selectedPrimaryCurrencies,
-          );
           //@ts-ignore
           formikRef.current?.setFieldValue(
             "primary_currency",
@@ -1149,10 +1136,6 @@ const Configuration = () => {
         showCloseButton
         primaryActionParams={selectedSecondaryCurrencies}
         primaryAction={(selectedSecondaryCurrencies) => {
-          console.log(
-            "selectedSecondaryCurrencies ====",
-            selectedSecondaryCurrencies,
-          );
           //@ts-ignore
           formikRef.current?.setFieldValue(
             "secondary_currency",

@@ -6,6 +6,7 @@ import { FormikErrors } from "formik";
 import React from "react";
 import { Product } from "../../../types/product";
 import { getSectionDisplayName, getSectionNavState } from "./sectionNavState";
+import { clickableProps } from "../../../utils/a11y";
 
 export interface CompleteYourProductItem {
   name: string;
@@ -86,7 +87,7 @@ const CompleteYourProductList: React.FC<CompleteYourProductListProps> = ({
             hasAttemptedPublish,
           );
           return (
-            <Box
+            <Box {...clickableProps}
               key={section.name}
               onClick={() => onSelect(section.name)}
               sx={{

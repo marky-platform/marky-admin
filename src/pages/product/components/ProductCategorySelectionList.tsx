@@ -6,6 +6,7 @@ import { ReactComponent as ParaguayFlagIcon } from "../../../assets/icons/flag-p
 import { ReactComponent as VenezuelaFlagIcon } from "../../../assets/icons/flag-venezuela.svg";
 
 import { Category } from "../../../types/category";
+import { clickableProps } from "../../../utils/a11y";
 
 interface CategorySelectionListProps {
   /** Lista de categorías disponibles */
@@ -59,7 +60,8 @@ const ProductCategorySelectionList: React.FC<CategorySelectionListProps> = ({
         {categories.map((cat) => {
           const isSelected = selected.some((item) => item.id === cat.id);
           return (
-            <Box
+            <Box {...clickableProps}
+              aria-pressed={isSelected}
               key={cat.id}
               onClick={() => toggleCategory(cat)}
               sx={{

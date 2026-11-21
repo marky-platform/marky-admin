@@ -228,7 +228,7 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
               marky.one/{businessId || "..."}
             </Typography>
           </Box>
-          <IconButton onClick={handleCopyLink} size="small">
+          <IconButton aria-label="Copiar enlace" onClick={handleCopyLink} size="small">
             <ContentCopyIcon fontSize="small" />
           </IconButton>
         </Box>

@@ -8,6 +8,7 @@ import { ReactComponent as LocationIcon } from "../../../assets/icons/location.s
 import EntryListPopup, { EntryListPopupItem } from "./EntryListPopup";
 import { LocationEntryValue } from "./LocationsModal";
 import type { AnalyticsActionType } from "../../../analytics/types";
+import { clickableProps } from "../../../utils/a11y";
 
 interface SocialMediaInfoProps {
   socialMedia: ChannelsByKey;
@@ -129,7 +130,7 @@ const SocialMediaInfo: React.FC<SocialMediaInfoProps> = ({
   return (
     <>
       {isEmpty ? (
-        <Box
+        <Box {...clickableProps}
           onClick={onEmptyState}
           sx={{
             border: (theme) => `1px dashed ${theme.palette.border.dashed}`,

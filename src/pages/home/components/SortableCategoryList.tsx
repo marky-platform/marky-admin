@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   DndContext,
   closestCenter,
+  KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
@@ -11,6 +12,7 @@ import {
 import {
   SortableContext,
   arrayMove,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Box, Button, Typography } from "@mui/material";
@@ -42,7 +44,11 @@ const SortableCategoryList: React.FC<SortableCategoryListProps> = ({
   isEditable,
 }) => {
   const [localCategories, setLocalCategories] = useState(categories);
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    // Reordenar con teclado: Espacio/Enter levanta, flechas mueven.
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
   const [hasChanges, setHasChanges] = useState(false);
 
   /**

@@ -14,6 +14,7 @@ import NumberInput from "../../../components/NumberInput";
 import Input from "../../../components/Input";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { useBusinessAccountInfo } from "../../../hooks/useBusinessAccountInfo";
+import { clickableProps } from "../../../utils/a11y";
 
 interface ExtrasSectionProps extends FormikProps<any> {
   maxItems?: number;
@@ -154,7 +155,7 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                       alignSelf: { xs: "flex-end", md: "auto" },
                     }}
                   >
-                    <IconButton
+                    <IconButton aria-label="Eliminar extra"
                       onClick={() => {
                         // Persisted rows (real DB id) are soft-deleted so the
                         // submit handler can send a { id, _delete: true }
@@ -172,7 +173,7 @@ const ExtrasSection: React.FC<ExtrasSectionProps> = ({
                   </Box>
                 </Box>
               ))}
-              <Box
+              <Box {...(visibleAddons.length >= maxItems ? {} : clickableProps)}
                 sx={{
                   display: "flex",
                   alignItems: "center",

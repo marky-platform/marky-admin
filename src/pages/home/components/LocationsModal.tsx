@@ -20,6 +20,7 @@ import Input from "../../../components/Input";
 import XButton from "../../../components/XButton";
 import InsetSurface from "../../../themes/InsetSurface";
 import BackButton from "../../../components/BackButton";
+import { clickableProps } from "../../../utils/a11y";
 
 const MAX_LOCATIONS = 4;
 const NAME_MAX_LENGTH = 60;
@@ -261,7 +262,7 @@ const LocationsModal = ({
                         </Typography>
                       )}
 
-                      <Box
+                      <Box {...(atLimit ? {} : clickableProps)}
                         sx={{
                           display: "flex",
                           alignItems: "center",

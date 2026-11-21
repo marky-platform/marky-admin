@@ -1,4 +1,7 @@
 import * as Yup from "yup";
+import { passwordSchema } from "./Register";
+
+jest.mock("../services/authService", () => ({ register: jest.fn() }));
 
 const isRequiredMessage = "Este campo es requerido";
 
@@ -20,5 +23,19 @@ describe("businessName validation (Register)", () => {
 
   it("rejects an empty value", async () => {
     await expect(businessNameSchema.isValid("")).resolves.toBe(false);
+  });
+});
+
+describe("password validation (Register)", () => {
+  it("rejects fewer than 8 characters", async () => {
+    await expect(passwordSchema.isValid("Ab1!")).resolves.toBe(false);
+  });
+
+  it("rejects an all-numeric password", async () => {
+    await expect(passwordSchema.isValid("12345678")).resolves.toBe(false);
+  });
+
+  it("accepts a password with letters and at least 8 characters", async () => {
+    await expect(passwordSchema.isValid("abc12345")).resolves.toBe(true);
   });
 });

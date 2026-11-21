@@ -4,6 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/paths";
 import { useThemeAssets } from "../themes/useThemeAssets";
+import { clickableProps } from "../utils/a11y";
 
 interface AuthMobileHeaderProps {
   // Disable on pages reached only once the user is already authenticated
@@ -30,7 +31,7 @@ const AuthMobileHeader: React.FC<AuthMobileHeaderProps> = ({
       }}
       justifyContent="center"
     >
-      <Box
+      <Box {...(disableLoginLink ? {} : clickableProps)}
         onClick={disableLoginLink ? undefined : () => navigate(ROUTES.LOGIN)}
         sx={{
           display: "flex",

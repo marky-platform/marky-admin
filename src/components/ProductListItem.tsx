@@ -7,6 +7,7 @@ import { ProductGridItem } from "../types/product";
 import { formatPrice } from "../utils/format";
 import ProductActionsMenu, { ProductCategoryRef } from "./ProductActionsMenu";
 import ProductStopperTag from "./ProductStopperTag";
+import { clickableProps } from "../utils/a11y";
 
 interface ProductListItemProps {
   product: ProductGridItem;
@@ -93,7 +94,10 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
   const hasMeta = !!countdown || !!stopper;
 
   return (
-    <Box
+    // a11y: ver ProductCard. Solo en modo público (readOnly) la fila es un
+    // enlace enfocable; en admin contiene el menú de acciones y el teclado
+    // pasa por ese control, no por el contenedor.
+    <Box {...(onClick && readOnly ? { ...clickableProps, role: "link" } : {})}
       data-testid="product-list-item"
       onClick={onClick}
       sx={{
@@ -124,7 +128,7 @@ const ProductListItem: React.FC<ProductListItemProps> = ({
       >
         <Box
           component="img"
-          src={product.image || defaultImage}
+          src={product.imageThumbnail || product.image || defaultImage}
           alt={product.name}
           loading="lazy"
           sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}

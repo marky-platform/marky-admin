@@ -1,5 +1,5 @@
 import publicApi from "./publicAxios";
-import { getPublicProductBySlug } from "./publicService";
+import { getPublicCategories, getPublicProductBySlug } from "./publicService";
 
 jest.mock("./publicAxios", () => ({
   __esModule: true,
@@ -28,5 +28,20 @@ describe("getPublicProductBySlug", () => {
     );
     expect(product.slug).toBe("torta");
     expect(product.categorySlug).toBe("postres");
+  });
+});
+
+describe("getPublicCategories", () => {
+  it("no envía page_size (las categorías no se paginan) y conserva el sobre results", async () => {
+    mockedGet.mockResolvedValue({
+      data: { count: 2, next: null, previous: null, results: [{ id: 1 }, { id: 2 }] },
+    });
+
+    const data = await getPublicCategories("dulce");
+
+    expect(mockedGet).toHaveBeenCalledWith(
+      expect.stringMatching(/\/public\/business\/dulce\/categories\/$/),
+    );
+    expect(data.results).toHaveLength(2);
   });
 });

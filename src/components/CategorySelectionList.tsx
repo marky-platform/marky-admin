@@ -4,6 +4,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useTheme } from "@mui/material/styles";
 import { ReactComponent as ParaguayFlagIcon } from "../assets/icons/flag-paraguay.svg";
 import { ReactComponent as VenezuelaFlagIcon } from "../assets/icons/flag-venezuela.svg";
+import { clickableProps } from "../utils/a11y";
 
 export interface Category {
   id: string | number;
@@ -66,7 +67,8 @@ const CategorySelectionList: React.FC<CategorySelectionListProps> = ({
         {categories.map((cat) => {
           const isSelected = selected.some((item) => item.id === cat.id);
           return (
-            <Box
+            <Box {...clickableProps}
+              aria-pressed={isSelected}
               key={cat.id}
               onClick={() => toggleCategory(cat)}
               sx={{

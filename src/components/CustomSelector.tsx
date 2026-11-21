@@ -12,6 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { FieldProps } from "formik";
 import { ReactComponent as ParaguayFlagIcon } from "../assets/icons/flag-paraguay.svg";
 import { ReactComponent as VenezuelaFlagIcon } from "../assets/icons/flag-venezuela.svg";
+import { clickableProps } from "../utils/a11y";
 
 interface CustomSelectorFieldProps extends FieldProps {
   /** Etiqueta opcional para el campo */
@@ -132,7 +133,7 @@ const CustomSelectorField: React.FC<CustomSelectorFieldProps> = ({
         // seguir agregando opciones.
         const isSingleSelectFilled = maxSelected === 1 && selectedItems.length > 0;
         return (
-          <Box
+          <Box {...(selectedItems.length >= maxSelected ? {} : clickableProps)}
             onClick={selectedItems.length < maxSelected ? onOpen : () => {}}
             sx={{
               border:

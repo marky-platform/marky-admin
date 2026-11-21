@@ -102,6 +102,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
             <ProductCard
               product={related}
               readOnly
+              keyboardActivation={false}
               onClick={() => goToProduct(related)}
             />
           </Box>

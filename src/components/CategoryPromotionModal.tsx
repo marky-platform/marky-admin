@@ -3,7 +3,6 @@ import { Dialog, DialogContent } from "@mui/material";
 import XButton from "./XButton";
 import InsetSurface from "../themes/InsetSurface";
 import { Formik, Form, useFormikContext } from "formik";
-import * as Yup from "yup";
 import {
   Box,
   Typography,
@@ -25,7 +24,12 @@ import { useApiMutation } from "../hooks/useApiMutation";
 import { addPromotionToProductCategory } from "../services/productService";
 import { useQueryClient } from "@tanstack/react-query";
 import { ShowNotification } from "../utils/utils";
-import { sanitizeDiscountInput } from "../utils/promotionForm";
+import { categoryPromotionValidationSchema } from "../utils/categoryPromotionSchema";
+import {
+  sanitizeDiscountInput,
+  splitIsoDateTime,
+  toIsoDateTime,
+} from "../utils/promotionForm";
 
 interface Props {
   open: boolean;
@@ -44,90 +48,6 @@ const initialValues = {
   promotionDateEnd: "",
   promotionTimeEnd: "",
 };
-
-const validationSchema = Yup.object({
-  isPromotionActive: Yup.boolean(),
-  // Required whenever the promotion switch is enabled: "Descuento" or
-  // "Oferta" must be picked, otherwise the promotion has no actual effect
-  // (a countdown alone doesn't discount anything).
-  promotionOption: Yup.string().when("isPromotionActive", {
-    is: true,
-    then: (schema) => schema.required("Debes seleccionar Descuento u Oferta"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  discountPercentage: Yup.number()
-    .transform((value, original) =>
-      String(original).trim() === "" ? null : value,
-    )
-    // Gated on isPromotionActive too (not just promotionOption): otherwise a
-    // stale "descuento" left over from before the switch was turned off
-    // keeps this required forever, even though the field is hidden and the
-    // switch being off should lift the requirement entirely.
-    .when(["isPromotionActive", "promotionOption"], {
-      is: (isPromotionActive: boolean, promotionOption: string) =>
-        isPromotionActive && promotionOption === "descuento",
-      then: (schema) =>
-        schema
-          .required("Debe ingresar un porcentaje")
-          .min(1, "Mínimo 1%")
-          .max(100, "Máximo 100%"),
-      otherwise: (schema) => schema.nullable(),
-    }),
-  multibuyOption: Yup.string().when(["isPromotionActive", "promotionOption"], {
-    is: (isPromotionActive: boolean, promotionOption: string) =>
-      isPromotionActive && promotionOption === "oferta",
-    then: (schema) => schema.required("Debe seleccionar una opción de oferta"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  countdownActive: Yup.boolean(),
-  promotionDateStart: Yup.string().when("countdownActive", {
-    is: true,
-    then: (schema) => schema.required("Debe ingresar la fecha de inicio"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-  promotionTimeStart: Yup.string().when("countdownActive", {
-    is: true,
-    then: (schema) => schema.required("Debe ingresar la hora de inicio"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-  promotionDateEnd: Yup.string().when("countdownActive", {
-    is: true,
-    then: (schema) => schema.required("Debe ingresar la fecha de fin"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-  promotionTimeEnd: Yup.string().when("countdownActive", {
-    is: true,
-    then: (schema) => schema.required("Debe ingresar la hora de fin"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-}).test(
-  "fecha-valida",
-  "La fecha y hora de fin deben ser posteriores al inicio",
-  function (values) {
-    const {
-      countdownActive,
-      promotionDateStart,
-      promotionTimeStart,
-      promotionDateEnd,
-      promotionTimeEnd,
-    } = values as any;
-
-    if (!countdownActive) return true;
-
-    if (
-      promotionDateStart &&
-      promotionTimeStart &&
-      promotionDateEnd &&
-      promotionTimeEnd
-    ) {
-      const start = new Date(`${promotionDateStart}T${promotionTimeStart}`);
-      const end = new Date(`${promotionDateEnd}T${promotionTimeEnd}`);
-      return end > start;
-    }
-
-    return true;
-  },
-);
 
 const PromotionInitializer: React.FC<{
   category?: CategoryWithProducts | null;
@@ -159,12 +79,14 @@ const PromotionInitializer: React.FC<{
       }
 
       if (category.promotion_starts_at && category.promotion_ends_at) {
-        const [startDate, startTime] = category.promotion_starts_at
-          .split("T")
-          .map((v: string, i: number) => (i === 1 ? v.slice(0, 5) : v));
-        const [endDate, endTime] = category.promotion_ends_at
-          .split("T")
-          .map((v: string, i: number) => (i === 1 ? v.slice(0, 5) : v));
+        // Misma base local que la ruta de productos (F-29): el servidor envía un
+        // instante ISO con offset y los inputs muestran la hora local del navegador.
+        const { date: startDate, time: startTime } = splitIsoDateTime(
+          category.promotion_starts_at,
+        );
+        const { date: endDate, time: endTime } = splitIsoDateTime(
+          category.promotion_ends_at,
+        );
 
         setFieldValue("countdownActive", true);
         setFieldValue("promotionDateStart", startDate);
@@ -217,8 +139,26 @@ const CategoryPromotionModalContent: React.FC<Props> = ({
         promotionTimeEnd: "",
       };
     } else if (values.countdownActive) {
-      const start = `${values.promotionDateStart}T${values.promotionTimeStart}`;
-      const end = `${values.promotionDateEnd}T${values.promotionTimeEnd}`;
+      // Instante ISO con offset explícito (como en productos), no "YYYY-MM-DDTHH:mm"
+      // naive que el servidor interpretaría en hora de Asunción.
+      const start = toIsoDateTime(
+        values.promotionDateStart,
+        values.promotionTimeStart,
+      );
+      const end = toIsoDateTime(
+        values.promotionDateEnd,
+        values.promotionTimeEnd,
+      );
+
+      // Defensa en profundidad: la validación ya rechaza fechas inválidas, pero
+      // si alguna llegara aquí (toIsoDateTime devuelve null) no se envía nada.
+      if (!start || !end) {
+        ShowNotification({
+          message: "La fecha y hora ingresadas no son válidas",
+          type: "error",
+        });
+        return;
+      }
 
       dataToSubmit.promotionStartsAt = start;
       dataToSubmit.promotionEndsAt = end;
@@ -306,7 +246,7 @@ const CategoryPromotionModalContent: React.FC<Props> = ({
         <DialogContent>
           <Formik
             initialValues={initialValues}
-            validationSchema={validationSchema}
+            validationSchema={categoryPromotionValidationSchema}
             onSubmit={onSubmitLocal}
             enableReinitialize
           >

@@ -27,6 +27,7 @@ import ProductCard from "./ProductCard";
 import ProductListItem from "./ProductListItem";
 import { CatalogViewMode } from "../hooks/useCatalogViewMode";
 import { HEADER_HEIGHT } from "../constants/layout";
+import { clickableProps } from "../utils/a11y";
 
 // Debe coincidir exactamente con la altura fija del AppBar (Header.tsx,
 // Toolbar minHeight/maxHeight: 55) para que el encabezado de categoría quede
@@ -215,7 +216,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
         {!readOnly && (
           <>
             <Tooltip title="Más acciones">
-              <IconButton
+              <IconButton aria-label="Más acciones de la categoría"
                 onClick={handleOpen}
                 sx={{
                   borderRadius: 2,
@@ -375,7 +376,7 @@ const CategoryGroup: React.FC<CategoryGroupProps> = ({
       >
         {category.products.length === 0 ? (
           readOnly ? null : (
-            <Box
+            <Box {...clickableProps}
               onClick={() =>
                 navigate(ROUTES.PRODUCT_CREATE, {
                   state: {

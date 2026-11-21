@@ -7,6 +7,7 @@ import { FormikErrors } from "formik";
 import React from "react";
 import { Product } from "../../../types/product";
 import { getSectionDisplayName, getSectionNavState } from "./sectionNavState";
+import { clickableProps } from "../../../utils/a11y";
 
 export interface SectionsNavItem {
   name: string;
@@ -100,7 +101,7 @@ const SectionsNav: React.FC<SectionsNavProps> = ({
           const isLast = index === sections.length - 1;
           return (
             <Box key={section.name}>
-              <Box
+              <Box {...clickableProps}
                 onClick={() => onSelect(section.name)}
                 sx={{
                   display: "flex",

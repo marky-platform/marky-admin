@@ -20,7 +20,7 @@ const CategoryFilterChips: React.FC<CategoryFilterChipsProps> = ({
   categories: injectedCategories,
 }) => {
   const { data: categoriesData } = useProductCategories(
-    { page_size: 100 },
+    undefined,
     { enabled: !injectedCategories },
   );
   const categories = injectedCategories ?? categoriesData?.results ?? [];

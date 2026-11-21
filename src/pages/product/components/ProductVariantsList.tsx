@@ -9,7 +9,9 @@ const ProductVariantsList: React.FC<{ variants: ProductVariant[] }> = ({
 }) => {
   if (!variants || variants.length === 0) return null;
 
-  const getVariantImageUrl = (image?: File | string) => {
+  const getVariantImageUrl = (image?: File | string, thumbnail?: string) => {
+    // La miniatura (60px) solo aplica si la imagen sigue siendo la URL original.
+    if (typeof image === "string" && thumbnail) return thumbnail;
     if (!image) return undefined;
     if (typeof image === "string") return image;
     try {
@@ -26,7 +28,7 @@ const ProductVariantsList: React.FC<{ variants: ProductVariant[] }> = ({
       </Typography>
       <Box display="flex" flexDirection="column" gap={2}>
         {variants.map((v, index) => {
-          const imageUrl = getVariantImageUrl(v.image) ?? defaultProductImage;
+          const imageUrl = getVariantImageUrl(v.image, v.thumbnail) ?? defaultProductImage;
           return (
             <Box
               key={v.id ?? index}
