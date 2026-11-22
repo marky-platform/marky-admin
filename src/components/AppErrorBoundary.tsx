@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import * as Sentry from "@sentry/react";
 
 interface AppErrorBoundaryProps {
   children: ReactNode;
@@ -22,6 +23,10 @@ class AppErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Error no controlado en la aplicación:", error, errorInfo);
+    // React no propaga a window.onerror los errores atrapados por un boundary.
+    Sentry.captureException(error, {
+      contexts: { react: { componentStack: errorInfo.componentStack } },
+    });
   }
 
   handleRetry = () => {

@@ -17,6 +17,10 @@ import { ROUTES } from "./routes/paths";
 import { CssBaseline } from "@mui/material";
 import { LoadingProvider } from "./contexts/LoadingContext";
 import AppErrorBoundary from "./components/AppErrorBoundary";
+import * as Sentry from "@sentry/react";
+
+// Routes instrumentado: transacciones de Sentry con la ruta parametrizada.
+const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 
 // El catálogo público va en chunks propios: un visitante anónimo no descarga
 // el panel de administración.
@@ -48,7 +52,7 @@ const App = () => {
             <CssBaseline enableColorScheme />
             <BrowserRouter>
               <Suspense fallback={<LoadingSpinner fullScreen size={50} />}>
-                <Routes>
+                <SentryRoutes>
                   {/* Loop over public routes */}
                   {publicRoutes.map(({ path, component: Component }) => (
                     <Route
@@ -116,7 +120,7 @@ const App = () => {
                     element={<PublicBusinessProfilePage />}
                   />
                   <Route path="*" element={<NotFound />} />
-                </Routes>
+                </SentryRoutes>
               </Suspense>
               <ThemedToastContainer />
             </BrowserRouter>
