@@ -18,7 +18,7 @@ npm test -- App.test   # run a single test file by name pattern
 npm test -- --watchAll=false   # run all tests once, non-interactive
 ```
 
-`npm run lint` runs ESLint (`react-app` config, `--max-warnings 0`); `npx tsc --noEmit` typechecks. CI (`.github/workflows/ci.yml`, Node 20) runs `npm ci`, lint, tsc, `npm test -- --watchAll=false --runInBand`, build and a non-blocking `npm audit --audit-level=high`. Secret scan config: `.gitleaks.toml`.
+`npm run lint` runs ESLint (`react-app` config, `--max-warnings 0`); `npx tsc --noEmit` typechecks. CI (`.github/workflows/ci.yml`, Node 24, on PRs and pushes to `develop`/`main`) runs `npm ci`, lint, tsc, `npm test -- --watchAll=false --runInBand`, build and a non-blocking `npm audit --audit-level=high`. Secret scan config: `.gitleaks.toml`.
 
 ## Architecture
 

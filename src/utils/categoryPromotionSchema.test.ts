@@ -54,14 +54,9 @@ describe("toIsoDateTime con fecha inválida", () => {
 });
 
 describe("splitIsoDateTime con offset del servidor (America/Asuncion, -03:00)", () => {
-  const originalTz = process.env.TZ;
-  afterAll(() => {
-    if (originalTz === undefined) delete process.env.TZ;
-    else process.env.TZ = originalTz;
-  });
-
+  // La zona se fija al arrancar el proceso (`TZ=America/Asuncion` en el script "test" de
+  // package.json): cambiar process.env.TZ dentro de Jest no afecta al reloj del runner.
   it("lee el offset -03:00 sin desplazar el día cuando el navegador está en Asunción", () => {
-    process.env.TZ = "America/Asuncion";
     // Sanity: el runner realmente adoptó la zona (UTC-3 en enero 2026, DST de Paraguay).
     expect(new Date("2026-01-10T12:00:00Z").getHours()).toBe(9);
     expect(splitIsoDateTime("2026-01-10T00:30:00-03:00")).toEqual({
