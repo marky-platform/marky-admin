@@ -1,3 +1,5 @@
+// Debe ir primero: inicializa Sentry antes de que se cargue el resto de la app.
+import "./instrument";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
